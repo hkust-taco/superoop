@@ -1,0 +1,164 @@
+:NewDefs
+
+
+
+trait T1[A] {
+  fun f: A -> A
+}
+//│ trait T1[A] {
+//│   fun f: A -> A
+//│ }
+
+class C1 extends T1 {
+  fun f(x: Int) = x
+}
+//│ class C1 extends T1 {
+//│   fun f: (x: Int,) -> Int
+//│ }
+
+class C1 extends T1['FigureItOut] {
+  fun f(x: Int) = x
+}
+//│ class C1 extends T1 {
+//│   fun f: (x: Int,) -> Int
+//│ }
+
+let c1 = new C1
+//│ let c1: C1
+//│ c1
+//│    = C1 {}
+
+c1.f
+//│ (x: Int,) -> Int
+//│ res
+//│     = [Function: f]
+
+(c1 : T1).f
+//│ ??A -> ??A0
+//│ res
+//│     = [Function: f]
+
+(c1 : T1['X]).f
+//│ Int -> Int
+//│ res
+//│     = [Function: f]
+
+:ns
+(c1 : T1).f
+//│ 'f
+//│   where
+//│     'f :> in ??A out ??A0 -> in ??A out ??A0
+//│ res
+//│     = [Function: f]
+
+:ns
+(c1 : T1['X]).f
+//│ 'f
+//│   where
+//│     'f :> 'X -> 'X
+//│     'X :> Int
+//│        <: 'FigureItOut
+//│     'FigureItOut :> Int
+//│                  <: 'X & Int
+//│ res
+//│     = [Function: f]
+
+:e
+(c1 : T1['X]).f(false)
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.67: 	(c1 : T1['X]).f(false)
+//│ ║        	^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── reference of type `false` is not an instance of type `Int`
+//│ ║  l.67: 	(c1 : T1['X]).f(false)
+//│ ║        	                ^^^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.20: 	  fun f(x: Int) = x
+//│ ║        	           ^^^
+//│ ╟── from type variable:
+//│ ║  l.67: 	(c1 : T1['X]).f(false)
+//│ ╙──      	         ^^
+//│ Int | error | false
+//│ res
+//│     = false
+
+
+
+// * The more tricky case:
+
+:e
+trait T2[A] {
+  fun f: A -> A
+  val r = C2().f(false)
+}
+class C2 extends T2['FigureItOut] {
+  fun f(x: Int) = x
+}
+//│ ╔══[ERROR] Method implementations in traits are not yet supported
+//│ ║  l.91: 	  val r = C2().f(false)
+//│ ╙──      	      ^^^^^^^^^^^^^^^^^
+//│ ╔══[ERROR] Unhandled cyclic definition
+//│ ║  l.89: 	trait T2[A] {
+//│ ║        	^^^^^^^^^^^^^
+//│ ║  l.90: 	  fun f: A -> A
+//│ ║        	^^^^^^^^^^^^^^^
+//│ ║  l.91: 	  val r = C2().f(false)
+//│ ╙──      	^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.91: 	  val r = C2().f(false)
+//│ ║        	          ^^^^^^^^^^^^^
+//│ ╟── reference of type `false` is not an instance of type `Int`
+//│ ║  l.91: 	  val r = C2().f(false)
+//│ ║        	                 ^^^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.94: 	  fun f(x: Int) = x
+//│ ╙──      	           ^^^
+//│ trait T2[A] {
+//│   fun f: A -> A
+//│   let r: Int | error
+//│ }
+//│ class C2 extends T2 {
+//│   fun f: (x: Int,) -> Int
+//│ }
+
+:e
+trait T3[A] {
+  fun f: A -> A
+  val r = (C3() : T3['X]).f(false)
+}
+class C3 extends T3['FigureItOut] {
+  fun f(x: Int) = x
+}
+//│ ╔══[ERROR] Method implementations in traits are not yet supported
+//│ ║  l.126: 	  val r = (C3() : T3['X]).f(false)
+//│ ╙──       	      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╔══[ERROR] Unhandled cyclic definition
+//│ ║  l.124: 	trait T3[A] {
+//│ ║         	^^^^^^^^^^^^^
+//│ ║  l.125: 	  fun f: A -> A
+//│ ║         	^^^^^^^^^^^^^^^
+//│ ║  l.126: 	  val r = (C3() : T3['X]).f(false)
+//│ ╙──       	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╔══[ERROR] Type `C3` does not contain member `T3#A`
+//│ ║  l.124: 	trait T3[A] {
+//│ ╙──       	         ^
+//│ trait T3[A] {
+//│   fun f: A -> A
+//│   let r: error | false
+//│ }
+//│ class C3 extends T3 {
+//│   fun f: (x: Int,) -> Int
+//│ }
+
+:e // FIXME
+C3() : T3['X]
+//│ ╔══[ERROR] Type `C3` does not contain member `T3#A`
+//│ ║  l.124: 	trait T3[A] {
+//│ ╙──       	         ^
+//│ T3['X]
+//│   where
+//│     'X :> error
+//│ res
+//│ Runtime error:
+//│   TypeError: Class constructor C3 cannot be invoked without 'new'
+
+

@@ -360,6 +360,7 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
   }
   
   type TR = TypeRef
+  val TR: TypeRef.type = TypeRef
   case class TypeRef(defn: TypeName, targs: Ls[SimpleType])(val prov: TypeProvenance) extends SimpleType with TypeRefImpl {
     def level: Level = targs.iterator.map(_.level).maxOption.getOrElse(0)
     def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = targs.iterator.map(_.levelBelow(ub)).maxOption.getOrElse(MinLevel)
@@ -404,12 +405,7 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
     override def toString = showProvOver(false)(id.idStr+s"<${parents.map(_.name).mkString(",")}>")
   }
   
-  sealed trait TypeVarOrRigidVar extends SimpleType {
-    def assertTV: TV = this match {
-      case tv: TV => tv
-      case _ => lastWords(s"$this was not a type variable")
-    }
-  }
+  sealed trait TypeVarOrRigidVar extends SimpleType
   
   sealed trait ObjectTag extends TypeTag {
     val id: SimpleTerm
@@ -418,7 +414,7 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
   
   sealed abstract class AbstractTag extends BaseTypeOrTag with TypeTag with Factorizable
   
-  case class TraitTag(id: Var)(val prov: TypeProvenance) extends AbstractTag with ObjectTag {
+  case class TraitTag(id: Var, parents: Set[TypeName])(val prov: TypeProvenance) extends AbstractTag with ObjectTag {
     def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = MinLevel
     def level: Level = MinLevel
   }
@@ -519,15 +515,6 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
     private lazy val trueOriginal: Opt[TV] =
       originalTV.flatMap(_.trueOriginal.orElse(originalTV))
     
-    override def freshenAbove(lim: Int, rigidify: Bool)
-        (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST])
-        : TypeVarOrRigidVar =
-      super.freshenAbove(lim, rigidify) match {
-        case tv: TypeVarOrRigidVar =>
-          tv // * Note that type variables can be refreshed as rigid variables (trait tags)
-        case _ => die
-      }
-    
     def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level =
       if (level <= ub) level else {
         if (cache(this)) MinLevel else {
@@ -551,17 +538,22 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
     override def toString: String =
       (trueOriginal match {
         case S(to) =>
-          assert(to.nameHint === nameHint)
+          assert(to.nameHint === nameHint, (to.nameHint, nameHint))
           to.mkStr + "_" + uid + showLevel(level)
         case N =>
           showProvOver(false)(mkStr + showLevel(level))
       }) + (if (assignedTo.isDefined) "#" else "")
     private[mlscript] def mkStr = nameHint.getOrElse("α") + uid
     
-    def isRecursive_$(implicit ctx: Ctx) : Bool = (lbRecOccs_$, ubRecOccs_$) match {
-      case (S(N | S(true)), _) | (_, S(N | S(false))) => true
+    final def isRecursive_$(implicit ctx: Ctx) : Bool = isPosRecursive_$ || isNegRecursive_$
+    final def isPosRecursive_$(implicit ctx: Ctx) : Bool = lbRecOccs_$ match {
+      case S(N | S(true)) => true
       case _ => false
-    } 
+    }
+    final def isNegRecursive_$(implicit ctx: Ctx) : Bool = ubRecOccs_$ match {
+      case S(N | S(false)) => true
+      case _ => false
+    }
     /** None: not recursive in this bound; Some(Some(pol)): polarly-recursive; Some(None): nonpolarly-recursive.
       * Note that if we have something like 'a :> Bot <: 'a -> Top, 'a is not truly recursive
       *   and its bounds can actually be inlined. */

@@ -4,7 +4,7 @@ import mlscript.utils.shorthands._
 import mlscript.{JSStmt, JSExpr, JSLetDecl}
 import mlscript.Type
 import scala.reflect.ClassTag
-import mlscript.{TypeName, Top, Bot, TypeDef, Als, Trt, Cls, Nms, Mxn}
+import mlscript.{TypeName, Top, Bot, TypeDef, Als, Trt, Cls, Mod, Mxn}
 import mlscript.{MethodDef, Var}
 import mlscript.{Term, Statement, Record}
 import mlscript.utils.{AnyOps, lastWords}
@@ -47,6 +47,12 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
       "div",
       "gt",
       "not",
+      "ne",
+      "eq",
+      "sgt",
+      "slt",
+      "sge",
+      "sle",
       "typeof",
       "toString",
       "negate",
@@ -69,10 +75,19 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
     i <- (1 to Int.MaxValue).iterator
     c <- Scope.nameAlphabet.combinations(i)
     name = c.mkString
-    if !runtimeSymbols.contains(name)
+    if !hasRuntimeName(name)
   } yield {
     name
   }
+
+  /**
+    * Check if a runtime name is used recursively.
+    *
+    * @param name the name
+    * @return whether it's available or not
+    */
+  private def hasRuntimeName(name: Str): Bool =
+    runtimeSymbols.contains(name) || enclosing.exists(_.hasRuntimeName(name))
 
   /**
     * Allocate a non-sense runtime name.
@@ -220,7 +235,7 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
       declareClass(name, tparams map { _.name }, baseType, members)
     case TypeDef(Mxn, _, _, _, _, _, _) =>
       throw CodeGenError("Mixins are not supported yet.")
-    case TypeDef(Nms, _, _, _, _, _, _) =>
+    case TypeDef(Mod, _, _, _, _, _, _) =>
       throw CodeGenError("Namespaces are not supported yet.")
   }
 

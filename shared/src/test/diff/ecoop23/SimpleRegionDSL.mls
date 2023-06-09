@@ -1,4 +1,3 @@
-:NewParser
 :NewDefs
 
 
@@ -7,15 +6,15 @@
 
 // ******************* Initial System *******************
 
-class Vector(x: int, y: int)
-//│ class Vector(x: int, y: int)
+class Vector(x: Int, y: Int)
+//│ class Vector(x: Int, y: Int)
 
-class Circle(radius: int)
-class Outside[Region](a: Region)
-class Union[Region](a: Region, b: Region)
-class Intersect[Region](a: Region, b: Region)
-class Translate[Region](v: Vector, a: Region)
-//│ class Circle(radius: int)
+class Circle(radius: Int)
+class Outside[out Region](a: Region)
+class Union[out Region](a: Region, b: Region)
+class Intersect[out Region](a: Region, b: Region)
+class Translate[out Region](v: Vector, a: Region)
+//│ class Circle(radius: Int)
 //│ class Outside[Region](a: Region)
 //│ class Union[Region](a: Region, b: Region)
 //│ class Intersect[Region](a: Region, b: Region)
@@ -31,21 +30,21 @@ mixin SizeBase {
       Translate(_, a) then this.size(a) + 1
 }
 //│ mixin SizeBase() {
-//│   this: {size: ('a | 'a0 | 'a1 | 'a2) -> int}
-//│   fun size: (Circle | Intersect['a1] | Outside['a] | Translate['a2] | Union['a0]) -> int
+//│   this: {size: 'a -> Int}
+//│   fun size: (Circle | Intersect['a] | Outside['a] | Translate['a] | Union['a]) -> Int
 //│ }
 
 // ******************* Linguistic Reuse and Meta-Language Optimizations *******************
 
-fun round(n: number): int = 0
-//│ fun round: (n: number,) -> int
+fun round(n: Num): Int = 0
+//│ fun round: (n: Num,) -> Int
 
 fun go(x, offset) =
   if x is 0 then Circle(1)
   else
     let shared = go(x - 1, round(offset / 2))
     Union(Translate(Vector(0 - offset, 0), shared), Translate(Vector(offset, 0), shared))
-//│ fun go: forall 'Region. (int, int,) -> 'Region
+//│ fun go: forall 'Region. (0 | Int & ~0, Int,) -> 'Region
 //│   where
 //│     'Region :> Circle | Union[Translate['Region]]
 
@@ -59,9 +58,9 @@ let circles = go(2, 1024)
 
 // ******************* Adding More Language Constructs *******************
 
-class Univ
-class Empty
-class Scale[Region](v: Vector, a: Region)
+class Univ()
+class Empty()
+class Scale[out Region](v: Vector, a: Region)
 //│ class Univ()
 //│ class Empty()
 //│ class Scale[Region](v: Vector, a: Region)
@@ -76,47 +75,38 @@ mixin SizeExt {
 }
 //│ mixin SizeExt() {
 //│   super: {size: 'b -> 'c}
-//│   this: {size: 'a -> int}
-//│   fun size: (Empty | Scale['a] | Univ | 'b & ~#Empty & ~#Scale & ~#Univ) -> (int | 'c)
+//│   this: {size: 'a -> Int}
+//│   fun size: (Empty | Object & 'b & ~#Empty & ~#Scale & ~#Univ | Scale['a] | Univ) -> (Int | 'c)
 //│ }
 
 module TestSize extends SizeBase, SizeExt
-//│ module TestSize() {
-//│   fun size: 'a -> int
+//│ module TestSize {
+//│   fun size: 'a -> Int
 //│ }
 //│ where
-//│   'a <: Circle | Empty | Intersect['a] | Outside['a] | Scale['a] | Translate['a] | Union['a] | Univ
+//│   'a <: Empty | Object & (Circle | Intersect['a] | Outside['a] | Translate['a] | Union['a]) & ~#Empty & ~#Scale & ~#Univ | Scale['a] | Univ
 
-// TODO investigate
-:re
 TestSize.size(Empty())
-//│ int
+//│ Int
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 1
 
-// TODO investigate
-:re
 TestSize.size(circles)
-//│ int
+//│ Int
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 13
 
-// TODO investigate
-:re
 TestSize.size(Scale(Vector(1, 1), circles))
-//│ int
+//│ Int
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 14
 
 // ******************* Adding a New Interpretation *******************
-// a stupid power (int ** int) implementation
+// a stupid power (Int ** Int) implementation
 fun pow(x, a) =
   if a is 0 then 1
   else x * pow(x, a - 1)
-//│ fun pow: (int, int,) -> int
+//│ fun pow: (Int, 0 | Int & ~0,) -> Int
 
 mixin Contains {
   fun contains(a, p) =
@@ -128,47 +118,38 @@ mixin Contains {
       Translate(v, a) then this.contains(a, Vector(p.x - v.x, p.y - v.y))
 }
 //│ mixin Contains() {
-//│   this: {contains: ('a | 'a0 | 'a1, 'b,) -> bool & ('a2, Vector,) -> 'c}
-//│   fun contains: (Circle | Intersect['a1] | Outside['a] | Translate['a2] | Union['a0], {x: int, y: int} & 'b,) -> (bool | 'c)
+//│   this: {contains: ('a, 'b,) -> Bool & ('a0, Vector,) -> 'c}
+//│   fun contains: (Circle | Intersect['a] | Outside['a] | Translate['a0] | Union['a], {x: Int, y: Int} & 'b,) -> (Bool | 'c)
 //│ }
 
 module TestContains extends Contains
-//│ module TestContains() {
-//│   fun contains: ('a, {x: int, y: int},) -> bool
+//│ module TestContains {
+//│   fun contains: ('a, {x: Int, y: Int},) -> Bool
 //│ }
 //│ where
 //│   'a <: Circle | Intersect['a] | Outside['a] | Translate['a] | Union['a]
 
-// TODO investigate
-:re
 TestContains.contains(Translate(Vector(0, 0), Circle(1)), Vector(0, 0))
-//│ bool
+//│ Bool
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = true
 
-// TODO investigate
-:re
 TestContains.contains(Intersect(Translate(Vector(0, 0), Circle(1)), Circle(1)), Vector(0, 0))
-//│ bool
+//│ Bool
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = true
 
-// TODO investigate
-:re
 TestContains.contains(circles, Vector(0, 0))
-//│ bool
+//│ Bool
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = false
 
 // ******************* Dependencies, Complex Interpretations, and Domain-Specific Optimizations *******************
 
-fun toString(a: int): string = "foo"
-fun concat(a: string, b: string): string = a
-//│ fun toString: (a: int,) -> string
-//│ fun concat: (a: string, b: string,) -> string
+fun toString(a: Int): Str = "foo"
+fun concat(a: Str, b: Str): Str = a
+//│ fun toString: (a: Int,) -> Str
+//│ fun concat: (a: Str, b: Str,) -> Str
 
 mixin Text {
   fun text(e) =
@@ -180,58 +161,54 @@ mixin Text {
       Translate then concat("a translated region of size ", toString(this.size(e)))
 }
 //│ mixin Text() {
-//│   this: {size: (Intersect['Region] | Translate['Region0] | Union['Region1] | 'a) -> int}
-//│   fun text: (Circle | Intersect['Region] | Outside['a] | Translate['Region0] | Union['Region1]) -> string
+//│   this: {size: (Intersect[nothing] | Translate['Region] | Union[nothing] | 'a) -> Int}
+//│   fun text: (Circle | Intersect[anything] | Outside['a] | Translate['Region] | Union[anything]) -> Str
 //│ }
 
 :e
 module SizeText extends Text
-//│ ╔══[ERROR] Module `SizeText` does not contain member `size`
-//│ ║  l.180: 	      Translate then concat("a translated region of size ", toString(this.size(e)))
+//│ ╔══[ERROR] Type `#SizeText & {text: ?a -> (?b | ?c | ?d | ?e | ?f)}` does not contain member `size`
+//│ ║  l.161: 	      Translate then concat("a translated region of size ", toString(this.size(e)))
 //│ ╙──       	                                                                         ^^^^^
-//│ ╔══[ERROR] Module `SizeText` does not contain member `size`
-//│ ║  l.179: 	      Intersect then concat("the intersection of two regions of size ", toString(this.size(e)))
+//│ ╔══[ERROR] Type `#SizeText & {text: ?a -> (?b | ?c | ?d | ?e | ?f)}` does not contain member `size`
+//│ ║  l.160: 	      Intersect then concat("the intersection of two regions of size ", toString(this.size(e)))
 //│ ╙──       	                                                                                     ^^^^^
-//│ ╔══[ERROR] Module `SizeText` does not contain member `size`
-//│ ║  l.178: 	      Union then concat("the union of two regions of size ", toString(this.size(e)))
+//│ ╔══[ERROR] Type `#SizeText & {text: ?a -> (?b | ?c | ?d | ?e | ?f)}` does not contain member `size`
+//│ ║  l.159: 	      Union then concat("the union of two regions of size ", toString(this.size(e)))
 //│ ╙──       	                                                                          ^^^^^
-//│ ╔══[ERROR] Module `SizeText` does not contain member `size`
-//│ ║  l.177: 	      Outside(a) then concat("outside a region of size ", toString(this.size(a)))
+//│ ╔══[ERROR] Type `#SizeText & {text: ?a -> (?b | ?c | ?d | ?e | ?f)}` does not contain member `size`
+//│ ║  l.158: 	      Outside(a) then concat("outside a region of size ", toString(this.size(a)))
 //│ ╙──       	                                                                       ^^^^^
-//│ module SizeText() {
-//│   fun text: (Circle | Intersect[anything] | Outside[anything] | Translate[anything] | Union[anything]) -> string
+//│ module SizeText {
+//│   fun text: (Circle | Intersect[anything] | Outside[anything] | Translate[anything] | Union[anything]) -> Str
 //│ }
 
 // * Note: this inferred type got *much worse* after this commit (field access type refinement)
 module SizeText extends SizeBase, Text
-//│ module SizeText() {
-//│   fun size: 'a -> int
-//│   fun text: (Circle | Intersect[Circle | Intersect['Region] | Outside['Region0] | Translate['Region1] | Union['Region2]] | Outside['a] | Translate[Circle | Intersect['Region] | Outside['Region0] | Translate['Region1] | Union['Region2]] | Union[Circle | Intersect['Region] | Outside['Region0] | Translate['Region1] | Union['Region2]]) -> string
+//│ module SizeText {
+//│   fun size: 'a -> Int
+//│   fun text: 'a -> Str
 //│ }
 //│ where
-//│   'a <: Circle | Intersect['Region] | Outside['Region0] | Translate['Region1] | Union['Region2]
-//│   'Region2 <: 'a
-//│   'Region1 <: 'a
-//│   'Region0 <: 'a
-//│   'Region <: 'a
+//│   'a <: Circle | Intersect['a] | Outside['a] | Translate['a] | Union['a]
 
 SizeText.text(circles)
-//│ string
+//│ Str
 //│ res
 //│     = 'the union of two regions of size '
 
 SizeText.size(circles)
-//│ int
+//│ Int
 //│ res
 //│     = 13
 
 SizeText.text(Intersect(Translate(Vector(0, 0), Circle(1)), Circle(1)))
-//│ string
+//│ Str
 //│ res
 //│     = 'the intersection of two regions of size '
 
 SizeText.size(Intersect(Translate(Vector(0, 0), Circle(1)), Circle(1)))
-//│ int
+//│ Int
 //│ res
 //│     = 4
 
@@ -247,8 +224,8 @@ mixin IsUniv {
     else false
 }
 //│ mixin IsUniv() {
-//│   this: {isEmpty: 'a -> 'b, isUniv: ('a0 | 'a1) -> bool & ('a2 | 'a3) -> 'b}
-//│   fun isUniv: (Intersect['a1] | Outside['a] | Scale['a3] | Translate['a2] | Union['a0] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ) -> (bool | 'b)
+//│   this: {isEmpty: 'a -> 'b, isUniv: 'a0 -> Bool & 'a1 -> 'b}
+//│   fun isUniv: (Intersect['a0] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['a] | Scale['a1] | Translate['a1] | Union['a0] | Univ) -> (Bool | 'b)
 //│ }
 
 mixin IsEmpty {
@@ -263,42 +240,42 @@ mixin IsEmpty {
     else false
 }
 //│ mixin IsEmpty() {
-//│   this: {isEmpty: ('a | 'a0) -> bool & ('a1 | 'a2) -> 'b, isUniv: 'a3 -> 'b}
-//│   fun isEmpty: (Intersect['a0] | Outside['a3] | Scale['a2] | Translate['a1] | Union['a] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ) -> (bool | 'b)
+//│   this: {isEmpty: 'a -> Bool & 'a0 -> 'b, isUniv: 'a1 -> 'b}
+//│   fun isEmpty: (Intersect['a] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['a1] | Scale['a0] | Translate['a0] | Union['a] | Univ) -> (Bool | 'b)
 //│ }
 
 module IsUnivIsEmpty extends IsUniv, IsEmpty
-//│ module IsUnivIsEmpty() {
-//│   fun isEmpty: 'a -> bool
-//│   fun isUniv: 'b -> bool
+//│ module IsUnivIsEmpty {
+//│   fun isEmpty: 'a -> Bool
+//│   fun isUniv: 'b -> Bool
 //│ }
 //│ where
-//│   'a <: Intersect['a] | Outside['b] | Scale['a] | Translate['a] | Union['a] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
-//│   'b <: Intersect['b] | Outside['a] | Scale['b] | Translate['b] | Union['b] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
+//│   'b <: Intersect['b] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['b] | Scale['b] | Translate['b] | Union['b] | Univ
+//│   'a <: Intersect['a] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['a] | Scale['a] | Translate['a] | Union['a] | Univ
 
 module IsUnivIsEmpty extends IsEmpty, IsUniv
-//│ module IsUnivIsEmpty() {
-//│   fun isEmpty: 'a -> bool
-//│   fun isUniv: 'b -> bool
+//│ module IsUnivIsEmpty {
+//│   fun isEmpty: 'a -> Bool
+//│   fun isUniv: 'b -> Bool
 //│ }
 //│ where
-//│   'a <: Intersect['a] | Outside['b] | Scale['a] | Translate['a] | Union['a] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
-//│   'b <: Intersect['b] | Outside['a] | Scale['b] | Translate['b] | Union['b] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
+//│   'b <: Intersect['b] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['b] | Scale['b] | Translate['b] | Union['b] | Univ
+//│   'a <: Intersect['a] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['a] | Scale['a] | Translate['a] | Union['a] | Univ
 
 IsUnivIsEmpty.isUniv(circles)
-//│ bool
+//│ Bool
 //│ res
 //│     = false
 
 IsUnivIsEmpty.isEmpty(circles)
-//│ bool
+//│ Bool
 //│ res
 //│     = false
 
-class Foo
+class Foo()
 IsUnivIsEmpty.isEmpty(Scale(Vector(1, 2), Intersect(Foo(), circles)))
 //│ class Foo()
-//│ bool
+//│ Bool
 //│ res
 //│     = false
 
@@ -314,29 +291,34 @@ mixin Eliminate {
     else e
 }
 //│ mixin Eliminate() {
-//│   this: {eliminate: 'a -> 'b & 'a0 -> 'c & 'a1 -> 'd & 'a2 -> 'e & 'a3 -> 'f & 'a4 -> 'g}
-//│   fun eliminate: forall 'h. (Intersect['a2] | Outside['a0 & (Outside['a] | ~#Outside)] | Scale['a4] | Translate['a3] | Union['a1] | 'h & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union) -> (Intersect['e] | Outside['c] | Scale['g] | Translate['f] | Union['d] | 'b | 'h)
+//│   this: {eliminate: 'a -> 'b & 'a0 -> 'Region & 'a1 -> 'Region0 & 'a2 -> 'Region1 & 'a3 -> 'Region2 & 'a4 -> 'Region3}
+//│   fun eliminate: (Intersect['a2] | Object & 'b & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union | Outside['a0 & (Object & ~#Outside | Outside['a])] | Scale['a4] | Translate['a3] | Union['a1]) -> (Intersect['Region1] | Outside['Region] | Scale['Region3] | Translate['Region2] | Union['Region0] | 'b)
 //│ }
 
 module TestElim extends Eliminate
-//│ module TestElim() {
-//│   fun eliminate: 'a -> 'b
+//│ module TestElim {
+//│   fun eliminate: forall 'a. 'b -> ('a | 'c)
 //│ }
 //│ where
-//│   'a <: Intersect['a] | Outside['a & (Outside['a] | ~#Outside)] | Scale['a] | Translate['a] | Union['a] | 'b & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union
-//│   'b :> Outside['b] | Union['b] | Intersect['b] | Translate['b] | Scale['b]
+//│   'b <: Intersect['b] | Object & 'c & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union | Outside['b & (Object & ~#Outside | Outside['b])] | Scale['b] | Translate['b] | Union['b]
+//│   'c :> 'a
+//│   'a :> Outside['c] | Union['c] | Intersect['c] | Translate['c] | Scale['c]
 
 TestElim.eliminate(Outside(Outside(Univ())))
-//│ 'a
+//│ forall 'a. 'b | 'a
 //│   where
-//│     'a :> Intersect['a] | Translate['a] | Scale['a] | Univ | Outside['a] | Union['a]
+//│     'b :> Univ | 'a
+//│     'a :> Outside['Region] | Union['Region] | Intersect['Region] | Translate['Region] | Scale['Region]
+//│     'Region :> Univ | 'b
 //│ res
 //│     = Univ {}
 
 TestElim.eliminate(circles)
-//│ 'a
+//│ forall 'a. 'b | 'a
 //│   where
-//│     'a :> Outside['a] | Union['a] | Intersect['a] | Translate['a] | Scale['a] | Circle
+//│     'b :> Circle | 'a
+//│     'a :> Outside['Region] | Intersect['Region] | Translate['Region] | Scale['Region] | Union['Region]
+//│     'Region :> Circle | 'b
 //│ res
 //│     = Union {}
 
@@ -346,15 +328,16 @@ fun mk(n) = if n is
   3 then Intersect(mk(n), mk(n))
   4 then Translate(Vector(0, 0), mk(n))
   _ then Scale(Vector(0, 0), mk(n))
-//│ fun mk: forall 'Region. number -> 'Region
+//│ fun mk: forall 'Region. Object -> 'Region
 //│   where
 //│     'Region :> Intersect['Region] | Outside['Region] | Scale['Region] | Translate['Region] | Union['Region]
 
 :re
 TestElim.eliminate(mk(100))
-//│ 'a
+//│ forall 'a. 'a
 //│   where
-//│     'a :> Outside['a] | Union['a] | Intersect['a] | Translate['a] | Scale['a]
+//│     'a :> Outside['Region] | Union['Region] | Intersect['Region] | Translate['Region] | Scale['Region]
+//│     'Region :> 'a
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -362,69 +345,59 @@ TestElim.eliminate(mk(100))
 // *************************************************************************
 
 module Lang extends SizeBase, SizeExt, Contains, Text, IsUniv, IsEmpty, Eliminate
-//│ module Lang() {
-//│   fun contains: ('a, {x: int, y: int},) -> bool
-//│   fun eliminate: 'b -> 'c
-//│   fun isEmpty: 'd -> bool
-//│   fun isUniv: 'e -> bool
-//│   fun size: 'f -> int
-//│   fun text: (Circle | Intersect[Empty | Scale['Region] | Univ | 'g & ~#Empty & ~#Scale & ~#Univ] | Outside['f] | Translate[Empty | Scale['Region] | Univ | 'g & ~#Empty & ~#Scale & ~#Univ] | Union[Empty | Scale['Region] | Univ | 'g & ~#Empty & ~#Scale & ~#Univ]) -> string
+//│ module Lang {
+//│   fun contains: ('a, {x: Int, y: Int},) -> Bool
+//│   fun eliminate: forall 'b. 'c -> ('b | 'd)
+//│   fun isEmpty: 'e -> Bool
+//│   fun isUniv: 'f -> Bool
+//│   fun size: 'g -> Int
+//│   fun text: 'h -> Str
 //│ }
 //│ where
-//│   'f <: Empty | Scale['Region] | Univ | 'g & ~#Empty & ~#Scale & ~#Univ
-//│   'g <: Circle | Intersect['f] | Outside['f] | Translate['f] | Union['f]
-//│   'Region <: 'f
-//│   'd <: Intersect['d] | Outside['e] | Scale['d] | Translate['d] | Union['d] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
-//│   'e <: Intersect['e] | Outside['d] | Scale['e] | Translate['e] | Union['e] | Univ | ~Intersect[anything] & ~Outside[anything] & ~Scale[anything] & ~Translate[anything] & ~Union[anything] & ~Univ
-//│   'b <: Intersect['b] | Outside['b & (Outside['b] | ~#Outside)] | Scale['b] | Translate['b] | Union['b] | 'c & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union
-//│   'c :> Translate['c] | Scale['c] | Outside['c] | Union['c] | Intersect['c]
+//│   'h <: Circle | Intersect['i] | Outside['i] | Translate['i] | Union['i]
+//│   'i <: Empty | Object & 'h & ~#Empty & ~#Scale & ~#Univ | Scale['i] | Univ
+//│   'g <: Empty | Object & 'j & ~#Empty & ~#Scale & ~#Univ | Scale['g] | Univ
+//│   'j <: Circle | Intersect['g] | Outside['g] | Translate['g] | Union['g]
+//│   'f <: Intersect['f] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['f] | Scale['f] | Translate['f] | Union['f] | Univ
+//│   'e <: Intersect['e] | Object & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union & ~#Univ | Outside['e] | Scale['e] | Translate['e] | Union['e] | Univ
+//│   'c <: Intersect['c] | Object & 'd & ~#Intersect & ~#Outside & ~#Scale & ~#Translate & ~#Union | Outside['c & (Object & ~#Outside | Outside['c])] | Scale['c] | Translate['c] | Union['c]
+//│   'd :> 'b
+//│   'b :> Outside['d] | Union['d] | Intersect['d] | Translate['d] | Scale['d]
 //│   'a <: Circle | Intersect['a] | Outside['a] | Translate['a] | Union['a]
 
-// TODO investigate
-:re
 Lang.size(circles)
-//│ int
+//│ Int
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 13
 
-// TODO investigate
-:re
 Lang.contains(circles, Vector(0, 0))
-//│ bool
+//│ Bool
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = false
 
-// TODO investigate
-:re
 Lang.text(circles)
-//│ string
+//│ Str
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 'the union of two regions of size '
 
 Lang.isUniv(circles)
-//│ bool
+//│ Bool
 //│ res
 //│     = false
 
 Lang.isEmpty(circles)
-//│ bool
+//│ Bool
 //│ res
 //│     = false
 
-// TODO investigate
-:re
 Lang.size(Lang.eliminate(circles))
-//│ int
+//│ Int
 //│ res
-//│ Runtime error:
-//│   Error: non-exhaustive case expression
+//│     = 13
 
 :re
 Lang.size(mk(100))
-//│ int
+//│ Int
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -433,18 +406,18 @@ Lang.size(mk(100))
 :re
 Lang.contains(mk(100), Vector(0, 0))
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.434: 	Lang.contains(mk(100), Vector(0, 0))
+//│ ║  l.407: 	Lang.contains(mk(100), Vector(0, 0))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Scale[?Region]` does not match type `Circle | Intersect[?Region0] | Outside[?Region1] | Translate[?Region2] | Union[?Region3]`
-//│ ║  l.348: 	  _ then Scale(Vector(0, 0), mk(n))
+//│ ║  l.330: 	  _ then Scale(Vector(0, 0), mk(n))
 //│ ║         	         ^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── but it flows into application with expected type `Circle | Intersect[?Region4] | Outside[?Region5] | Translate[?Region6] | Union[?Region7]`
-//│ ║  l.434: 	Lang.contains(mk(100), Vector(0, 0))
-//│ ║         	              ^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.123: 	    if a is
-//│ ╙──       	       ^
-//│ error | bool
+//│ ║  l.113: 	    if a is
+//│ ║         	       ^
+//│ ╟── Note: type parameter Region is defined at:
+//│ ║  l.13: 	class Outside[out Region](a: Region)
+//│ ╙──      	                  ^^^^^^
+//│ error | false | true
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -453,39 +426,39 @@ Lang.contains(mk(100), Vector(0, 0))
 :re
 Lang.text(mk(100))
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.454: 	Lang.text(mk(100))
+//│ ║  l.427: 	Lang.text(mk(100))
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Scale[?Region]` does not match type `Circle | Intersect[?Region0] | Outside[?Region1] | Translate[?Region2] | Union[?Region3]`
-//│ ║  l.348: 	  _ then Scale(Vector(0, 0), mk(n))
+//│ ║  l.330: 	  _ then Scale(Vector(0, 0), mk(n))
 //│ ║         	         ^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into application with expected type `Circle | Intersect[?Region4] | Outside[?Region5] | Translate[?Region6] | Union[?Region7]`
-//│ ║  l.454: 	Lang.text(mk(100))
+//│ ║  l.427: 	Lang.text(mk(100))
 //│ ║         	          ^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.175: 	    if e is
+//│ ║  l.156: 	    if e is
 //│ ╙──       	       ^
-//│ error | string
+//│ Str | error
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
 
 :re
 Lang.isUniv(mk(100))
-//│ bool
+//│ Bool
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
 
 :re
 Lang.isEmpty(mk(100))
-//│ bool
+//│ Bool
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
 
 :re
 Lang.size(Lang.eliminate(mk(100)))
-//│ int
+//│ Int
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded

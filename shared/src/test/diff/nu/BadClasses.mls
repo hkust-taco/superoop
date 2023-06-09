@@ -2,35 +2,35 @@
 
 
 
-mixin M0(x: int)
-//│ mixin M0(x: int)
+mixin M0(x: Int)
+//│ mixin M0(x: Int)
 
 :e
 class C0 extends M0
-//│ ╔══[ERROR] mixin M0 expects 1 parameters; got 0
+//│ ╔══[ERROR] mixin M0 expects 1 parameter(s); got 0
 //│ ║  l.9: 	class C0 extends M0
 //│ ╙──     	                 ^^
-//│ class C0()
+//│ class C0
 
 :e
 class C0 extends M0(1, 2)
-//│ ╔══[ERROR] mixin M0 expects 1 parameters; got 2
+//│ ╔══[ERROR] mixin M0 expects 1 parameter(s); got 2
 //│ ║  l.16: 	class C0 extends M0(1, 2)
 //│ ╙──      	                 ^^^^^^^
-//│ class C0()
+//│ class C0
 
 :e
 class C0 extends M0(true)
 //│ ╔══[ERROR] Type mismatch in type declaration:
 //│ ║  l.23: 	class C0 extends M0(true)
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── reference of type `true` is not an instance of type `int`
+//│ ╟── reference of type `true` is not an instance of type `Int`
 //│ ║  l.23: 	class C0 extends M0(true)
 //│ ║        	                    ^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.5: 	mixin M0(x: int)
+//│ ║  l.5: 	mixin M0(x: Int)
 //│ ╙──     	            ^^^
-//│ class C0()
+//│ class C0
 
 
 // TODO catch this at typing (lack of `this`)
@@ -38,7 +38,7 @@ class Foo {
   fun foo = 0
   fun bar = foo
 }
-//│ class Foo() {
+//│ class Foo {
 //│   fun bar: 0
 //│   fun foo: 0
 //│ }
@@ -48,7 +48,7 @@ class Foo {
   let foo = 0
   fun bar = foo
 }
-//│ class Foo() {
+//│ class Foo {
 //│   fun bar: 0
 //│   let foo: 0
 //│ }
@@ -56,10 +56,10 @@ class Foo {
 
 module Bar {
   fun hello = 0
-  type I = int
+  type I = Int
 }
-//│ module Bar() {
-//│   type I = int
+//│ module Bar {
+//│   type I = Int
 //│   fun hello: 0
 //│ }
 
@@ -91,16 +91,36 @@ class Foo[A] { 42: A }
 //│ ╟── Note: constraint arises from type parameter:
 //│ ║  l.86: 	class Foo[A] { 42: A }
 //│ ╙──      	          ^
-//│ class Foo[A]()
+//│ class Foo[A]
 
 
 :e
 class C1 { fun oops = this.x }
-//│ ╔══[ERROR] Class `C1` does not contain member `x`
+//│ ╔══[ERROR] Type `#C1` does not contain member `x`
 //│ ║  l.98: 	class C1 { fun oops = this.x }
 //│ ╙──      	                          ^^
-//│ class C1() {
+//│ class C1 {
 //│   fun oops: error
+//│ }
+
+
+:e
+class C { fun x: Int }
+//│ ╔══[ERROR] Member `x` is declared in parent but not implemented in `C`
+//│ ║  l.108: 	class C { fun x: Int }
+//│ ║         	      ^
+//│ ╟── Declared here:
+//│ ║  l.108: 	class C { fun x: Int }
+//│ ╙──       	              ^^^^^^
+//│ class C {
+//│   fun x: Int
+//│ }
+
+// FIXME should error
+// :e
+class C { val x: Int }
+//│ class C {
+//│   let x: Int
 //│ }
 
 

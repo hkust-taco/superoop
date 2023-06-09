@@ -12,12 +12,14 @@ package object utils {
     "org.wartremover.warts.Equals",
     "org.wartremover.warts.AsInstanceOf"))
   implicit final class AnyOps[A](self: A) {
-    def ===(other: A): Boolean = self == other
-    def =/=(other: A): Boolean = self != other
-    def is(other: AnyRef): Boolean = self.asInstanceOf[AnyRef] eq other
-    def isnt(other: AnyRef): Boolean = !(self.asInstanceOf[AnyRef] eq other)
+    def ===(other: A): Bool = self == other
+    def =/=(other: A): Bool = self != other
+    def is(other: AnyRef): Bool = self.asInstanceOf[AnyRef] eq other
+    def isnt(other: AnyRef): Bool = !(self.asInstanceOf[AnyRef] eq other)
     /** An alternative to === when in ScalaTest, which shadows our === */
-    def =:=(other: A): Boolean = self == other
+    def =:=(other: A): Bool = self == other
+    def in(xs: A => Bool): Bool = xs(self)
+    def in(xs: Seq[_ >: A]): Bool = xs.exists(_ === self)
   }
   
   implicit class StringOps(private val self: String) extends AnyVal {
@@ -56,6 +58,8 @@ package object utils {
       val ite = self.iterator
       if (ite.nonEmpty) ite.mkString(start, sep, end) else els
     }
+    def lnIndent(pre: String = "\t"): Str =
+      self.iterator.map("\n" + _.toString.indent(pre)).mkString
     def collectLast[B](f: Paf[A, B]): Opt[B] = self.iterator.collect(f).foldLeft[Opt[B]](N)((_, a) => S(a))
     def toSortedSet(implicit ord: Ordering[A]): SortedSet[A] =
       SortedSet.from(self)

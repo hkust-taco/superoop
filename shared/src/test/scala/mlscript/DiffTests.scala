@@ -119,12 +119,16 @@ class DiffTests
       str.splitSane('\n').foreach(l => out.println(outputMarker + l))
     def outputSourceCode(code: SourceCode) = code.lines.foreach{line => out.println(outputMarker + line.toString())}
     val allStatements = mutable.Buffer.empty[DesugaredStatement]
-    val typer = new Typer(dbg = false, verbose = false, explainErrors = false) {
-      override def funkyTuples = file.ext =:= "fun"
-      // override def emitDbg(str: String): Unit = if (stdout) System.out.println(str) else output(str)
-      override def emitDbg(str: String): Unit = output(str)
-    }
-    var ctx: typer.Ctx = typer.Ctx.init
+    var newDefs = false
+    trait MyTyper extends Typer { var ctx: Ctx }
+    lazy val typer =
+      new Typer(dbg = false, verbose = false, explainErrors = false, newDefs = newDefs) with MyTyper {
+        var ctx: Ctx = Ctx.init
+        override def funkyTuples = file.ext =:= "fun"
+        // override def emitDbg(str: String): Unit = if (stdout) System.out.println(str) else output(str)
+        override def emitDbg(str: String): Unit = output(str)
+      }
+    def ctx = typer.ctx
     var declared: Map[Str, typer.ST] = Map.empty
     val failures = mutable.Buffer.empty[Int]
     val unmergedChanges = mutable.Buffer.empty[Int]
@@ -179,8 +183,6 @@ class DiffTests
     var irregularTypes = false
     var generalizeArguments = false
     var newParser = basePath.headOption.contains("parser") || basePath.headOption.contains("compiler")
-    
-    var newDefs = false
     
     val backend = new JSTestBackend()
     val host = ReplHost()
@@ -500,39 +502,43 @@ class DiffTests
               
               def showTTU(ttu: typer.TypedTypingUnit, ind: Int): Unit = {
                 val indStr = "  " * ind
-                // ttu.entities.map(_.complete()(raise)).foreach {
-                ttu.entities.foreach {
+                ttu.implementedMembers.foreach {
+                  // case p: typer.NuTypeParam =>
+                  //   output(s"${indStr}${p.name}: ${p.ty}")
                   case p: typer.NuParam =>
                     output(s"${indStr}${p.name}: ${p.ty}")
                   case tc: typer.TypedNuAls =>
                     output(s"${indStr}type ${tc.name} = ${tc.body}")
+                  case tt: typer.TypedNuTrt =>
+                    output(s"${indStr}trait ${tt.name}")
+                    output(s"${indStr}  this: ${tt.thisTy} ${tt.thisTy.showBounds
+                      .indentNewLines(indStr+"  |")}")
                   case tc: typer.TypedNuCls =>
                     output(s"${indStr}class ${tc.name}")
                     output(s"${indStr}  this: ${tc.thisTy} ${tc.thisTy.showBounds
                       .indentNewLines(indStr+"  |")}")
-                    showTTU(tc.ttu, ind + 1)
+                    // showTTU(tc.ttu, ind + 1)
                   case tm: typer.TypedNuMxn =>
                     output(s"${indStr}mixin ${tm.name}")
-                    output(s"${indStr}  this: ${tm.thisTV} ${tm.thisTV.showBounds
+                    output(s"${indStr}  this: ${tm.thisTy} ${tm.thisTy.showBounds
                       .indentNewLines(indStr+"  |")}")
-                    output(s"${indStr}  super: ${tm.superTV} ${tm.superTV.showBounds
+                    output(s"${indStr}  super: ${tm.superTy} ${tm.superTy.showBounds
                       .indentNewLines(indStr+"  |")}")
-                    // tm.ttu.entities.foreach { }
-                    showTTU(tm.ttu, ind + 1)
+                    // showTTU(tm.ttu, ind + 1)
                   case tf: typer.TypedNuFun =>
-                    // val exp = getType(tf.ty)
                     output(s"${indStr}${tf.fd.isLetRec match {
                       case S(false) => "let"
                       case S(true) => "let rec"
                       case N => "fun"
                     }} ${tf.name}: ${tf.typeSignature} where ${tf.typeSignature.showBounds
                       .indentNewLines(indStr+"|")}")
+                  case typer.TypedNuDummy(d) =>
+                    output(s"${indStr}<dummy> ${d.name}")
                 }
               }
               if (mode.dbg || mode.explainErrors) {
                 output("======== TYPED ========")
                 showTTU(tpd, 0)
-                // output("res: " + tpd.result)
                 tpd.result.foreach { res_ty =>
                   output("res: " + tpd.result + " where " + res_ty.showBounds)
                 }
@@ -602,7 +608,7 @@ class DiffTests
                 }
               }
               
-              ctx = 
+              typer.ctx = 
                 // if (newParser) typer.typeTypingUnit(tu)
                 // else 
                 typer.processTypeDefs(typeDefs)(ctx, raise)

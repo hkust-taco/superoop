@@ -2,11 +2,11 @@
 
 
 
-class Foo1(x: int) {
+class Foo1(x: Int) {
   fun test = Foo1(1).x
 }
-//│ class Foo1(x: int) {
-//│   fun test: int
+//│ class Foo1(x: Int) {
+//│   fun test: Int
 //│ }
 
 class Foo2[A](x: A) {
@@ -56,18 +56,18 @@ class Foo4 {
 //│ ╟── reference of type `() -> #Foo4` does not have field 'test'
 //│ ║  l.51: 	  fun test = [Foo4.test]
 //│ ╙──      	              ^^^^
-//│ class Foo4() {
+//│ class Foo4 {
 //│   fun test: (error,)
 //│ }
 
 :e
-class Foo5(x: int) {
+class Foo5(x: Int) {
   fun test = [Foo5(5).test]
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
 //│ ║  l.65: 	  fun test = [Foo5(5).test]
 //│ ╙──      	                     ^^^^^
-//│ class Foo5(x: int) {
+//│ class Foo5(x: Int) {
 //│   fun test: (error,)
 //│ }
 
@@ -93,7 +93,7 @@ class Foo6[A](x: A) {
 //│ }
 
 module N
-//│ module N()
+//│ module N
 
 :e
 class Foo7[A](head: A, tail: Foo7[A] | N) {
@@ -127,13 +127,13 @@ class Foo7_A2[A](head: A, tail: Foo7_A[A] | N) {
 //│   fun test1: A
 //│ }
 
-class Foo7_2_A[A](head: A, tail: Foo7_A[int] | N) {
-  fun test1: int | A = if tail is
+class Foo7_2_A[A](head: A, tail: Foo7_A[Int] | N) {
+  fun test1: Int | A = if tail is
     N then head
     _ then tail.test1
 }
-//│ class Foo7_2_A[A](head: A, tail: Foo7_A[int] | N) {
-//│   fun test1: A | int
+//│ class Foo7_2_A[A](head: A, tail: Foo7_A[Int] | N) {
+//│   fun test1: A | Int
 //│ }
 
 :e
