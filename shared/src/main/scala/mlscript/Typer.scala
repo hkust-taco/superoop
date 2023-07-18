@@ -1531,14 +1531,18 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         // val allTVs = allResults.iterator.flatMap(_.freeTypeVariables)
         // // allTVs.toArray.groupMapReduce(allResults)
         // allTVs.map(tv => tv -> allResults.count(_.freeTypeVariables.contains(tv)))
-        val tvUses = allResults.iterator
+        val tvUses = MutMap.from(allResults.iterator
           .flatMap(_.typeVarsList).distinct
-          .map(tv => tv -> allResults.count(_.typeVarsList.contains(tv)))
-          .toMap
+          .map(tv => tv -> allResults.count(_.typeVarsList.contains(tv))))
         tvUses.foreach(tv_num => assert(tv_num._2 > 0, tv_num))
         // def mkConstrained(tl: TypeLike): TypeLike = tl match {
         //   case 
         // }
+        bounds.foreach {
+          case (tv, bs) =>
+            // tvUses(tv)
+            // FIXME fixed point would be needed
+        }
         println(s"TV uses: $tvUses")
         def mkWhereClause(tl: mlscript.TypeLike) = {
           println(s"Making where clause for ${tl} (${tl.typeVarsList})")
