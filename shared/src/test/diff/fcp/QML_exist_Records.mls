@@ -207,7 +207,7 @@ stepImpl_ty = stepImpl_Ann_4
 // def stepImpl2 (arr: Arrays['a]) = arr stepImpl
 
 def stepImpl2 arr = arr stepImpl
-//│ stepImpl2: ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm. {fold: 'b -> 'f -> 'j -> 'm, init: 'a -> 'e, sub: 'h -> 'k -> 'g, update: 'd -> 'c -> 'l -> 'i} -> {fold: 'b -> 'f -> ('j, anything,) -> 'm, init: 'a -> ('e, "hi",), sub: ('h, anything,) -> 'k -> 'g, update: ('d, anything,) -> 'c -> 'l -> ('i, "hey",)}) -> 'n) -> 'n
+//│ stepImpl2: ((forall 'e 'a 'k 'j 'f 'b 'i 'g 'm 'c 'h 'l 'd. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> 'n
 //│          = [Function: stepImpl2]
 
 def stepImpl2_ arr = arr stepImpl_ty
@@ -222,7 +222,7 @@ def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
 //│                = [Function: stepImpl2_Ann_2]
 
 def stepImpl2_Ann_3 arr = arr stepImpl_Ann_3
-//│ stepImpl2_Ann_3: ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'f -> 'g, sub: 'a -> 'd -> 'e, update: 'c -> 'i -> 'b -> 'h} -> {fold: Fold[nothing, (anything, string,)], init: 'f -> ('g, "hi",), sub: ('a, anything,) -> 'd -> 'e, update: ('c, anything,) -> 'i -> 'b -> ('h, "hey",)}) -> 'j) -> 'j
+//│ stepImpl2_Ann_3: ((forall 'c 'h 'f 'd 'e 'a 'b 'i 'g. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> 'j
 //│                = [Function: stepImpl2_Ann_3]
 
 def stepImpl2_Ann_4 arr = arr stepImpl_Ann_4
@@ -249,7 +249,7 @@ def step: Arrays['a] -> Arrays['a]
 // * But this problem actually disappeared after fixing a subtle bug in type freshening...!
 :e // * Since "sound extrusion"
 def step arr f = f (stepImpl2 arr)
-//│ ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm. {fold: 'i -> 'g -> 'f -> 'k, init: 'a -> 'd, sub: 'm -> 'j -> 'e, update: 'l -> 'h -> 'b -> 'c} -> {fold: 'i -> 'g -> ('f, anything,) -> 'k, init: 'a -> ('d, "hi",), sub: ('m, anything,) -> 'j -> 'e, update: ('l, anything,) -> 'h -> 'b -> ('c, "hey",)}) -> 'n) -> ('n -> 'o) -> 'o
+//│ ((forall 'e 'l 'm 'f 'i 'c 'b 'k 'a 'h 'd 'j 'g. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> ('n -> 'o) -> 'o
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
@@ -330,7 +330,7 @@ def step arr f = f (stepImpl2_Ann_2 arr)
 
 :e
 def step arr f = f (stepImpl2_Ann_3 arr)
-//│ ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'b -> 'h, sub: 'f -> 'e -> 'c, update: 'i -> 'g -> 'a -> 'd} -> {fold: Fold[nothing, (anything, string,)], init: 'b -> ('h, "hi",), sub: ('f, anything,) -> 'e -> 'c, update: ('i, anything,) -> 'g -> 'a -> ('d, "hey",)}) -> 'j) -> ('j -> 'k) -> 'k
+//│ ((forall 'h 'a 'e 'i 'd 'c 'g 'b 'f. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> ('j -> 'k) -> 'k
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition

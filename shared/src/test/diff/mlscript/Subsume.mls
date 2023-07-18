@@ -370,9 +370,9 @@ fun p -> fun q -> p q p
 
 :ns
 fun p -> fun q -> p q p
-//│ res: forall 'a 'b 'c 'd. 'a -> 'b -> 'd
+//│ res: forall 'a 'b 'd 'c. 'a -> 'b -> 'c
 //│   where
-//│     'a <: 'b -> 'c
-//│     'c <: 'a -> 'd
+//│     'a <: 'b -> 'd
+//│     'd <: 'a -> 'c
 //│    = [Function: res]
 

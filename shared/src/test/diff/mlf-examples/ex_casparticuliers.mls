@@ -527,10 +527,10 @@ def succ' n = fun f -> fun x -> f (n f x)
 //│   where
 //│     'b <: 'a -> 'a & 'a -> 'c))
 //│     = [Function: succ1]
-//│ succ': 'a -> (forall 'b. 'b -> (forall 'c 'd 'e. 'e -> 'd
+//│ succ': 'a -> (forall 'b. 'b -> (forall 'e 'd 'c. 'c -> 'd
 //│   where
-//│     'b <: 'c -> 'd
-//│     'a <: 'b -> 'e -> 'c))
+//│     'b <: 'e -> 'd
+//│     'a <: 'b -> 'c -> 'e))
 //│      = [Function: succ$1]
 
 // * Note: without constrained types we wouldn't get the principal type of succ'
@@ -546,10 +546,10 @@ succ_ty = succ
 // * Still requires distributivity even with CT
 :e
 succ_ty = succ'
-//│ 'a -> (forall 'b. 'b -> (forall 'c 'd 'e. 'e -> 'd
+//│ 'a -> (forall 'b. 'b -> (forall 'e 'd 'c. 'c -> 'd
 //│   where
-//│     'a <: 'b -> 'e -> 'c
-//│     'b <: 'c -> 'd))
+//│     'a <: 'b -> 'c -> 'e
+//│     'b <: 'e -> 'd))
 //│   <:  succ_ty:
 //│ ChurchInt -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition
@@ -581,18 +581,18 @@ succ_ty = succ'
 :DontDistributeForalls
 
 succ'
-//│ res: 'a -> (forall 'b. 'b -> (forall 'c 'd 'e. 'e -> 'd
+//│ res: 'a -> (forall 'b. 'b -> (forall 'e 'd 'c. 'c -> 'd
 //│   where
-//│     'a <: 'b -> 'e -> 'c
-//│     'b <: 'c -> 'd))
+//│     'a <: 'b -> 'c -> 'e
+//│     'b <: 'e -> 'd))
 //│    = [Function: succ$1]
 
 // :e // * Error delayed by inconsistent constrained types
 succ' {}
-//│ res: 'a -> (forall 'b 'c 'd. 'd -> 'c
+//│ res: 'a -> (forall 'd 'c 'b. 'b -> 'c
 //│   where
-//│     'a <: 'b -> 'c
-//│     anything <: 'a -> 'd -> 'b)
+//│     'a <: 'd -> 'c
+//│     anything <: 'a -> 'b -> 'd)
 //│    = [Function (anonymous)]
 
 // :e // * Error delayed by inconsistent constrained types

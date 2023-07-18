@@ -53,8 +53,6 @@ module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ }
 //│ where
 //│   'a <: Neg['A] | Object & 'b & ~#Neg
-//│   'A <: Neg['a & 'A] | Neg['A] & ~#Neg | Object & 'b & ~#Neg
-//│   'b <: Add['a] | Lit | Neg['a]
 
 
 fun mk(n) = if n is

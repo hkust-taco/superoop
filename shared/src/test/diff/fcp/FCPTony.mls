@@ -127,11 +127,11 @@ def succ n f x = f (n f x)
 
 :ns
 def add n m = n succ m
-//│ add: forall 'a. 'a -> (forall 'b 'c 'd. 'b -> 'd
+//│ add: forall 'a. 'a -> (forall 'b 'd 'c. 'b -> 'c
 //│   where
-//│     'a <: (ChurchInt -> ChurchInt) -> 'c)
+//│     'a <: (ChurchInt -> ChurchInt) -> 'd)
 //│ where
-//│   'c <: 'b -> 'd
+//│   'd <: 'b -> 'c
 //│    = [Function: add]
 
 add
@@ -142,13 +142,13 @@ add
 
 :ns
 def f x y = add x y
-//│ f: forall 'a. 'a -> (forall 'b 'c 'd 'e 'f. 'c -> 'd
+//│ f: forall 'a. 'a -> (forall 'e 'b 'c 'd 'f. 'b -> 'c
 //│   where
-//│     'a <: (ChurchInt -> ChurchInt) -> 'e)
+//│     'a <: (ChurchInt -> ChurchInt) -> 'd)
 //│ where
-//│   'c <: 'f
-//│   'e <: 'f -> 'b
-//│   'b <: 'd
+//│   'b <: 'f
+//│   'd <: 'f -> 'e
+//│   'e <: 'c
 //│  = [Function: f]
 
 // :ds

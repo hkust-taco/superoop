@@ -142,13 +142,14 @@ trait Derived2 extends Base[(Int | Str, Int | Str)]
 //│   fun bar: 'A -> 'A
 //│   fun foo: 'A
 //│ }
+//│ where
+//│   'A := A
 //│ trait Derived2 extends Base {
 //│   fun bar: 'A0 -> 'A0
 //│   fun foo: 'A0
 //│ }
 //│ where
 //│   'A0 := (Int | Str, Int | Str,)
-//│   'A := A
 
 class Final extends Derived1[(Int, Int)], Derived2 {
   fun foo = (123, 456)

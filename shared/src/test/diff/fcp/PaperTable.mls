@@ -568,7 +568,7 @@ fst (fst (fst (n3 (fun x -> (x, 0)) 1)))
 
 // G7
 rec def to_ch n = if n == 0 then z else s (to_ch (n - 1))
-//│ to_ch: int -> (forall 'a. ('b -> 'a & 'b -> 'b) -> (forall 'c. ('b & 'c) -> ('c | 'a)))
+//│ to_ch: int -> (forall 'b. ('a -> 'b & 'a -> 'a) -> (forall 'c. ('a & 'c) -> ('c | 'b)))
 //│      = [Function: to_ch]
 
 :e

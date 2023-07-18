@@ -9,10 +9,11 @@ class Union[out Region](a: Region)
 fun go(x) = Union(go(x))
 let circles = go(2)
 //│ fun go: forall 'Region. anything -> 'Region
+//│   where
+//│     'Region :> Union['Region]
 //│ let circles: forall 'Region0. 'Region0
-//│ where
-//│   'Region0 :> Union['Region0]
-//│   'Region :> Union['Region]
+//│   where
+//│     'Region0 :> Union['Region0]
 
 
 fun contains(a) =

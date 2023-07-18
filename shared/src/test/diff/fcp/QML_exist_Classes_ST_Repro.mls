@@ -55,7 +55,7 @@ def simpleStepImpl arrImpl = ArraysImpl {
 // * Something off is going on here (see stats)
 :stats
 simpleStepImpl : ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string)]
-//│ ╔══[ERROR] Subtyping constraint of the form `forall ?a ?b. ?b -> ?a <: ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string,)]` took too many steps and ran out of fuel (5000)
+//│ ╔══[ERROR] Subtyping constraint of the form `forall ?b ?a. ?a -> ?b <: ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string,)]` took too many steps and ran out of fuel (5000)
 //│ ║  l.57: 	simpleStepImpl : ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string)]
 //│ ║        	^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.

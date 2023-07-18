@@ -493,16 +493,16 @@ sz = s zero
 
 :ns
 sz
-//│ res: forall 'N 'a 'b 'c 'd. 'd
+//│ res: forall 'N 'b 'c 'd 'a. 'a
 //│   where
-//│     'd :> forall 'e 'f 'g. 'e -> (forall 'h 'i. 'h -> 'i)
-//│     'i :> 'g
-//│     'h <: 'b
-//│     'b <: 'N
-//│     'e <: 'f -> 'g & 'a
-//│     'a <: 'N -> 'N
-//│     'N <: 'c
-//│     'f :> 'c
+//│     'a :> forall 'e 'h 'i. 'e -> (forall 'f 'g. 'f -> 'g)
+//│     'g :> 'i
+//│     'f <: 'c
+//│     'c <: 'N
+//│     'e <: 'h -> 'i & 'b
+//│     'b <: 'N -> 'N
+//│     'N <: 'd
+//│     'h :> 'd
 //│    = [Function (anonymous)]
 
 sz: ChurchInt
@@ -563,7 +563,7 @@ sz1 2
 rec def to_ch_s n =
   if n == 0 then z
   else s (to_ch_s (n - 1))
-//│ to_ch_s: int -> (forall 'a. ('b -> 'a & 'b -> 'b) -> (forall 'c. ('b & 'c) -> ('c | 'a)))
+//│ to_ch_s: int -> (forall 'b. ('a -> 'b & 'a -> 'a) -> (forall 'c. ('a & 'c) -> ('c | 'b)))
 //│        = [Function: to_ch_s]
 
 
@@ -571,12 +571,12 @@ rec def to_ch_s n =
 rec def to_ch n =
   if n == 0 then z
   else s (to_ch (n - 1))
-//│ to_ch: int -> (forall 'a. ('b -> 'a & 'b -> 'b) -> (forall 'c. ('b & 'c) -> ('c | 'a)))
+//│ to_ch: int -> (forall 'b. ('a -> 'b & 'a -> 'a) -> (forall 'c. ('a & 'c) -> ('c | 'b)))
 //│      = [Function: to_ch]
 
 :e // * Needs distrib (see below)
 to_church_ty = to_ch
-//│ int -> (forall 'a. ('b -> 'a & 'b -> 'b) -> (forall 'c. ('b & 'c) -> ('c | 'a)))
+//│ int -> (forall 'b. ('a -> 'b & 'a -> 'a) -> (forall 'c. ('a & 'c) -> ('c | 'b)))
 //│   <:  to_church_ty:
 //│ int -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition
@@ -618,12 +618,12 @@ to_church_ty = to_ch_s_A1
 
 // * Boil down the problem with `to_ch`
 rec def to_ch_simplif n = s (to_ch_simplif n)
-//│ to_ch_simplif: anything -> (forall 'a. ('b -> 'a & 'b -> 'b) -> anything -> 'a)
+//│ to_ch_simplif: anything -> (forall 'b. ('a -> 'b & 'a -> 'a) -> anything -> 'b)
 //│              = [Function: to_ch_simplif]
 
 :e
 to_church_ty = to_ch_simplif
-//│ anything -> (forall 'a. ('b -> 'a & 'b -> 'b) -> anything -> 'a)
+//│ anything -> (forall 'b. ('a -> 'b & 'a -> 'a) -> anything -> 'b)
 //│   <:  to_church_ty:
 //│ int -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition
@@ -874,13 +874,13 @@ to_church_ty = to_ch_A2
 def to_church_mix n =
   if n == 0 then z
   else s (to_church (n - 1))
-//│ to_church_mix: int -> (forall 'a. ('M -> ('M & 'b) & 'N -> ('b & 'N) & 'b -> 'a) -> (forall 'c. ('M & 'b & 'N & 'c) -> ('c | 'a)))
+//│ to_church_mix: int -> (forall 'b. ('M -> ('M & 'a) & 'N -> ('a & 'N) & 'a -> 'b) -> (forall 'c. ('M & 'a & 'N & 'c) -> ('c | 'b)))
 //│              = [Function: to_church_mix]
 
 // * Works with Constrained Types
 :e
 to_church_ty = to_church_mix
-//│ int -> (forall 'a. ('M -> ('M & 'b) & 'N -> ('b & 'N) & 'b -> 'a) -> (forall 'c. ('M & 'b & 'N & 'c) -> ('c | 'a)))
+//│ int -> (forall 'b. ('M -> ('M & 'a) & 'N -> ('a & 'N) & 'a -> 'b) -> (forall 'c. ('M & 'a & 'N & 'c) -> ('c | 'b)))
 //│   <:  to_church_ty:
 //│ int -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition

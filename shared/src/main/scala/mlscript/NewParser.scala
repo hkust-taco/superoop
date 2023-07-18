@@ -399,16 +399,19 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
               case c: Constructor => L(c)
               case t => R(t)
             }
-
+            
             val ctor =
               if (ctors.lengthIs > 1) {
                 err(msg"A class may only have at most one explicit constructor" -> S(l0) :: Nil)
                 N
               }
               else ctors.headOption
-
+            
+            val whereClause = Nil // TODO parse where clause
+            
             val res =
-              NuTypeDef(kind, tn, tparams, params, ctor, sig, ps, N, N, TypingUnit(body))(isDecl, isAbs)
+              NuTypeDef(kind, tn, tparams, params, ctor, sig, ps, N, N, TypingUnit(body), whereClause)(
+                isDecl, isAbs)
             R(res.withLoc(S(l0 ++ res.getLoc)))
           
           case ModifierSet(mods, (KEYWORD(kwStr @ ("fun" | "val" | "let")), l0) :: c) => // TODO support rec?
@@ -477,22 +480,29 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
                   val body = expr(0)
                   val newBody = transformBody.fold(body)(_(body))
                   val annotatedBody = asc.fold(newBody)(ty => Asc(newBody, ty))
-                  R(NuFunDef(isLetRec, v, tparams, L(ps.foldRight(annotatedBody)((i, acc) => Lam(i, acc))))(isDecl, N, N))
+                  val whereClause = Nil // TODO parse where clause
+                  R(NuFunDef(isLetRec, v, tparams,
+                    L(ps.foldRight(annotatedBody)((i, acc) => Lam(i, acc))),
+                    whereClause
+                  )(isDecl, N, N))
                 case c =>
                   asc match {
                     case S(ty) =>
                       if (transformBody.nonEmpty) die // TODO
+                      val whereClause = Nil // TODO parse where clause
                       R(NuFunDef(isLetRec, v, tparams, R(PolyType(Nil, ps.foldRight(ty)((p, r) => Function(p.toType match {
                         case L(diag) => raise(diag); Top // TODO better
                         case R(tp) => tp
-                      }, r)))))(isDecl, N, N)) // TODO rm PolyType after FCP is merged
+                      }, r)))), whereClause)(isDecl, N, N)) // TODO rm PolyType after FCP is merged
                     case N =>
                       // TODO dedup:
                       val (tkstr, loc) = c.headOption.fold(("end of input", lastLoc))(_.mapFirst(_.describe).mapSecond(some))
                       err((
                         msg"Expected ':' or '=' followed by a function body or signature; found ${tkstr} instead" -> loc :: Nil))
                       consume
-                      R(NuFunDef(isLetRec, v, Nil, L(ps.foldRight(errExpr: Term)((i, acc) => Lam(i, acc))))(isDecl, N, N))
+                      val whereClause = Nil // TODO parse where clause
+                      R(NuFunDef(isLetRec, v, Nil,
+                        L(ps.foldRight(errExpr: Term)((i, acc) => Lam(i, acc))), whereClause)(isDecl, N, N))
                   }
               }
             }

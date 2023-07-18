@@ -225,16 +225,16 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
   private val preludeLoc = Loc(0, 0, Origin("<prelude>", 0, new FastParseHelpers("")))
   
   val nuBuiltinTypes: Ls[NuTypeDef] = Ls(
-    NuTypeDef(Cls, TN("Object"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil))(N, N),
-    NuTypeDef(Trt, TN("Eql"), (S(VarianceInfo.contra), TN("A")) :: Nil, N, N, N, Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Cls, TN("Num"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Cls, TN("Int"), Nil, N, N, N, Var("Num") :: Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Cls, TN("Bool"), Nil, N, N, S(Union(TN("true"), TN("false"))), Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Mod, TN("true"), Nil, N, N, N, Var("Bool") :: Nil, N, N, TypingUnit(Nil))(N, N),
-    NuTypeDef(Mod, TN("false"), Nil, N, N, N, Var("Bool") :: Nil, N, N, TypingUnit(Nil))(N, N),
-    NuTypeDef(Cls, TN("Str"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Als, TN("undefined"), Nil, N, N, S(Literal(UnitLit(true))), Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
-    NuTypeDef(Als, TN("null"), Nil, N, N, S(Literal(UnitLit(false))), Nil, N, N, TypingUnit(Nil))(N, S(preludeLoc)),
+    NuTypeDef(Cls, TN("Object"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil), Nil)(N, N),
+    NuTypeDef(Trt, TN("Eql"), (S(VarianceInfo.contra), TN("A")) :: Nil, N, N, N, Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Cls, TN("Num"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Cls, TN("Int"), Nil, N, N, N, Var("Num") :: Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Cls, TN("Bool"), Nil, N, N, S(Union(TN("true"), TN("false"))), Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Mod, TN("true"), Nil, N, N, N, Var("Bool") :: Nil, N, N, TypingUnit(Nil), Nil)(N, N),
+    NuTypeDef(Mod, TN("false"), Nil, N, N, N, Var("Bool") :: Nil, N, N, TypingUnit(Nil), Nil)(N, N),
+    NuTypeDef(Cls, TN("Str"), Nil, N, N, N, Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Als, TN("undefined"), Nil, N, N, S(Literal(UnitLit(true))), Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
+    NuTypeDef(Als, TN("null"), Nil, N, N, S(Literal(UnitLit(false))), Nil, N, N, TypingUnit(Nil), Nil)(N, S(preludeLoc)),
   )
   val builtinTypes: Ls[TypeDef] =
     TypeDef(Cls, TN("int"), Nil, TopType, Nil, Nil, sing(TN("number")), N, Nil) ::
@@ -398,9 +398,9 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           case ti: DelayedTypeInfo =>
             checkKind(ti.decl.kind, ti.decl.name, loc)
             ti.decl match {
-              case NuTypeDef(k @ (Cls | Mod | Als | Trt), _, tps, _,  _, _, _, _, _, _) =>
+              case NuTypeDef(k @ (Cls | Mod | Als | Trt), _, tps, _,  _, _, _, _, _, _, _) =>
                 S(k, tps.size)
-              case NuTypeDef(k @ Mxn, nme, tps,  _, _, _, _, _, _, _) =>
+              case NuTypeDef(k @ Mxn, nme, tps,  _, _, _, _, _, _, _, _) =>
                 S(k, tps.size)
               case fd: NuFunDef =>
                 N
@@ -487,11 +487,11 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
               else ctx.tyDefs2.get(name) match {
                 case S(lti) =>
                   lti.decl match {
-                    case NuTypeDef(Cls | Mod, _, _, _, _, _, _, _, _, _) =>
+                    case NuTypeDef(Cls | Mod, _, _, _, _, _, _, _, _, _, _) =>
                       clsNameToNomTag(ctx.tyDefs2(name).decl.asInstanceOf[NuTypeDef])(tyTp(tyLoc, "class tag"), ctx)
-                    case NuTypeDef(Trt, _, _, _, _, _, _, _, _, _) =>
+                    case NuTypeDef(Trt, _, _, _, _, _, _, _, _, _, _) =>
                       trtNameToNomTag(ctx.tyDefs2(name).decl.asInstanceOf[NuTypeDef])(tyTp(tyLoc, "class tag"), ctx)
-                    case NuTypeDef(Als, _, _, _, _, _, _, _, _, _) =>
+                    case NuTypeDef(Als, _, _, _, _, _, _, _, _, _, _) =>
                       TypeRef(tn, List.fill(tpnum)(freshVar(noProv, N, N)))(tpr)
                     case _ => die // TODO
                   }
@@ -1373,7 +1373,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
     def goDecl(d: NuMember)(implicit ectx: ExpCtx): NuDecl = d match {
       case TypedNuAls(level, td, tparams, body) =>
         ectx(tparams) |> { implicit ectx =>
-          NuTypeDef(td.kind, td.nme, td.tparams, N, N, S(go(body)), Nil, N, N, TypingUnit(Nil))(
+          NuTypeDef(td.kind, td.nme, td.tparams, N, N, S(go(body)), Nil, N, N, TypingUnit(Nil), Nil)(
             td.declareLoc, td.abstractLoc)
         }
       case TypedNuMxn(level, td, thisTy, superTy, tparams, params, members) =>
@@ -1385,7 +1385,9 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
             Nil, // TODO mixin parents?
             Option.when(!(TopType <:< superTy))(go(superTy)),
             Option.when(!(TopType <:< thisTy))(go(thisTy)),
-            mkTypingUnit(thisTy, members))(td.declareLoc, td.abstractLoc)
+            mkTypingUnit(thisTy, members),
+            Nil,
+          )(td.declareLoc, td.abstractLoc)
         }
       case TypedNuCls(level, td, tparams, params, members, thisTy, sign, ihtags, ptps) =>
         ectx(tparams) |> { implicit ectx =>
@@ -1396,8 +1398,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
             ihtags.toList.sorted.map(_.toVar), // TODO provide targs/args
             N,//TODO
             Option.when(!(TopType <:< thisTy))(go(thisTy)),
-            mkTypingUnit(thisTy, members))(td.declareLoc, td.abstractLoc)
-          }
+            mkTypingUnit(thisTy, members),
+            Nil,
+          )(td.declareLoc, td.abstractLoc)
+        }
       case TypedNuTrt(level, td, tparams, members, thisTy, sign, ihtags, ptps) => 
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams,
@@ -1407,24 +1411,16 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
             ihtags.toList.sorted.map(_.toVar), // TODO provide targs/args
             N,//TODO
             Option.when(!(TopType <:< thisTy))(go(thisTy)),
-            mkTypingUnit(thisTy, members))(td.declareLoc, td.abstractLoc)
-          }
+            mkTypingUnit(thisTy, members),
+            Nil,
+          )(td.declareLoc, td.abstractLoc)
+        }
       case tf @ TypedNuFun(level, fd, bodyTy) =>
-        NuFunDef(fd.isLetRec, fd.nme, Nil, R(go(tf.typeSignature)))(fd.declareLoc, fd.signature, fd.outer)
+        NuFunDef(fd.isLetRec, fd.nme, Nil, R(go(tf.typeSignature)), Nil)(fd.declareLoc, fd.signature, fd.outer)
       case p: NuParam =>
         ??? // TODO
       case TypedNuDummy(d) =>
         ??? // TODO
-    }
-    def goLike(ty: TypeLike)(implicit ectx: ExpCtx): mlscript.TypeLike = ty match {
-      case ty: SimpleType =>
-        val res = go(ty)
-        // if (bounds.isEmpty) res
-        // else Constrained(res, bounds, Nil)
-        res
-      case OtherTypeLike(tu) =>
-        val mems = tu.implementedMembers.map(goDecl)
-        Signature(mems, tu.result.map(go))
     }
     
     def go(st: SimpleType)(implicit ectx: ExpCtx): Type =
@@ -1496,8 +1492,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           val boundsSize = bounds.size
           val b = go(bod)
           
-          // This is not completely correct: if we've already traversed TVs as part of a previous sibling PolymorphicType,
-          // the bounds of these TVs won't be registered again...
+          // * This is not completely correct: if we've already traversed TVs as part of a previous sibling PolymorphicType,
+          // * the bounds of these TVs won't be registered again...
           // FIXME in principle we'd want to compute a transitive closure...
           val newBounds = bounds.reverseIterator.drop(boundsSize).toBuffer
           
@@ -1512,19 +1508,58 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           val (ubs, others1) = cs.groupMap(_._1)(_._2).toList.partition(_._2.sizeIs > 1)
           val lbs = others1.mapValues(_.head).groupMap(_._2)(_._1).toList
           val bounds = (ubs.mapValues(_.reduce(_ &- _)) ++ lbs.mapValues(_.reduce(_ | _)).map(_.swap))
-          val procesased = bounds.map { case (lo, hi) => Bounds(go(lo), go(hi)) }
-          Constrained(go(bod), Nil, procesased)
-        
-        // case DeclType(lvl, info) =>
-          
+          val processed = bounds.map { case (lo, hi) => Bounds(go(lo), go(hi)) }
+          Constrained(go(bod), Nil, processed)
     }
     // }(r => s"~> $r")
     
-    val res = goLike(st)(new ExpCtx(Map.empty))
-    if (bounds.isEmpty) res
-    else Constrained(res, bounds, Nil)
+    // val res = goLike(st)(new ExpCtx(Map.empty))
+    // if (bounds.isEmpty) res
+    // else Constrained(res, bounds, Nil)
     
-    // goLike(st)
+    implicit val ectx: ExpCtx = new ExpCtx(Map.empty)
+    st match {
+      case ty: SimpleType =>
+        val res = go(ty)
+        if (bounds.isEmpty) res
+        else Constrained(res, bounds, Nil)
+      case OtherTypeLike(tu) =>
+        val mems = tu.implementedMembers.map(goDecl)
+        val res = tu.result.map(go)
+        val allResults = mems ++ res
+        // // val allTVs = (mems.iterator ++ res).flatMap(_.freeTypeVariables)
+        // val allTVs = allResults.iterator.flatMap(_.freeTypeVariables)
+        // // allTVs.toArray.groupMapReduce(allResults)
+        // allTVs.map(tv => tv -> allResults.count(_.freeTypeVariables.contains(tv)))
+        val tvUses = allResults.iterator
+          .flatMap(_.typeVarsList).distinct
+          .map(tv => tv -> allResults.count(_.typeVarsList.contains(tv)))
+          .toMap
+        tvUses.foreach(tv_num => assert(tv_num._2 > 0, tv_num))
+        // def mkConstrained(tl: TypeLike): TypeLike = tl match {
+        //   case 
+        // }
+        println(s"TV uses: $tvUses")
+        def mkWhereClause(tl: mlscript.TypeLike) = {
+          println(s"Making where clause for ${tl} (${tl.typeVarsList})")
+          bounds.filter(tvb => (tvb._1 in tl.typeVarsList) && tvUses(tvb._1) === 1)
+        }.tap(res => println(s"=> $res"))
+        val mems2 = mems.map {
+          case fd: NuFunDef =>
+            fd.copy(whereClause = mkWhereClause(fd))(fd.declareLoc, fd.signature, fd.outer)
+          case td: NuTypeDef =>
+            td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
+        }
+        val res2 = res.map { res =>
+          val bs = mkWhereClause(res)
+          if (bs.isEmpty) res else Constrained(res, bs, Nil)
+        }
+        val result = Signature(mems2, res2)
+        // val restBounds = bounds.filter(tvb => tvUses(tvb._1) > 1)
+        val restBounds = bounds.filter(tvb => tvUses.getOrElse(tvb._1, 0) > 1)
+        if (restBounds.isEmpty) result else Constrained(result, restBounds, Nil)
+    }
+    
   }
   
   

@@ -11,13 +11,14 @@ module EvalAddLit {
 let res = EvalAddLit.eval(add11)
 //│ class Add[E](lhs: E)
 //│ let add11: 'E
+//│   where
+//│     'E :> Add['E]
 //│ module EvalAddLit {
 //│   fun eval: forall 'lhs 'A. (e: 'lhs,) -> nothing
 //│ }
-//│ let res: nothing
 //│ where
 //│   'lhs <: Add['A]
 //│   'A <: 'lhs
-//│   'E :> Add['E]
+//│ let res: nothing
 
 

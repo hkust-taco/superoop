@@ -218,7 +218,7 @@ table = hashtbl_add table "two" (fun f -> fun x -> f (f x))
 //│      = Nil {}
 //│ table: List[("one", forall 'a 'b. ('a -> 'b) -> 'a -> 'b,)]
 //│      = Cons { head: [ 'one', [Function (anonymous)] ], tail: Nil {} }
-//│ table: List[("one" | "two", forall 'a 'b 'c. ('b -> 'c & 'c -> 'a & 'b -> 'a) -> 'b -> 'a,)]
+//│ table: List[("one" | "two", forall 'c 'a 'b. ('a -> 'b & 'b -> 'c & 'a -> 'c) -> 'a -> 'c,)]
 //│      = Cons {
 //│          head: [ 'two', [Function (anonymous)] ],
 //│          tail: Cons { head: [ 'one', [Function (anonymous)] ], tail: Nil {} }

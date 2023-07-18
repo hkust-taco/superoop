@@ -39,11 +39,11 @@ def s n f x = (n f x)
 
 :ns
 s
-//│ res: forall 'a. 'a -> (forall 'b. 'b -> (forall 'c 'd 'e. 'c -> 'e
+//│ res: forall 'a. 'a -> (forall 'b. 'b -> (forall 'c 'e 'd. 'c -> 'd
 //│   where
-//│     'a <: 'b -> 'd))
+//│     'a <: 'b -> 'e))
 //│ where
-//│   'd <: 'c -> 'e
+//│   'e <: 'c -> 'd
 //│    = [Function: s]
 
 :e // * Since "sound extrusion"
@@ -197,9 +197,9 @@ rec def to_ch n =
 
 :e
 to_church = to_ch
-//│ int -> (forall 'a. 'a -> (forall 'b 'c. 'c -> 'b
+//│ int -> (forall 'a. 'a -> (forall 'c 'b. 'b -> 'c
 //│   where
-//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'c -> 'b) | ChurchInt)
+//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'b -> 'c) | ChurchInt)
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
@@ -228,17 +228,17 @@ to_church = to_ch
 def to_ch n =
   if true then z
   else s (to_church n)
-//│ to_ch: int -> (forall 'a. 'a -> (forall 'a 'b 'c 'd. ('b & 'd) -> ('d | 'c)
+//│ to_ch: int -> (forall 'a. 'a -> (forall 'a 'b 'd 'c. ('b & 'c) -> ('c | 'd)
 //│   where
-//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'b -> 'c))
+//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'b -> 'd))
 //│      = <no result>
 //│        to_church, to_ch and zero are not implemented
 
 :e // * Since "sound extrusion"
 to_church = to_ch
-//│ int -> (forall 'a. 'a -> (forall 'a 'b 'c 'd. ('b & 'd) -> ('d | 'c)
+//│ int -> (forall 'a. 'a -> (forall 'a 'b 'd 'c. ('b & 'c) -> ('c | 'd)
 //│   where
-//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'b -> 'c))
+//│     forall 'M. ('M -> 'M) -> 'M -> 'M <: 'a -> 'b -> 'd))
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
@@ -530,9 +530,9 @@ rec def to_ch n =
 //│   where
 //│     'd <: 'a -> 'b -> 'c)
 //│ where
-//│   'd :> forall 'e 'f 'g 'h. 'e -> (('h & 'f) -> ('h | 'g)
+//│   'd :> forall 'e 'g 'h 'f. 'e -> (('f & 'g) -> ('f | 'h)
 //│     where
-//│       'd <: 'e -> 'f -> 'g)
+//│       'd <: 'e -> 'g -> 'h)
 //│      = [Function: to_ch7]
 
 :e // * Since the removal of "recursive definition hacks"
@@ -541,9 +541,9 @@ to_church = to_ch
 //│   where
 //│     'd <: 'a -> 'b -> 'c)
 //│ where
-//│   'd :> forall 'e 'f 'g 'h. 'e -> (('h & 'f) -> ('h | 'g)
+//│   'd :> forall 'e 'g 'h 'f. 'e -> (('f & 'g) -> ('f | 'h)
 //│     where
-//│       'd <: 'e -> 'f -> 'g)
+//│       'd <: 'e -> 'g -> 'h)
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Subtyping constraint of the form `forall ?to_ch. ?to_ch <: int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)` exceeded recursion depth limit (250)
@@ -570,9 +570,9 @@ to_church = to_ch
 //│   where
 //│     'd <: 'a -> 'b -> 'c)
 //│ where
-//│   'd :> forall 'e 'f 'g 'h. 'e -> (('h & 'f) -> ('h | 'g)
+//│   'd :> forall 'e 'g 'h 'f. 'e -> (('f & 'g) -> ('f | 'h)
 //│     where
-//│       'd <: 'e -> 'f -> 'g)
+//│       'd <: 'e -> 'g -> 'h)
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Subtyping constraint of the form `forall ?to_ch. ?to_ch <: int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)` exceeded recursion depth limit (250)
