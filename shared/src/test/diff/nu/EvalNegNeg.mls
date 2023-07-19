@@ -713,13 +713,9 @@ module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ class TestLang
 //│   this: ⊤ 
 //│ TV uses: HashMap(α240 -> 1)
-//│ Making where clause for module TestLang() {fun eval: 'a -> Int} (List(α240))
-//│ => List((α240,Bounds(Bot,Union(AppliedType(TypeName(Neg),List(α241)),Inter(Inter(TypeName(Object),α242),Neg(TypeTag(Neg)))))))
 //│ module TestLang {
 //│   fun eval: 'a -> Int
 //│ }
-//│ where
-//│   'a <: Neg['A] | Object & 'b & ~#Neg
 
 
 fun mk(n) = if n is
@@ -739,5 +735,6 @@ TestLang.eval(mk(11))
 //│ Int
 //│ res
 //│     = -3072
+
 
 

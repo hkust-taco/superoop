@@ -803,7 +803,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       case Asc(trm, ty) =>
         val trm_ty = typePolymorphicTerm(trm)
         val ty_ty = typeType(ty)(ctx.copy(inPattern = false), raise, vars)
-        if (ctx.inPattern) { unify(trm_ty, ty_ty); ty_ty } // * In patterns, we actually _unify_ the pattern and ascribed type 
+        if (ctx.inPattern) { unify(trm_ty, ty_ty); ty_ty } // * In patterns, we actually _unify_ the pattern and ascribed type
         else con(trm_ty, ty_ty, ty_ty)
       case (v @ ValidPatVar(nme)) =>
         val prov = tp(if (verboseConstraintProvenanceHints) v.toLoc else N, "variable")
@@ -1390,6 +1390,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           )(td.declareLoc, td.abstractLoc)
         }
       case TypedNuCls(level, td, tparams, params, members, thisTy, sign, ihtags, ptps) =>
+        // val tvs = TypedTypingUnit(d :: Nil, N).varsBetween
+        
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams,
             Opt.when(td.params.isDefined)(Tup(params.map(p => N -> Fld(false, false, Asc(p._1, go(p._2.ub)))))),
@@ -1551,8 +1553,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         val mems2 = mems.map {
           case fd: NuFunDef =>
             fd.copy(whereClause = mkWhereClause(fd))(fd.declareLoc, fd.signature, fd.outer)
+          // case td: NuTypeDef =>
+          //   td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
           case td: NuTypeDef =>
-            td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
+            td//.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
         }
         val res2 = res.map { res =>
           val bs = mkWhereClause(res)

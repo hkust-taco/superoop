@@ -858,6 +858,14 @@ abstract class TyperHelpers { Typer: Typer =>
       res.toSortedMap
     }
     
+    def varsBetweenLike(lb: Level, ub: Level): Set[TV] = this match {
+      case ty: ST => ty.varsBetween(lb, ub)
+      case OtherTypeLike(tu) =>
+        // tu.implementedMembers.iterator ++ tu.result.flatMap(_.varsBetween(lb, ub)).toSet
+        tu.implementedMembers.iterator.flatMap(_.varsBetween(lb, ub)).toSet ++
+          tu.result.iterator.flatMap(_.varsBetween(lb, ub))
+    }
+    
     private def childrenMem(m: NuMember): List[ST] = m match {
       case NuParam(nme, ty) => ty.lb.toList ::: ty.ub :: Nil
       case TypedNuFun(level, fd, ty) => ty :: Nil

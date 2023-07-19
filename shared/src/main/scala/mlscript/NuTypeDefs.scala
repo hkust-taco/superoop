@@ -40,6 +40,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST])
           : NuMember
     
+    def varsBetween(lb: Level, ub: Level): Set[TV]
+    
     def map(f: ST => ST)(implicit ctx: Ctx): NuMember =
       mapPol(N, false)((_, ty) => f(ty))
     
@@ -68,6 +70,11 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST])
           : NuParam =
       NuParam(nme, ty.freshenAbove(lim, rigidify))(ctx.lvl)
+    
+    def varsBetween(lb: Level, ub: Level): Set[TV] = {
+      val ub_res = ty.ub.varsBetween(lb, ub)
+      ty.lb.fold(ub_res)(_.varsBetween(lb, ub) ++ ub_res)
+    }
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): NuParam =
@@ -128,6 +135,10 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         body.freshenAbove(lim, rigidify))
     }}
     
+    def varsBetween(lb: Level, ub: Level): Set[TV] =
+      body.varsBetween(lb, ub) // TODO hide vars above `level`?!
+      //++ tparams.flatMap(_._2.varsBetween(lb, ub))
+    
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuDecl =
         TypedNuAls(
@@ -182,6 +193,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         parentTP.mapValuesIter(_.freshenAbove(lim, rigidify)).toMap
       )
     }}
+    
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = 
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuTrt =
