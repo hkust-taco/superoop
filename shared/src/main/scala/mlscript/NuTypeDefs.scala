@@ -22,11 +22,12 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
   case class TypeDefInfo() extends NuDeclInfo
   
   
-  sealed trait NuMember {
+  sealed trait NuMember extends Typeish {
     def name: Str
     def kind: DeclKind
     def toLoc: Opt[Loc]
-    def level: Level
+    def level: Level // TODO rm!
+    def quantifLevel: Level
     def isImplemented: Bool
     
     def isValueParam: Bool = this match {
@@ -40,7 +41,103 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST])
           : NuMember
     
-    def varsBetween(lb: Level, ub: Level): Set[TV]
+    // def quantifiedVars: Set[TV] = this match {
+    //   case cls: TypedNuCls => cls.variances.keySet
+    // }
+    // def childrenTypes: Iterator[SimpleType] = 
+    /* 
+    def children(includeTyParams: Bool): Iterator[SimpleType] = this match {
+      case tf: TypedNuFun =>
+        Iterator.single(tf.bodyType)
+      case als: TypedNuAls =>
+        als.tparams.iterator.map(_._2) ++ S(als.body)
+      case mxn: TypedNuMxn =>
+        mxn.tparams.iterator.map(_._2) ++
+        mxn.members.valuesIterator.flatMap(_.children(includeTyParams)) ++
+          S(mxn.superTy) ++
+          S(mxn.thisTy)
+      case cls: TypedNuCls =>
+        cls.tparams.iterator.map(_._2) ++
+          cls.params.flatMap(p => p._2.lb.toList ::: p._2.ub :: Nil) ++
+          cls.members.valuesIterator.flatMap(_.children(includeTyParams)) ++
+          S(cls.thisTy) ++
+          S(cls.sign) ++
+          S(cls.instanceType)
+      case trt: TypedNuTrt =>
+        trt.tparams.iterator.map(_._2) ++
+          trt.members.valuesIterator.flatMap(_.children(includeTyParams)) ++
+          S(trt.thisTy) ++
+          S(trt.sign) ++
+          trt.parentTP.valuesIterator.flatMap(_.children(includeTyParams))
+      case p: NuParam =>
+        // p.ty.lb.toList ::: p.ty.ub :: Nil
+        p.ty.lb.iterator ++ Iterator.single(p.ty.ub)
+      case TypedNuDummy(d) => Iterator.empty
+    }
+    */
+    def childrenTypes: Iterator[ST] = this match {
+      case tf: TypedNuFun =>
+        Iterator.single(tf.bodyType)
+      case als: TypedNuAls =>
+        als.tparams.iterator.map(_._2) ++ S(als.body)
+      case mxn: TypedNuMxn =>
+        mxn.tparams.iterator.map(_._2) ++
+        mxn.members.valuesIterator.flatMap(_.childrenTypes) ++
+          S(mxn.superTy) ++
+          S(mxn.thisTy)
+      case cls: TypedNuCls =>
+        cls.tparams.iterator.map(_._2) ++
+          cls.params.flatMap(p => p._2.lb.toList ::: p._2.ub :: Nil) ++
+          cls.members.valuesIterator.flatMap(_.childrenTypes) ++
+          S(cls.thisTy) ++
+          S(cls.sign) ++
+          S(cls.instanceType)
+      case trt: TypedNuTrt =>
+        trt.tparams.iterator.map(_._2) ++
+          trt.members.valuesIterator.flatMap(_.childrenTypes) ++
+          S(trt.thisTy) ++
+          S(trt.sign) ++
+          trt.parentTP.valuesIterator.flatMap(_.childrenTypes)
+      case p: NuParam =>
+        // p.ty.lb.toList ::: p.ty.ub :: Nil
+        p.ty.lb.iterator ++ Iterator.single(p.ty.ub)
+      case TypedNuDummy(d) => Iterator.empty
+    }
+    /** Does not list type parameters. */
+    def innerChildren: Iterator[Typeish] = this match {
+      case tf: TypedNuFun =>
+        Iterator.single(tf.bodyType)
+      case als: TypedNuAls =>
+        // als.tparams.iterator.map(_._2) ++ 
+        Iterator.single(als.body)
+      case mxn: TypedNuMxn =>
+        // mxn.tparams.iterator.map(_._2) ++
+        mxn.members.valuesIterator ++
+          S(mxn.superTy) ++
+          S(mxn.thisTy)
+      case cls: TypedNuCls =>
+        // cls.tparams.iterator.map(_._2) ++
+        cls.params.iterator.flatMap(p => p._2.lb.toList ::: p._2.ub :: Nil) ++
+          cls.members.valuesIterator ++
+          S(cls.thisTy) ++
+          S(cls.sign) ++
+          S(cls.instanceType)
+      case trt: TypedNuTrt =>
+        // trt.tparams.iterator.map(_._2) ++
+        trt.members.valuesIterator ++
+          S(trt.thisTy) ++
+          S(trt.sign) ++
+          trt.parentTP.valuesIterator.flatMap(_.childrenTypes)
+      case p: NuParam =>
+        // p.ty.lb.toList ::: p.ty.ub :: Nil
+        p.ty.lb.iterator ++ Iterator.single(p.ty.ub)
+      case TypedNuDummy(d) => Iterator.empty
+    }
+    def quantifiedVars: Set[TV] =
+      innerChildren.flatMap(_.varsBetween(quantifLevel, MaxLevel)).toSet
+    
+    def varsBetween(lb: Level, ub: Level): Set[TV] =
+      innerChildren.flatMap(_.varsBetween(lb, ub min quantifLevel)).toSet
     
     def map(f: ST => ST)(implicit ctx: Ctx): NuMember =
       mapPol(N, false)((_, ty) => f(ty))
@@ -63,6 +160,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       if (isType) Als // FIXME?
       else Val
     def toLoc: Opt[Loc] = nme.toLoc
+    def quantifLevel: Level = MaxLevel
     def isImplemented: Bool = true
     def typeSignature: ST = ty.ub
     
@@ -71,10 +169,12 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           : NuParam =
       NuParam(nme, ty.freshenAbove(lim, rigidify))(ctx.lvl)
     
-    def varsBetween(lb: Level, ub: Level): Set[TV] = {
-      val ub_res = ty.ub.varsBetween(lb, ub)
-      ty.lb.fold(ub_res)(_.varsBetween(lb, ub) ++ ub_res)
-    }
+    def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = ???
+    
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = {
+    //   val ub_res = ty.ub.varsBetween(lb, ub)
+    //   ty.lb.fold(ub_res)(_.varsBetween(lb, ub) ++ ub_res)
+    // }
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): NuParam =
@@ -124,6 +224,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = td.kind
     def name: Str = nme.name
     def nme: mlscript.TypeName = td.nme
+    def quantifLevel: Level = MaxLevel // TODO really? aren't type aliases quantifying
     def members: Map[Str, NuMember] = Map.empty
     def isImplemented: Bool = td.sig.isDefined
     
@@ -135,9 +236,9 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         body.freshenAbove(lim, rigidify))
     }}
     
-    def varsBetween(lb: Level, ub: Level): Set[TV] =
-      body.varsBetween(lb, ub) // TODO hide vars above `level`?!
-      //++ tparams.flatMap(_._2.varsBetween(lb, ub))
+    // def varsBetween(lb: Level, ub: Level): Set[TV] =
+    //   body.varsBetween(lb, ub) // TODO hide vars above `level`?!
+    //   //++ tparams.flatMap(_._2.varsBetween(lb, ub))
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuDecl =
@@ -174,6 +275,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = td.kind
     def nme: TypeName = td.nme
     def name: Str = nme.name
+    def quantifLevel: Level = level
     def isImplemented: Bool = true
     
     lazy val virtualMembers: Map[Str, NuMember] = members ++ tparams.map {
@@ -194,7 +296,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )
     }}
     
-    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     
     // def varsBetween(lb: Level, ub: Level): Set[TV] = 
     
@@ -237,6 +339,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = td.kind
     def nme: TypeName = td.nme
     def name: Str = nme.name
+    def quantifLevel: Level = level
     def isImplemented: Bool = true
     
     def typeSignature: ST = typeSignatureOf(td, level, tparams, params, sign, inheritedTags)
@@ -310,7 +413,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )(this.instanceType.freshenAbove(lim, rigidify))
     }}
     
-    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuCls =
@@ -351,6 +454,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = td.kind
     def nme: TypeName = td.nme
     def name: Str = nme.name
+    def quantifLevel: Level = level
     def isImplemented: Bool = true
 
     lazy val virtualMembers: Map[Str, NuMember] = members ++ tparams.map {
@@ -370,7 +474,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )
     }}
     
-    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuMxn =
@@ -395,12 +499,14 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = Val
     def toLoc: Opt[Loc] = N
     def name: Str = d.name
+    def quantifLevel: Level = MaxLevel
     def isImplemented: Bool = true
     def typeSignature: ST = errType
     def freshenAbove(lim: Int, rigidify: Bool)
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST]) =
       this
-    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = ???
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuTermDef =
       this
@@ -416,6 +522,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def kind: DeclKind = Val
     def name: Str = fd.nme.name
     def toLoc: Opt[Loc] = fd.toLoc
+    def quantifLevel: Level = level
     lazy val typeSignature: ST = PolymorphicType.mk(level, bodyType)
     
     def freshenAbove(lim: Int, rigidify: Bool)
@@ -425,8 +532,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         TypedNuFun(outer.lvl, fd, ty.freshenAbove(lim, rigidify))(isImplemented)
           // .tap(res => println(s"Freshen[$level,${ctx.lvl}] $this ~> $res"))
     }}}
-    
-    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = ???
+    // def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuFun =
@@ -450,6 +557,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST])
           : TypedTypingUnit =
       TypedTypingUnit(implementedMembers.map(_.freshenAbove(lim, rigidify)), result.map(_.freshenAbove(lim, rigidify)))
+    def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level = ???
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     override def toString: Str = s"TypedTypingUnit(${(implementedMembers :+ result).lnIndent()})"
   }
   

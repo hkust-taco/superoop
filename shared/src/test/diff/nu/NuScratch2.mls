@@ -24,4 +24,208 @@ module Test {
 //│   'c :> ('c, 'u,)
 //│   'b <: {u: 'b & 'u}
 
+:d
+mixin Test {
+  fun foo(e) =
+    fun f(x) = [f(x.u), x.u]
+    [e, f]
+  fun bar = this.f(super.x)
+}
+//│ 0. Typing TypingUnit(List(mixin Test() {fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}; fun bar = (this).f ((super).x,)}))
+//│ | 0. Created lazy type info for mixin Test() {fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}; fun bar = (this).f ((super).x,)}
+//│ | Completing mixin Test() {fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}; fun bar = (this).f ((super).x,)}
+//│ | | UNSTASHING... (out)
+//│ | | Type params 
+//│ | | UNSTASHING... (out)
+//│ | | Params 
+//│ | | UNSTASHING... (out)
+//│ | | 1. Typing TypingUnit(List(fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}, fun bar = (this).f ((super).x,)))
+//│ | | | 1. Created lazy type info for fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}
+//│ | | | 1. Created lazy type info for fun bar = (this).f ((super).x,)
+//│ | | | Completing fun foo = (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}
+//│ | | | | UNSTASHING... (out)
+//│ | | | | Type params 
+//│ | | | | UNSTASHING... (out)
+//│ | | | | Params 
+//│ | | | | Not typing polymorphicall (cf. not top level or not annotated)
+//│ | | | | 1. Typing term (e,) => {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}
+//│ | | | | | 1. Typing pattern e,
+//│ | | | | | | 1. Typing pattern e
+//│ | | | | | | 1. : e83'
+//│ | | | | | 1. : (e83',)
+//│ | | | | | 1. Typing term {fun f = (x,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'}
+//│ | | | | | | 1. Typing TypingUnit(List(fun f = (x,) => '(' f ((x).u,), (x).u, ')', '(' e, f, ')'))
+//│ | | | | | | | 1. Created lazy type info for fun f = (x,) => '(' f ((x).u,), (x).u, ')'
+//│ | | | | | | | Completing fun f = (x,) => '(' f ((x).u,), (x).u, ')'
+//│ | | | | | | | | UNSTASHING... (out)
+//│ | | | | | | | | Type params 
+//│ | | | | | | | | UNSTASHING... (out)
+//│ | | | | | | | | Params 
+//│ | | | | | | | | 2. Typing term (x,) => '(' f ((x).u,), (x).u, ')'
+//│ | | | | | | | | | 2. Typing pattern x,
+//│ | | | | | | | | | | 2. Typing pattern x
+//│ | | | | | | | | | | 2. : x84''
+//│ | | | | | | | | | 2. : (x84'',)
+//│ | | | | | | | | | 2. Typing term '(' f ((x).u,), (x).u, ')'
+//│ | | | | | | | | | | 2. Typing term f ((x).u,), (x).u,
+//│ | | | | | | | | | | | 2. Typing term f ((x).u,)
+//│ | | | | | | | | | | | | 2. Typing term f
+//│ | | | | | | | | | | | | | Already computing! Using TV: f85''
+//│ | | | | | | | | | | | | 2. : f85''
+//│ | | | | | | | | | | | | 2. Typing term (x).u
+//│ | | | | | | | | | | | | | 2. Typing term x
+//│ | | | | | | | | | | | | | 2. : x84''
+//│ | | | | | | | | | | | | | CONSTRAIN x84'' <! {u: u86''}
+//│ | | | | | | | | | | | | |   where 
+//│ | | | | | | | | | | | | | 2. C x84'' <! {u: u86''}    (0)
+//│ | | | | | | | | | | | | | | NEW x84'' UB (2)
+//│ | | | | | | | | | | | | 2. : u86''
+//│ | | | | | | | | | | | | CONSTRAIN f85'' <! (u86'' -> α87'')
+//│ | | | | | | | | | | | |   where 
+//│ | | | | | | | | | | | | 2. C f85'' <! (u86'' -> α87'')    (0)
+//│ | | | | | | | | | | | | | NEW f85'' UB (2)
+//│ | | | | | | | | | | | 2. : α87''
+//│ | | | | | | | | | | | 2. Typing term (x).u
+//│ | | | | | | | | | | | | 2. Typing term x
+//│ | | | | | | | | | | | | 2. : x84''
+//│ | | | | | | | | | | | | CONSTRAIN x84'' <! {u: u88''}
+//│ | | | | | | | | | | | |   where 
+//│ 		x84'' <: {u: u86''}
+//│ | | | | | | | | | | | | 2. C x84'' <! {u: u88''}    (0)
+//│ | | | | | | | | | | | | | NEW x84'' UB (2)
+//│ | | | | | | | | | | | 2. : u88''
+//│ | | | | | | | | | | 2. : (α87'', u88'',)
+//│ | | | | | | | | | 2. : (α87'', u88'',)
+//│ | | | | | | | | 2. : (x84'' -> (α87'', u88'',))
+//│ | | | | | | | | UNSTASHING... (out)
+//│ | | | | | | | | CONSTRAIN (x84'' -> (α87'', u88'',)) <! f85''
+//│ | | | | | | | |   where 
+//│ 		x84'' <: {u: u88''} & {u: u86''}
+//│ 		f85'' <: (u86'' -> α87'')
+//│ | | | | | | | | 2. C (x84'' -> (α87'', u88'',)) <! f85''    (0)
+//│ | | | | | | | | | NEW f85'' LB (2)
+//│ | | | | | | | | | 2. C (x84'' -> (α87'', u88'',)) <! (u86'' -> α87'')    (2)
+//│ | | | | | | | | | | 2. C (u86'',) <! (x84'',)    (2)
+//│ | | | | | | | | | | | 2. C u86'' <! x84''    (3)
+//│ | | | | | | | | | | | | NEW u86'' UB (2)
+//│ | | | | | | | | | | 2. C (α87'', u88'',) <! α87''    (2)
+//│ | | | | | | | | | | | NEW α87'' LB (2)
+//│ | | | | | | | | UNSTASHING... (out)
+//│ | | | | | | | Completed TypedNuFun(1,fun f = (x::5,) => '(' f ((x).u,), (x).u, ')',(x84'' -> (α87'', u88'',))) where 
+//│ 		x84'' <: {u: u88''} & {u: u86''}
+//│ 		u86'' <: x84''
+//│ 		α87'' :> (α87'', u88'',)
+//│ | | | | | | | Typing unit statements
+//│ | | | | | | | | 1. Typing term '(' e, f, ')'
+//│ | | | | | | | | | 1. Typing term e, f,
+//│ | | | | | | | | | | 1. Typing term e
+//│ | | | | | | | | | | 1. : e83'
+//│ | | | | | | | | | | 1. Typing term f
+//│ | | | | | | | | | | 1. : ‹∀ 1. (x84'' -> (α87'', u88'',))›
+//│ | | | | | | | | | 1. : (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,)
+//│ | | | | | | | | 1. : (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,)
+//│ | | | | | | | : Some((e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,))
+//│ | | | | | 1. : (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,)
+//│ | | | | 1. : (e83' -> (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,))
+//│ | | | | UNSTASHING... (out)
+//│ | | | | CONSTRAIN (e83' -> (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,)) <! foo89''
+//│ | | | |   where 
+//│ 		x84'' <: {u: u88''} & {u: u86''}
+//│ 		u86'' <: x84''
+//│ 		α87'' :> (α87'', u88'',)
+//│ | | | | 2. C (e83' -> (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,)) <! foo89''    (0)
+//│ | | | | | NEW foo89'' LB (1)
+//│ | | | | UNSTASHING... (out)
+//│ | | | Completed TypedNuFun(1,fun foo = (e::4,) => {fun f = (x::5,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'},(e83' -> (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,))) where 
+//│ 		x84'' <: {u: u88''} & {u: u86''}
+//│ 		u86'' <: x84''
+//│ 		α87'' :> (α87'', u88'',)
+//│ | | | Completing fun bar = (this).f ((super).x,)
+//│ | | | | UNSTASHING... (out)
+//│ | | | | Type params 
+//│ | | | | UNSTASHING... (out)
+//│ | | | | Params 
+//│ | | | | Not typing polymorphicall (cf. not top level or not annotated)
+//│ | | | | 1. Typing term (this).f ((super).x,)
+//│ | | | | | 1. Typing term (this).f
+//│ | | | | | | 1. Typing term this
+//│ | | | | | | 1. : this81'
+//│ | | | | | | CONSTRAIN this81' <! {f: f90'}
+//│ | | | | | |   where 
+//│ | | | | | | 1. C this81' <! {f: f90'}    (0)
+//│ | | | | | | | NEW this81' UB (1)
+//│ | | | | | 1. : f90'
+//│ | | | | | 1. Typing term (super).x
+//│ | | | | | | 1. Typing term super
+//│ | | | | | | 1. : super82'
+//│ | | | | | | CONSTRAIN super82' <! {x: x91'}
+//│ | | | | | |   where 
+//│ | | | | | | 1. C super82' <! {x: x91'}    (0)
+//│ | | | | | | | NEW super82' UB (1)
+//│ | | | | | 1. : x91'
+//│ | | | | | CONSTRAIN f90' <! (x91' -> α92')
+//│ | | | | |   where 
+//│ | | | | | 1. C f90' <! (x91' -> α92')    (0)
+//│ | | | | | | NEW f90' UB (1)
+//│ | | | | 1. : α92'
+//│ | | | | UNSTASHING... (out)
+//│ | | | | CONSTRAIN α92' <! bar93''
+//│ | | | |   where 
+//│ | | | | 2. C α92' <! bar93''    (0)
+//│ | | | | | NEW bar93'' LB (1)
+//│ | | | | UNSTASHING... (out)
+//│ | | | Completed TypedNuFun(1,fun bar = (this).f ((super).x,),α92') where 
+//│ | | | Typing unit statements
+//│ | | | : None
+//│ | | Checking overriding for `foo`...
+//│ | | Checking overriding for `bar`...
+//│ | | UNSTASHING... (out)
+//│ | | UNSTASHING... (out)
+//│ | Completed TypedNuMxn(0, TypeName(Test),
+//│ 	this: this81',
+//│ 	super: super82',
+//│ 	tparams: List(),
+//│ 	params: List(),
+//│ 	members: 
+//│ 	(foo,TypedNuFun(1,fun foo = (e::4,) => {fun f = (x::5,) => '(' f ((x).u,), (x).u, ')'; '(' e, f, ')'},(e83' -> (e83', ‹∀ 1. (x84'' -> (α87'', u88'',))›,))))
+//│ 	(bar,TypedNuFun(1,fun bar = (this).f ((super).x,),α92'))
+//│ ) where 
+//│ 		this81' <: {f: f90'}
+//│ 		super82' <: {x: x91'}
+//│ 		x84'' <: {u: u88''} & {u: u86''}
+//│ 		u86'' <: x84''
+//│ 		α87'' :> (α87'', u88'',)
+//│ 		f90' <: (x91' -> α92')
+//│ | Typing unit statements
+//│ | : None
+//│ ======== TYPED ========
+//│ mixin Test
+//│   this: this81' 
+//│   |		this81' <: {f: f90'}
+//│   |		f90' <: (x91' -> α92')
+//│   super: super82' 
+//│   |		super82' <: {x: x91'}
+//│ Test quantifies Set(e83_112', α92_111', x91_110')
+//│ bar quantifies Set()
+//│ foo quantifies Set()
+//│ ‹∀ 1. (x84_113'' -> α87_115'')› quantifies ArraySeq(x84_113'', u88_114'', α87_115'')
+//│ TV uses: HashMap(α111 -> 1, α115 -> 1, α112 -> 1, α114 -> 1, α113 -> 1, α110 -> 1)
+//│ Making where clause for mixin Test() {fun bar: 'a; fun foo: 'e -> ('e, forall 'x 'u 'a. 'x -> 'a
+//│   where
+//│     'x <: {u: 'x & 'u}
+//│     'a :> ('a, 'u,),)} (List(α110, α110, α111, α111, α112, α112, α113, α115, α113, α113, α114, α115, α115, α114, α113, α114, α115))
+//│ => List((α115,Bounds(Tuple(List((None,Field(None,α115)), (None,Field(None,α114)))),Top)), (α113,Bounds(Bot,Record(List((u,Field(None,Inter(α113,α114))))))))
+//│ mixin Test() {
+//│   super: {x: 'x}
+//│   this: {f: 'x -> 'a}
+//│   fun bar: 'a
+//│   fun foo: 'e -> ('e, forall 'x0 'u 'b. 'x0 -> 'b
+//│     where
+//│       'x0 <: {u: 'x0 & 'u}
+//│       'b :> ('b, 'u,),)
+//│ }
+//│ where
+//│   'b :> ('b, 'u,)
+//│   'x0 <: {u: 'x0 & 'u}
+
 

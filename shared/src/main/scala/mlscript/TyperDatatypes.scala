@@ -131,7 +131,11 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
       body.fold(PolymorphicType(MinLevel, errType))(b => PolymorphicType(level, ProvType(b._2)(prov)))
   }
   
-  sealed abstract class TypeLike extends TypeLikeImpl {
+  abstract class Typeish extends TypeishImpl {
+    def levelBelow(ub: Level)(implicit cache: MutSet[TV]): Level
+    def varsBetween(lb: Level, ub: Level): Set[TV]
+  }
+  sealed abstract class TypeLike extends Typeish with TypeLikeImpl {
     def unwrapProvs: TypeLike
   }
   type TL = TypeLike

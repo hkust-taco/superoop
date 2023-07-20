@@ -1371,7 +1371,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         case (_, d: TypedNuTypeDef) => goDecl(d)
       })
     }
-    def goDecl(d: NuMember)(implicit ectx: ExpCtx): NuDecl = d match {
+    def goDecl(d: NuMember)(implicit ectx: ExpCtx): NuDecl = {
+      val quantifVars = d.quantifiedVars
+      println(s"${d.name} quantifies $quantifVars")
+      d match {
       case TypedNuAls(level, td, tparams, body) =>
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams, N, N, S(go(body)), Nil, N, N, TypingUnit(Nil), Nil)(
@@ -1424,6 +1427,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         ??? // TODO
       case TypedNuDummy(d) =>
         ??? // TODO
+      }
     }
     
     def go(st: SimpleType)(implicit ectx: ExpCtx): Type =

@@ -746,6 +746,9 @@ abstract class TyperHelpers { Typer: Typer =>
   
   
   
+  trait TypeishImpl { self: Typeish =>
+  }
+  
   trait TypeLikeImpl { self: TypeLike =>
     
     def childrenPol(pol: PolMap)(implicit ctx: Ctx): List[PolMap -> SimpleType] = {
@@ -866,12 +869,12 @@ abstract class TyperHelpers { Typer: Typer =>
           tu.result.iterator.flatMap(_.varsBetween(lb, ub))
     }
     
-    private def childrenMem(m: NuMember): List[ST] = m match {
-      case NuParam(nme, ty) => ty.lb.toList ::: ty.ub :: Nil
-      case TypedNuFun(level, fd, ty) => ty :: Nil
-      case TypedNuDummy(d) => Nil
-      case _ => ??? // TODO
-    }
+    // private def childrenMem(m: NuMember): List[ST] = m match {
+    //   case NuParam(nme, ty) => ty.lb.toList ::: ty.ub :: Nil
+    //   case TypedNuFun(level, fd, ty) => ty :: Nil
+    //   case TypedNuDummy(d) => Nil
+    //   case _ => ??? // TODO
+    // }
     def children(includeBounds: Bool): List[SimpleType] = this match {
       case tv @ AssignedVariable(ty) => if (includeBounds) ty :: Nil else Nil
       case tv: TypeVariable => if (includeBounds) tv.lowerBounds ::: tv.upperBounds else Nil
@@ -895,33 +898,35 @@ abstract class TyperHelpers { Typer: Typer =>
       case SpliceType(fs) => fs.flatMap{ case L(l) => l :: Nil case R(r) => r.lb.toList ::: r.ub :: Nil}
       case OtherTypeLike(tu) =>
         // tu.childrenPol(PolMap.neu).map(tp => tp._1)
-        val ents = tu.implementedMembers.flatMap {
-          case tf: TypedNuFun =>
-            tf.bodyType :: Nil
-          case als: TypedNuAls =>
-            als.tparams.iterator.map(_._2) ++ S(als.body)
-          case mxn: TypedNuMxn =>
-            mxn.tparams.iterator.map(_._2) ++
-            mxn.members.valuesIterator.flatMap(childrenMem) ++
-              S(mxn.superTy) ++
-              S(mxn.thisTy)
-          case cls: TypedNuCls =>
-            cls.tparams.iterator.map(_._2) ++
-              cls.params.flatMap(p => p._2.lb.toList ::: p._2.ub :: Nil) ++
-              cls.members.valuesIterator.flatMap(childrenMem) ++
-              S(cls.thisTy) ++
-              S(cls.sign) ++
-              S(cls.instanceType)
-          case trt: TypedNuTrt =>
-            trt.tparams.iterator.map(_._2) ++
-              trt.members.valuesIterator.flatMap(childrenMem) ++
-              S(trt.thisTy) ++
-              S(trt.sign) ++
-              trt.parentTP.valuesIterator.flatMap(childrenMem)
-          case p: NuParam =>
-            p.ty.lb.toList ::: p.ty.ub :: Nil
-          case TypedNuDummy(d) => Nil
-        }
+        // val ents = tu.implementedMembers.flatMap {
+        //   case tf: TypedNuFun =>
+        //     tf.bodyType :: Nil
+        //   case als: TypedNuAls =>
+        //     als.tparams.iterator.map(_._2) ++ S(als.body)
+        //   case mxn: TypedNuMxn =>
+        //     mxn.tparams.iterator.map(_._2) ++
+        //     mxn.members.valuesIterator.flatMap(childrenMem) ++
+        //       S(mxn.superTy) ++
+        //       S(mxn.thisTy)
+        //   case cls: TypedNuCls =>
+        //     cls.tparams.iterator.map(_._2) ++
+        //       cls.params.flatMap(p => p._2.lb.toList ::: p._2.ub :: Nil) ++
+        //       cls.members.valuesIterator.flatMap(childrenMem) ++
+        //       S(cls.thisTy) ++
+        //       S(cls.sign) ++
+        //       S(cls.instanceType)
+        //   case trt: TypedNuTrt =>
+        //     trt.tparams.iterator.map(_._2) ++
+        //       trt.members.valuesIterator.flatMap(childrenMem) ++
+        //       S(trt.thisTy) ++
+        //       S(trt.sign) ++
+        //       trt.parentTP.valuesIterator.flatMap(childrenMem)
+        //   case p: NuParam =>
+        //     p.ty.lb.toList ::: p.ty.ub :: Nil
+        //   case TypedNuDummy(d) => Nil
+        // }
+        // val ents = tu.implementedMembers.flatMap(_.children(includeTyParams = true))
+        val ents = tu.implementedMembers.flatMap(_.childrenTypes)
         ents ::: tu.result.toList
     }
     
