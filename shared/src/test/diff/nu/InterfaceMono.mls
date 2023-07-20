@@ -179,7 +179,7 @@ mixin More {
     fun size = 1
     fun bar(x) = x
 }
-//│ mixin More() {
+//│ mixin More {
 //│   fun bar: 'a -> 'a
 //│   fun more: Num -> Bool
 //│   fun size: 1
@@ -188,7 +188,7 @@ mixin More {
 mixin Fooo {
     fun foo(x) = 0
 }
-//│ mixin Fooo() {
+//│ mixin Fooo {
 //│   fun foo: anything -> 0
 //│ }
 

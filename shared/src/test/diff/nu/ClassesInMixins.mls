@@ -6,7 +6,7 @@ mixin Test {
   class Foo(n: Int)
   let f = Foo(123)
 }
-//│ mixin Test() {
+//│ mixin Test {
 //│   class Foo(n: Int)
 //│   let f: Foo
 //│ }
@@ -50,7 +50,7 @@ mixin Test2 { let f = Foo(1) }
 //│ ╔══[ERROR] identifier not found: Foo
 //│ ║  l.49: 	mixin Test2 { let f = Foo(1) }
 //│ ╙──      	                      ^^^
-//│ mixin Test2() {
+//│ mixin Test2 {
 //│   let f: error
 //│ }
 //│ Code generation encountered an error:
@@ -61,7 +61,7 @@ mixin Test3 { fun f(x) = if x is Foo then 1 }
 //│ ╔══[ERROR] Cannot find constructor `Foo` in scope
 //│ ║  l.60: 	mixin Test3 { fun f(x) = if x is Foo then 1 }
 //│ ╙──      	                                 ^^^
-//│ mixin Test3() {
+//│ mixin Test3 {
 //│   fun f: anything -> error
 //│ }
 //│ Code generation encountered an error:
@@ -77,7 +77,7 @@ mixin Test {
   fun size(x) = if x is
     Add(l, r) then this.size(l) + this.size(r)
 }
-//│ mixin Test() {
+//│ mixin Test {
 //│   this: {size: 'lhs -> Int}
 //│   class Add[A](lhs: A, rhs: A) {
 //│     let cached: Int

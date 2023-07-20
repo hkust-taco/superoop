@@ -39,7 +39,7 @@ mixin EvalVar {
         NotFound then v
         Success(r) then r
 }
-//│ mixin EvalVar() {
+//│ mixin EvalVar {
 //│   fun eval: (Cons[{_1: anything, _2: 'result}] | Nil, Var,) -> (Var | 'result)
 //│ }
 
@@ -70,7 +70,7 @@ mixin EvalLambda {
     else
       super.eval(sub, v)
 }
-//│ mixin EvalLambda() {
+//│ mixin EvalLambda {
 //│   super: {eval: ('a, 'b,) -> 'c}
 //│   this: {eval: ('a, 's,) -> ('A & 'd) & (Cons[(Str, 'd,)], 't,) -> 'c & (Cons[(Str, Var,) | 'A0], 't0,) -> 'A1}
 //│   fun eval: ('a & (Cons['A0] | Nil), Abs['t0] | App['s & (Abs['t] | Object & ~#Abs)] | Object & 'b & ~#Abs & ~#App,) -> (Abs['A1] | App['A] | 'c)
@@ -83,9 +83,9 @@ module Test1 extends EvalVar, EvalLambda
 //│       'b :> App['result] | Abs['result]
 //│ }
 //│ where
+//│   'result :> Var | 'b
 //│   'a <: Abs['a] | App['A] | Var
 //│   'A <: 'a & (Abs['a] | Object & ~#Abs)
-//│   'result :> Var | 'b
 //│   'b :> App['result] | Abs['result]
 
 Test1.eval(Nil, Var("a"))
@@ -153,7 +153,7 @@ mixin EvalExpr {
       Mul(Numb(l), Numb(r)) then Numb(l * r)
     else v
 }
-//│ mixin EvalExpr() {
+//│ mixin EvalExpr {
 //│   super: {eval: ('a, Var,) -> 'b}
 //│   this: {eval: ('a, 'c,) -> Object}
 //│   fun eval: ('a, 'b & (Add['c] | Mul['c] | Numb | Var),) -> (Numb | 'b)
@@ -214,13 +214,13 @@ module Test3 extends EvalVar, EvalExpr, EvalLambda
 //│       'c :> App['A0] | Abs['A0]
 //│ }
 //│ where
-//│   'result :> 'A0
-//│           <: Object
-//│   'A0 :> Numb | Var | 'result | 'b | 'c
+//│   'A <: 'a & (Abs['a] | Object & ~#Abs)
 //│   'c :> App['A0] | Abs['A0]
 //│   'b <: Add['a] | Mul['a] | Numb | Var
+//│   'A0 :> Numb | Var | 'result | 'b | 'c
+//│   'result :> 'A0
+//│           <: Object
 //│   'a <: Abs['a] | App['A] | Object & 'b & ~#Abs & ~#App
-//│   'A <: 'a & (Abs['a] | Object & ~#Abs)
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ forall 'a. 'A | 'a
@@ -250,8 +250,8 @@ module Test3 extends EvalVar, EvalLambda, EvalExpr
 //│ where
 //│   'result :> 'A | 'a
 //│           <: Object
-//│   'a <: Add['a] | Mul['a] | Numb | Var
 //│   'A :> Numb | 'result | Abs['A] | App['A] | Var
+//│   'a <: Add['a] | Mul['a] | Numb | Var
 
 // * Because EvalExpr does not dispatch lambdas to super and map_expr only
 // * handles exprs

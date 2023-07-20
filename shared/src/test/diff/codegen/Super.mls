@@ -6,7 +6,7 @@
 mixin Foo0 {
   let foo0 = 0
 }
-//│ mixin Foo0() {
+//│ mixin Foo0 {
 //│   let foo0: 0
 //│ }
 //│ // Prelude
@@ -36,7 +36,7 @@ mixin Foo1 {
   let foo0 = 1
   let foo1 = super.foo0
 }
-//│ mixin Foo1() {
+//│ mixin Foo1 {
 //│   super: {foo0: 'foo0}
 //│   let foo0: 1
 //│   let foo1: 'foo0
@@ -87,7 +87,7 @@ mixin Foo2 {
 //│ ╔══[ERROR] Illegal use of `super`
 //│ ║  l.85: 	  fun foo2 = super
 //│ ╙──      	             ^^^^^
-//│ mixin Foo2() {
+//│ mixin Foo2 {
 //│   super: 'super
 //│   fun foo2: 'super
 //│ }

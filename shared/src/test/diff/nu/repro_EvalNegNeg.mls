@@ -18,7 +18,7 @@ mixin EvalBase {
       Lit(n) then n
       Add(l, r) then this.eval(l) + this.eval(r)
 }
-//│ mixin EvalBase() {
+//│ mixin EvalBase {
 //│   this: {eval: 'expr -> 'a & ('expr0 | 'lhs) -> Int}
 //│   fun eval: (Add['lhs] | Lit | Neg['expr0 & (Neg['expr] | Object & ~#Neg)]) -> (Int | 'a)
 //│ }
@@ -31,8 +31,8 @@ module TestLang extends EvalBase
 //│       'E <: 'a
 //│ }
 //│ where
-//│   'E <: 'a
 //│   'a <: Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]
+//│   'E <: 'a
 
 
 fun mk(n) = if n is

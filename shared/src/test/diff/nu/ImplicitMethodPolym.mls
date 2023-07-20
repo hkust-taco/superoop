@@ -41,7 +41,7 @@ M.id1
 mixin Mx {
   fun id1(x) = x
 }
-//│ mixin Mx() {
+//│ mixin Mx {
 //│   fun id1: 'a -> 'a
 //│ }
 
@@ -59,7 +59,7 @@ module M extends Mx {
 mixin Mx {
   fun id1(x) = this.id2(x)
 }
-//│ mixin Mx() {
+//│ mixin Mx {
 //│   this: {id2: 'a -> 'b}
 //│   fun id1: 'a -> 'b
 //│ }

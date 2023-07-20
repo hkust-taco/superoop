@@ -4,7 +4,7 @@
 mixin Over {
   fun p = "hi"
 }
-//│ mixin Over() {
+//│ mixin Over {
 //│   fun p: "hi"
 //│ }
 

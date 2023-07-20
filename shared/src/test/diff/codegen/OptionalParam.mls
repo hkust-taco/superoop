@@ -444,4 +444,4 @@ mixin P {
 //│ ║  l.438: 	  constructor(x: Int)
 //│ ╙──       	  ^^^^^^^^^^^^^^^^^^^
 //│ module O
-//│ mixin P()
+//│ mixin P

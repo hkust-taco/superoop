@@ -47,8 +47,6 @@ module A {
 //│   fun h: forall 'b. 'b
 //│   fun i: forall 'c. 'c -> 'c
 //│ }
-//│ where
-//│   'a := 'a -> 'b
 
 :ns
 A.i

@@ -1372,9 +1372,14 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       })
     }
     def goDecl(d: NuMember)(implicit ectx: ExpCtx): NuDecl = {
-      val quantifVars = d.quantifiedVars
-      println(s"${d.name} quantifies $quantifVars")
-      d match {
+      val quantified = d.quantifiedVars
+      println(s"${d.name} quantifies $quantified")
+      lazy val bs = {
+        val res = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+        res
+      }
+      
+      val b = d match {
       case TypedNuAls(level, td, tparams, body) =>
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams, N, N, S(go(body)), Nil, N, N, TypingUnit(Nil), Nil)(
@@ -1383,19 +1388,18 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       case TypedNuMxn(level, td, thisTy, superTy, tparams, params, members) =>
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams,
-            S(Tup(params.map(p => N -> Fld(false, false, Asc(p._1, go(p._2.ub)))))),
+            Opt.when(td.params.isDefined)(Tup(params.map(p => N -> Fld(false, false, Asc(p._1, go(p._2.ub)))))),
             N,//TODO
             N,
             Nil, // TODO mixin parents?
             Option.when(!(TopType <:< superTy))(go(superTy)),
             Option.when(!(TopType <:< thisTy))(go(thisTy)),
             mkTypingUnit(thisTy, members),
-            Nil,
+            bs,
           )(td.declareLoc, td.abstractLoc)
         }
       case TypedNuCls(level, td, tparams, params, members, thisTy, sign, ihtags, ptps) =>
         // val tvs = TypedTypingUnit(d :: Nil, N).varsBetween
-        
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams,
             Opt.when(td.params.isDefined)(Tup(params.map(p => N -> Fld(false, false, Asc(p._1, go(p._2.ub)))))),
@@ -1405,13 +1409,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
             N,//TODO
             Option.when(!(TopType <:< thisTy))(go(thisTy)),
             mkTypingUnit(thisTy, members),
-            Nil,
+            bs,
           )(td.declareLoc, td.abstractLoc)
         }
       case TypedNuTrt(level, td, tparams, members, thisTy, sign, ihtags, ptps) => 
         ectx(tparams) |> { implicit ectx =>
           NuTypeDef(td.kind, td.nme, td.tparams,
-            N,
+            N, // TODO trait params?
             td.ctor,
             Option.when(!(TopType <:< sign))(go(sign)),
             ihtags.toList.sorted.map(_.toVar), // TODO provide targs/args
@@ -1428,6 +1432,15 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       case TypedNuDummy(d) =>
         ??? // TODO
       }
+      
+      // TODO factor
+      // val bs = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+      // if (quantified.isEmpty) b else
+      //   PolyType(quantified.map(_.asTypeVar pipe (R(_))).toList,
+      //     Constrained.mk(b, bs))
+      
+      b
+      
     }
     
     def go(st: SimpleType)(implicit ectx: ExpCtx): Type =
@@ -1576,8 +1589,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         val mems2 = mems.map {
           case fd: NuFunDef =>
             fd.copy(whereClause = mkWhereClause(fd))(fd.declareLoc, fd.signature, fd.outer)
-          case td: NuTypeDef =>
-            td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
+          // case td: NuTypeDef =>
+          //   td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
           case td: NuTypeDef =>
             td//.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
         }

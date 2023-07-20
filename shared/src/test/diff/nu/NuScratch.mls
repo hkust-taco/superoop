@@ -22,11 +22,11 @@ let res = TestLang.eval(add2negadd11)
 //│ class Neg[E](expr: E)
 //│ let add11: Add[Lit]
 //│ let add2negadd11: Add[Lit | Neg[Add[Lit]]]
-//│ mixin EvalAddLit() {
+//│ mixin EvalAddLit {
 //│   this: {eval: 'lhs -> Int}
 //│   fun eval: (Add['lhs] | Lit) -> Int
 //│ }
-//│ mixin EvalNeg() {
+//│ mixin EvalNeg {
 //│   super: {eval: 'a -> 'b}
 //│   this: {eval: 'expr -> Int}
 //│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)
@@ -45,6 +45,7 @@ let res = TestLang.eval(add2negadd11)
 //│     = -1
 
 
+:re
 class Foo[X](x: X -> X)
 let a = Foo(error)
 a.x(0)

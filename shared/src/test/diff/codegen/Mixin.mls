@@ -110,7 +110,7 @@ mixin EvalBase {
       Lit(n) then n: Int
       Add(l, r) then this.eval(l) + this.eval(r)
 }
-//│ mixin EvalBase() {
+//│ mixin EvalBase {
 //│   this: {eval: 'lhs -> Int}
 //│   fun eval: (Add['lhs] | Lit) -> Int
 //│ }
@@ -233,7 +233,7 @@ mixin EvalNeg {
     if e is Neg(d) then 0 - this.eval(d)
     else super.eval(e)
 }
-//│ mixin EvalNeg() {
+//│ mixin EvalNeg {
 //│   super: {eval: 'a -> 'b}
 //│   this: {eval: 'expr -> Int}
 //│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)
@@ -294,7 +294,7 @@ mixin EvalNegNeg {
     if e is Neg(Neg(d)) then this.eval(d)
     else super.eval(e)
 }
-//│ mixin EvalNegNeg() {
+//│ mixin EvalNegNeg {
 //│   super: {eval: (Neg[nothing] | 'a) -> 'b}
 //│   this: {eval: 'expr -> 'b}
 //│   fun eval: (Neg[Neg['expr] | Object & ~#Neg] | Object & 'a & ~#Neg) -> 'b
@@ -356,6 +356,8 @@ module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ }
 //│ where
 //│   'a <: Neg['A] | Object & 'b & ~#Neg
+//│   'A <: Neg['a & 'A] | Neg['A] & ~#Neg | Object & 'b & ~#Neg
+//│   'b <: Add['a] | Lit | Neg['a]
 //│ // Prelude
 //│ class TypingUnit5 {
 //│   #TestLang;
@@ -429,7 +431,7 @@ TestLang.eval(mk(0))
 //│ // Query 2
 //│ res = TestLang.eval(mk(0));
 //│ // End of generated code
-//│ ┌ Block at Mixin.mls:410
+//│ ┌ Block at Mixin.mls:412
 //│ ├─┬ Prelude
 //│ │ ├── Code
 //│ │ │   class TypingUnit6 {}
@@ -467,7 +469,7 @@ mixin AA(a: Int) {
 //│ mixin AA(a: Int)
 
 mixin BB {}
-//│ mixin BB()
+//│ mixin BB
 
 
 class C(x: Int) extends BB
@@ -580,9 +582,9 @@ mixin Base {
   fun x = y
 }
 //│ ╔══[ERROR] identifier not found: y
-//│ ║  l.580: 	  fun x = y
+//│ ║  l.582: 	  fun x = y
 //│ ╙──       	          ^
-//│ mixin Base() {
+//│ mixin Base {
 //│   fun x: error
 //│ }
 //│ Code generation encountered an error:

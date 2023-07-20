@@ -58,7 +58,7 @@ mixin EvalVar {
         NotFound then v
         Success(r) then r
 }
-//│ mixin EvalVar() {
+//│ mixin EvalVar {
 //│   fun eval: (List[{_1: Str, _2: 'result}], Var,) -> (Var | 'result)
 //│ }
 
@@ -92,7 +92,7 @@ mixin EvalLambda {
     else
       super.eval(sub, v)
 }
-//│ mixin EvalLambda() {
+//│ mixin EvalLambda {
 //│   super: {eval: ('b, 'c,) -> 'd}
 //│   this: {eval: ('b, 's,) -> 'A & (List[(Str, 'A,)], 't,) -> 'd & (List['a | (Str, Var,)], 't0,) -> 'A0}
 //│   fun eval: (List['a] & 'b, Abs['t0] | App['s & (Abs['t] | Object & ~#Abs)] | Object & 'c & ~#Abs & ~#App,) -> (Abs['A0] | App['A] | 'd)
@@ -105,9 +105,9 @@ module Test1 extends EvalVar, EvalLambda
 //│       'b :> App['A] | Abs['A]
 //│ }
 //│ where
+//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Var
 //│   'A :> 'b | Var
 //│   'b :> App['A] | Abs['A]
-//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Var
 
 Test1.eval(Nil(), Var("a"))
 //│ forall 'a. 'A | 'a
@@ -166,7 +166,7 @@ mixin EvalExpr {
       Mul(Numb(l), Numb(r)) then Numb(l * r)
     else v
 }
-//│ mixin EvalExpr() {
+//│ mixin EvalExpr {
 //│   super: {eval: ('a, Var,) -> 'b}
 //│   this: {eval: ('a, 'c,) -> Object}
 //│   fun eval: ('a, 'b & (Add['c] | Mul['c] | Numb | Var),) -> (Numb | 'b)
@@ -198,9 +198,10 @@ module Test3 extends EvalVar, EvalExpr, EvalLambda
 //│       'b :> App['A] | Abs['A]
 //│ }
 //│ where
+//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Object & 'c & ~#Abs & ~#App
+//│   'c <: Add['a] | Mul['a] | Numb | Var
 //│   'A :> 'b | Numb | Var | 'c
 //│   'b :> App['A] | Abs['A]
-//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Object & 'c & ~#Abs & ~#App
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), Abs("a", Var("a")))
 //│ forall 'a. 'A | 'a

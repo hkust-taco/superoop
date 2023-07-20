@@ -5,7 +5,7 @@ mixin Test[A] {
     fun bar: (A, A)
     fun bar = (this.a, this.a)
 }
-//│ mixin Test[A]() {
+//│ mixin Test[A] {
 //│   this: {a: A}
 //│   fun bar: (A, A,)
 //│ }
@@ -21,7 +21,7 @@ mixin Test2[S, T] {
     fun fb: S => (S, S)
     fun fb(h: S) = (this.s, h)
 }
-//│ mixin Test2[S, T]() {
+//│ mixin Test2[S, T] {
 //│   this: {s: S, t: T}
 //│   fun fb: S -> (S, S,)
 //│   fun x: (S, T,)

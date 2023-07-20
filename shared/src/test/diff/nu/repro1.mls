@@ -36,7 +36,7 @@ mixin Contains {
   fun contains(a) =
     if a is Union then this.contains(a.a)
 }
-//│ mixin Contains() {
+//│ mixin Contains {
 //│   this: {contains: 'a -> 'b}
 //│   fun contains: Union['a] -> 'b
 //│ }

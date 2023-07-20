@@ -131,7 +131,7 @@ class C() extends Test {
 mixin M {
   fun m1 = 3
 }
-//│ mixin M() {
+//│ mixin M {
 //│   fun m1: 3
 //│ }
 
@@ -896,8 +896,6 @@ trait BPar[T] extends Base[(Int,T)]
 //│ trait BPar[T] extends Base {
 //│   fun f: 'A -> 'A
 //│ }
-//│ where
-//│   'A := (Int, T,)
 
 let bi: BInt
 let bp: BPar[Bool]
@@ -917,7 +915,7 @@ bp: Base[(Int, Bool)]
 :e
 bp: Base[(Int, Int)]
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.918: 	bp: Base[(Int, Int)]
+//│ ║  l.916: 	bp: Base[(Int, Int)]
 //│ ║         	^^
 //│ ╙── expression of type `true` is not an instance of type `Int`
 //│ Base[(Int, Int,)]
@@ -978,10 +976,10 @@ trait BInfer2 extends Base {
 :e
 class DerBad1 extends Base[Int, Int]
 //│ ╔══[ERROR] trait Base expects 1 type parameter(s); got 2
-//│ ║  l.979: 	class DerBad1 extends Base[Int, Int]
+//│ ║  l.977: 	class DerBad1 extends Base[Int, Int]
 //│ ╙──       	                      ^^^^^^^^^^^^^
 //│ ╔══[ERROR] Member `f` is declared in parent but not implemented in `DerBad1`
-//│ ║  l.979: 	class DerBad1 extends Base[Int, Int]
+//│ ║  l.977: 	class DerBad1 extends Base[Int, Int]
 //│ ║         	      ^^^^^^^
 //│ ╟── Declared here:
 //│ ║  l.869: 	trait Base[A] { fun f: A -> A }
@@ -995,28 +993,28 @@ class DerBad1 extends Base[Int, Int]
 :e
 class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ╔══[ERROR] Type mismatch in definition of method f:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	                                            ^^^^^^^^^^^^^^^^^^
 //│ ╟── reference of type `B` does not match type `A`
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	                                                         ^
 //│ ╟── Note: constraint arises from type parameter:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	           ^
 //│ ╟── Note: type parameter B is defined at:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ╙──       	              ^
 //│ ╔══[ERROR] Type mismatch in definition of method f:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	                                            ^^^^^^^^^^^^^^^^^^
 //│ ╟── reference of type `A` does not match type `B`
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	                                                            ^
 //│ ╟── Note: constraint arises from type parameter:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ║         	              ^
 //│ ╟── Note: type parameter A is defined at:
-//│ ║  l.996: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
+//│ ║  l.994: 	class Der2[A, B] extends Base[(A, B)] { fun f((x, y)) = (y, x) }
 //│ ╙──       	           ^
 //│ class Der2[A, B] extends Base {
 //│   fun f: forall 'a 'b. ('a, 'b,) -> ('b, 'a,)
@@ -1067,14 +1065,12 @@ trait Tb extends Ta[Int] {
   let p = false
 }
 //│ ╔══[ERROR] Method implementations in traits are not yet supported
-//│ ║  l.1067: 	  let p = false
+//│ ║  l.1065: 	  let p = false
 //│ ╙──        	      ^^^^^^^^^
 //│ trait Tb extends Ta {
 //│   let g: 'T
 //│   let p: false
 //│ }
-//│ where
-//│   'T := Int
 
 class Ctb extends Tb {
   let p = false
@@ -1101,14 +1097,14 @@ trait Oz {
 :e
 class Fischl(age: Bool) extends Oz
 //│ ╔══[ERROR] Type mismatch in type reference:
-//│ ║  l.1102: 	class Fischl(age: Bool) extends Oz
+//│ ║  l.1098: 	class Fischl(age: Bool) extends Oz
 //│ ║          	                  ^^^^
 //│ ╟── type `Bool` is not an instance of `Int`
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.1095: 	  let age: Int
+//│ ║  l.1091: 	  let age: Int
 //│ ║          	           ^^^
 //│ ╟── from signature of member `age`:
-//│ ║  l.1095: 	  let age: Int
+//│ ║  l.1091: 	  let age: Int
 //│ ╙──        	      ^^^^^^^^
 //│ class Fischl(age: Bool) extends Oz
 
@@ -1127,29 +1123,29 @@ class Go extends Fate {
     fun foo(x) = x && true
 }
 //│ ╔══[ERROR] Type mismatch in definition of method foo:
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ║          	        ^^^^^^^^^^^^^^^^^^
 //│ ╟── expression of type `Int & ?a` is not an instance of type `Bool`
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ╙──        	                 ^
 //│ ╔══[ERROR] Type mismatch in definition of method foo:
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ║          	        ^^^^^^^^^^^^^^^^^^
 //│ ╟── operator application of type `Bool` does not match type `Int | ?a`
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ║          	                 ^^^^^^^^^
 //│ ╟── Note: constraint arises from operator application:
-//│ ║  l.1119: 	    fun foo(x) = x + 1
+//│ ║  l.1115: 	    fun foo(x) = x + 1
 //│ ╙──        	                 ^^^^^
 //│ ╔══[ERROR] Type mismatch in definition of method foo:
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ║          	        ^^^^^^^^^^^^^^^^^^
 //│ ╟── operator application of type `Bool` does not match type `Int | ?a`
-//│ ║  l.1127: 	    fun foo(x) = x && true
+//│ ║  l.1123: 	    fun foo(x) = x && true
 //│ ║          	                 ^^^^^^^^^
 //│ ╟── Note: constraint arises from operator application:
-//│ ║  l.1119: 	    fun foo(x) = x + 1
+//│ ║  l.1115: 	    fun foo(x) = x + 1
 //│ ╙──        	                 ^^^^^
 //│ class Go extends Fate {
 //│   fun foo: Bool -> Bool
@@ -1166,11 +1162,11 @@ class Haha(x: 1 | 2) extends Ha
 :e
 class Ohhh(x: Bool) extends Ha
 //│ ╔══[ERROR] Type mismatch in type reference:
-//│ ║  l.1167: 	class Ohhh(x: Bool) extends Ha
+//│ ║  l.1163: 	class Ohhh(x: Bool) extends Ha
 //│ ║          	              ^^^^
 //│ ╟── type `Bool` is not an instance of `Int`
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.1158: 	class Ha { let x: Int = 1 }
+//│ ║  l.1154: 	class Ha { let x: Int = 1 }
 //│ ╙──        	                  ^^^
 //│ class Ohhh(x: Bool) extends Ha
 

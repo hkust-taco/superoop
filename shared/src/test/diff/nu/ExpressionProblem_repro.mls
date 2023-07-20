@@ -37,14 +37,14 @@ mixin EvalLit {
     if e is
       Lit(n) then n
 }
-//│ mixin EvalLit() {
+//│ mixin EvalLit {
 //│   fun eval: Lit -> Int
 //│ }
 
 mixin EvalLit {
   fun eval(e: Lit) = e.value
 }
-//│ mixin EvalLit() {
+//│ mixin EvalLit {
 //│   fun eval: (e: Lit,) -> Int
 //│ }
 
@@ -54,7 +54,7 @@ mixin EvalAdd {
     if e is
       Add(l, r) then this.eval(l)
 }
-//│ mixin EvalAdd() {
+//│ mixin EvalAdd {
 //│   this: {eval: 'lhs -> 'a}
 //│   fun eval: Add['lhs] -> 'a
 //│ }
@@ -79,7 +79,7 @@ mixin EvalBase {
       Lit(n) then n: Int
       Add(l, r) then this.eval(l) + this.eval(r)
 }
-//│ mixin EvalBase() {
+//│ mixin EvalBase {
 //│   this: {eval: 'lhs -> Int}
 //│   fun eval: (Add['lhs] | Lit) -> Int
 //│ }
@@ -128,7 +128,7 @@ mixin EvalNeg {
     if e is Neg(d) then 0 - this.eval(d)
     else super.eval(e)
 }
-//│ mixin EvalNeg() {
+//│ mixin EvalNeg {
 //│   super: {eval: 'a -> 'b}
 //│   this: {eval: 'expr -> Int}
 //│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)

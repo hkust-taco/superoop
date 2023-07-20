@@ -1037,7 +1037,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
           err(msg"${raw.kind.str} $rawName expects ${
             raw.tparams.size.toString} type parameter(s); got ${pta.size.toString}", Loc(v :: pta))
       }
-      refreshHelper2(raw: PolyNuDecl, v: Var, parTargs.map(_.map(typeType(_))))
+      refreshHelper2(raw, v, parTargs.map(_.map(typeType(_))))
     }
     
     def complete()(implicit raise: Raise): TypedNuDecl = result.getOrElse {
@@ -1568,7 +1568,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     val rawName = v.name
     
     val parTP = raw.tparams.lazyZip(parTargs.getOrElse(raw.tparams.map {
-        case (_, tv, _) => freshVar(tv.prov, S(tv), tv.nameHint)(tv.level)
+        // case (_, tv, _) => freshVar(tv.prov, S(tv), tv.nameHint)(tv.level)
+        case (_, tv, _) => freshVar(tv.prov, S(tv), tv.nameHint)(lvl)
     })).map { case ((tn, _tv, vi), targ) =>
       val tv = (targ match {
         case tv: TV => 
@@ -1577,7 +1578,9 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         case _ =>
           println(s"Assigning ${tn.name} :: ${_tv} := $targ where ${targ.showBounds}")
           val tv =
-            freshVar(_tv.prov, S(_tv), _tv.nameHint)(targ.level)
+            // freshVar(_tv.prov, S(_tv), _tv.nameHint)(targ.level)
+            // freshVar(_tv.prov, S(_tv), _tv.nameHint)(lvl)
+            freshVar(_tv.prov, S(_tv), _tv.nameHint)(lvl max targ.level) // FIXME level in type simplifier is sometimes too low?
           println(s"Set ${tv} ~> ${_tv}")
           assert(tv.assignedTo.isEmpty)
           tv.assignedTo = S(targ)

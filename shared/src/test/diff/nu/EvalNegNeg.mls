@@ -13,7 +13,7 @@ mixin EvalBase {
       Lit(n) then n: Int
       Add(l, r) then this.eval(l) + this.eval(r)
 }
-//│ mixin EvalBase() {
+//│ mixin EvalBase {
 //│   this: {eval: 'lhs -> Int}
 //│   fun eval: (Add['lhs] | Lit) -> Int
 //│ }
@@ -28,7 +28,7 @@ mixin EvalNeg {
     if e is Neg(d) then 0 - this.eval(d)
     else super.eval(e)
 }
-//│ mixin EvalNeg() {
+//│ mixin EvalNeg {
 //│   super: {eval: 'a -> 'b}
 //│   this: {eval: 'expr -> Int}
 //│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)
@@ -40,7 +40,7 @@ mixin EvalNegNeg {
     if e is Neg(Neg(d)) then this.eval(d)
     else super.eval(e)
 }
-//│ mixin EvalNegNeg() {
+//│ mixin EvalNegNeg {
 //│   super: {eval: (Neg[nothing] | 'a) -> 'b}
 //│   this: {eval: 'expr -> 'b}
 //│   fun eval: (Neg[Neg['expr] | Object & ~#Neg] | Object & 'a & ~#Neg) -> 'b
@@ -712,14 +712,16 @@ module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ ======== TYPED ========
 //│ class TestLang
 //│   this: ⊤ 
-//│ TV uses: HashMap(α240 -> 1)
-//│ Making where clause for module TestLang() {fun eval: 'a -> Int} (List(α240))
-//│ => List((α240,Bounds(Bot,Union(AppliedType(TypeName(Neg),List(α241)),Inter(Inter(TypeName(Object),α242),Neg(TypeTag(Neg)))))))
+//│ TestLang quantifies Set(α113_240', A76_241', α123_242')
+//│ eval quantifies Set()
+//│ TV uses: HashMap(α241 -> 1, α240 -> 1, α242 -> 1)
 //│ module TestLang {
 //│   fun eval: 'a -> Int
 //│ }
 //│ where
 //│   'a <: Neg['A] | Object & 'b & ~#Neg
+//│   'A <: Neg['a & 'A] | Neg['A] & ~#Neg | Object & 'b & ~#Neg
+//│   'b <: Add['a] | Lit | Neg['a]
 
 
 fun mk(n) = if n is

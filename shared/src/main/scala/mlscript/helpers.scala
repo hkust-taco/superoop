@@ -153,7 +153,7 @@ trait TypeLikeImpl extends Located { self: TypeLike =>
           case (N, _) => "???"
           case (S(nme), rhs) => nme.name
         }.mkString(", ")})"
-        case _ => ""
+        case N => ""
       }}${sig.fold("")(": " + _.showIn(bodyCtx, 0))}${parents match {
         case Nil => ""
         case ps => " extends " + ps.mkString(", ") // TODO pp parent terms...

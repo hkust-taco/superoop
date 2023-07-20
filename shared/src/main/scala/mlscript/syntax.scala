@@ -152,6 +152,8 @@ final case class Constrained(base: TypeLike, tvBounds: Ls[TypeVar -> Bounds], wh
 object Constrained {
   def mk(base: Type, tvBounds: Ls[TypeVar -> Bounds]): Type =
     if (tvBounds.isEmpty) base else new Constrained(base, tvBounds, Nil)
+  def mk(base: TypeLike, tvBounds: Ls[TypeVar -> Bounds]): TypeLike =
+    if (tvBounds.isEmpty) base else new Constrained(base, tvBounds, Nil)
 }
 
 final case class Field(in: Opt[Type], out: Type)         extends FieldImpl

@@ -6,7 +6,7 @@
 mixin BaseTest[A] {
   fun test(x: A) = x
 }
-//│ mixin BaseTest[A]() {
+//│ mixin BaseTest[A] {
 //│   fun test: (x: A,) -> A
 //│ }
 
@@ -25,7 +25,7 @@ mixin Test[A] {
   fun bar: (A -> A) -> (A -> A)
   fun bar = id
 }
-//│ mixin Test[A]() {
+//│ mixin Test[A] {
 //│   fun bar: (A -> A) -> A -> A
 //│   fun foo: A -> A
 //│ }
@@ -115,7 +115,7 @@ mixin Test[A] {
   fun bar = (this.arg, this.arg)
   fun baz = foo(this.arg)
 }
-//│ mixin Test[A]() {
+//│ mixin Test[A] {
 //│   this: {arg: A & 'a}
 //│   fun bar: (A, A,)
 //│   fun baz: 'a
