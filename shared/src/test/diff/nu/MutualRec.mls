@@ -45,8 +45,6 @@ fun foo = {x: foo}
 //│ fun foo: forall 'foo. 'foo
 //│   where
 //│     'foo :> {x: 'foo}
-//│ where
-//│   'foo :> {x: 'foo}
 
 
 fun foo = {x: bar}
@@ -57,16 +55,12 @@ fun bar = {y: foo}
 //│ fun bar: forall 'foo. {y: 'foo}
 //│   where
 //│     'foo :> {x: {y: 'foo}}
-//│ where
-//│   'foo :> {x: {y: 'foo}}
 
 :re
 foo
 //│ forall 'foo. 'foo
 //│   where
 //│     'foo :> {x: {y: 'foo}}
-//│ where
-//│   'foo :> {x: {y: 'foo}}
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -77,8 +71,6 @@ foo
 //│ forall 'foo. {x: {y: 'foo}}
 //│   where
 //│     'foo :> {x: {y: 'foo}}
-//│ where
-//│   'foo :> {x: {y: 'foo}}
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -110,8 +102,6 @@ fun bar(b) = foo(b)
 //│ fun bar: forall 'a 'b. 'a -> 'b
 //│   where
 //│     'b :> {h: 'a, t: 'b}
-//│ where
-//│   'b :> {h: 'a, t: 'b}
 
 :ns
 foo
@@ -120,10 +110,6 @@ foo
 //│     'a <: 'c
 //│     'c <: 'a
 //│     'b :> {h: 'a, t: 'b}
-//│ where
-//│   'b :> {h: 'a, t: 'b}
-//│   'a <: 'c
-//│   'c <: 'a
 //│ res
 //│     = [Function: foo3]
 
@@ -138,9 +124,6 @@ fun bar(b) = {h2: b, t2: foo(b)}
 //│   where
 //│     'b :> {h1: 'a, t1: 'c}
 //│     'c :> {h2: 'a, t2: 'b}
-//│ where
-//│   'b :> {h1: 'a, t1: 'c}
-//│   'c :> {h2: 'a, t2: 'b}
 
 
 
@@ -184,7 +167,7 @@ module Test1_2 {
   fun b = Test1_1.a
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.184: 	  fun b = Test1_1.a
+//│ ║  l.167: 	  fun b = Test1_1.a
 //│ ╙──       	                 ^^
 //│ module Test1_1 {
 //│   fun a: error
@@ -209,7 +192,7 @@ class Test1_2 {
   fun b = Test1_1().a
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.209: 	  fun b = Test1_1().a
+//│ ║  l.192: 	  fun b = Test1_1().a
 //│ ╙──       	                   ^^
 //│ class Test1_1 {
 //│   fun a: error
@@ -232,7 +215,7 @@ module Test2_2 {
   fun e = Test2_1.n
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.231: 	  fun c = Test2_1.a
+//│ ║  l.214: 	  fun c = Test2_1.a
 //│ ╙──       	                 ^^
 //│ module Test2_1 {
 //│   fun a: 123 | error

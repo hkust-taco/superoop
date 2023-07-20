@@ -1372,8 +1372,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       })
     }
     def goDecl(d: NuMember)(implicit ectx: ExpCtx): NuDecl = {
-      val quantified = d.quantifiedVars
+      val quantified = d.quantifiedVars.toArray.sortInPlace()
       println(s"${d.name} quantifies $quantified")
+      
+      // TODO factor
       lazy val bs = {
         val res = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
         res
@@ -1564,6 +1566,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
       case OtherTypeLike(tu) =>
         val mems = tu.implementedMembers.map(goDecl)
         val res = tu.result.map(go)
+        /* 
         val allResults = mems ++ res
         // // val allTVs = (mems.iterator ++ res).flatMap(_.freeTypeVariables)
         // val allTVs = allResults.iterator.flatMap(_.freeTypeVariables)
@@ -1602,6 +1605,18 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         // val restBounds = bounds.filter(tvb => tvUses(tvb._1) > 1)
         val restBounds = bounds.filter(tvb => tvUses.getOrElse(tvb._1, 0) > 1)
         if (restBounds.isEmpty) result else Constrained(result, restBounds, Nil)
+        */
+        // val result = Signature(mems, res)
+        // if (bounds.isEmpty) result else Constrained(result, bounds, Nil)
+        
+        // val allResults = mems ++ res
+        // val quantified = allResults.flatMap(_.varsBetween(MinLevel, MaxLevel)).toSet
+        // ???
+        val result = Signature(mems, res)
+        val quantified = (tu.implementedMembers.iterator ++ tu.result).flatMap(_.varsBetween(MinLevel-1, MaxLevel)).toArray.distinct.sortInPlace()
+        println(s"Globally-quantified vars: $quantified")
+        val bounds = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+        if (bounds.isEmpty) result else Constrained(result, bounds, Nil)
     }
     
   }

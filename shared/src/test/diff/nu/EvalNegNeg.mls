@@ -712,9 +712,9 @@ module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ ======== TYPED ========
 //│ class TestLang
 //│   this: ⊤ 
-//│ TestLang quantifies Set(α113_240', A76_241', α123_242')
-//│ eval quantifies Set()
-//│ TV uses: HashMap(α241 -> 1, α240 -> 1, α242 -> 1)
+//│ TestLang quantifies ArraySeq(α113_240', A76_241', α123_242')
+//│ eval quantifies ArraySeq()
+//│ Globally-quantified vars: ArraySeq()
 //│ module TestLang {
 //│   fun eval: 'a -> Int
 //│ } where
@@ -730,8 +730,6 @@ fun mk(n) = if n is
 //│ fun mk: forall 'E. (0 | 1 | Int & ~0 & ~1) -> 'E
 //│   where
 //│     'E :> Add['E] | Lit | Neg['E]
-//│ where
-//│   'E :> Add['E] | Lit | Neg['E]
 
 TestLang.eval(mk(0))
 //│ Int

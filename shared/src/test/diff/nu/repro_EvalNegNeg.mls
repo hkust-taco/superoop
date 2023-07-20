@@ -30,8 +30,8 @@ module TestLang extends EvalBase
 //│     where
 //│       'E <: 'a
 //│ } where
-//│     'a <: Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]
 //│     'E <: 'a
+//│     'a <: Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]
 
 
 fun mk(n) = if n is
@@ -41,8 +41,6 @@ fun mk(n) = if n is
 //│ fun mk: forall 'E. Object -> 'E
 //│   where
 //│     'E :> Add['E] | Lit | Neg['E]
-//│ where
-//│   'E :> Add['E] | Lit | Neg['E]
 
 :stats
 TestLang.eval(mk(0))

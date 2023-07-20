@@ -416,8 +416,6 @@ TestLang.eval(mk(0))
 //│ fun mk: forall 'E. Object -> 'E
 //│   where
 //│     'E :> Add['E] | Lit | Neg['E]
-//│ where
-//│   'E :> Add['E] | Lit | Neg['E]
 //│ Int
 //│ // Prelude
 //│ class TypingUnit6 {}
@@ -581,7 +579,7 @@ mixin Base {
   fun x = y
 }
 //│ ╔══[ERROR] identifier not found: y
-//│ ║  l.581: 	  fun x = y
+//│ ║  l.579: 	  fun x = y
 //│ ╙──       	          ^
 //│ mixin Base {
 //│   fun x: error

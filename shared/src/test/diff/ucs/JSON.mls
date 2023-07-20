@@ -107,8 +107,6 @@ fun listJoin(xs, sep) =
 //│ fun listConcat: forall 'A 'A0 'a. (Cons['A] | Nil, List['A0] & 'a,) -> (Cons['A0] | 'a)
 //│   where
 //│     'A <: 'A0
-//│ where
-//│   'A <: 'A0
 //│ fun listJoin: forall 'A1. (Cons['A1] | Nil, Str,) -> Str
 
 type TreeMap[A] = Node[A] | Empty

@@ -114,7 +114,6 @@ Test1.eval(Nil(), Var("a"))
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Var
-//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Nil(), Abs("b", Var("a")))
 //│ forall 'a. 'A | 'a
@@ -122,7 +121,6 @@ Test1.eval(Nil(), Abs("b", Var("a")))
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Var
-//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Cons(("c", Var("d")), Nil()), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
@@ -130,7 +128,6 @@ Test1.eval(Cons(("c", Var("d")), Nil()), App(Abs("b", Var("b")), Var("c")))
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Var
-//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
@@ -138,7 +135,6 @@ Test1.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("b", Var("b")), Var("
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Abs[Var] | Var
-//│   'a :> App['A] | Abs['A]
 
 class Numb(n: Int)
 class Add<out A>(l: A, r: A)
@@ -206,7 +202,6 @@ Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), Abs("a", Var("a")))
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Abs[Var] | Numb | Var
-//│   'a :> App['A] | Abs['A]
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("a", Var("a")), Add(Numb(1), Var("c"))))
 //│ forall 'a. 'A | 'a
@@ -214,7 +209,6 @@ Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("a", Var("a")), Add(N
 //│     'a :> App['A] | Abs['A]
 //│ where
 //│   'A :> 'a | Abs[Var] | Add[Numb | Var] | Numb | Var
-//│   'a :> App['A] | Abs['A]
 
 module Test3 extends EvalVar, EvalLambda, EvalExpr
 //│ module Test3 {

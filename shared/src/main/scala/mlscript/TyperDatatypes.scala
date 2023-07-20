@@ -137,6 +137,7 @@ abstract class TyperDatatypes extends TyperHelpers { Typer: Typer =>
   }
   sealed abstract class TypeLike extends Typeish with TypeLikeImpl {
     def unwrapProvs: TypeLike
+    def varsBetween(lb: Level, ub: Level): Set[TV]
   }
   type TL = TypeLike
   
