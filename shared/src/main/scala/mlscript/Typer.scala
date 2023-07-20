@@ -1347,6 +1347,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
     val expandType = ()
     
     var bounds: Ls[TypeVar -> Bounds] = Nil
+    var boundsMap: MutMap[TV, Bounds] = MutMap.empty
     
     val seenVars = mutable.Set.empty[TV]
     
@@ -1437,11 +1438,16 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
               case S(ty) =>
                 val b = go(ty)
                 bounds ::= nv -> Bounds(b, b)
+                assert(!boundsMap.contains(tv))
+                boundsMap += tv -> Bounds(b, b)
               case N =>
                 val l = go(tv.lowerBounds.foldLeft(BotType: ST)(_ | _))
                 val u = go(tv.upperBounds.foldLeft(TopType: ST)(_ &- _))
-                if (l =/= Bot || u =/= Top)
+                if (l =/= Bot || u =/= Top) {
                   bounds ::= nv -> Bounds(l, u)
+                  assert(!boundsMap.contains(tv))
+                  boundsMap += tv -> Bounds(l, u)
+                }
             }
           }
           nv
@@ -1490,10 +1496,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         case TypeBounds(lb, ub) => Bounds(go(lb), go(ub))
         case Without(base, names) => Rem(go(base), names.toList)
         case Overload(as) => as.map(go).reduce(Inter)
-        case PolymorphicType(lvl, bod) =>
+        case pt @ PolymorphicType(lvl, bod) =>
+          // val quantified = pt.varsBetween(MinLevel, MaxLevel)
+          val quantified = pt.quantifiedVars.toArray.sortInPlace()
+          println(s"$pt quantifies $quantified")
+          
           val boundsSize = bounds.size
           val b = go(bod)
-          
           // * This is not completely correct: if we've already traversed TVs as part of a previous sibling PolymorphicType,
           // * the bounds of these TVs won't be registered again...
           // FIXME in principle we'd want to compute a transitive closure...
@@ -1504,8 +1513,15 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
             newBounds.iterator.map(_._1) ++
             newBounds.iterator.flatMap(_._2.freeTypeVariables)
           val fvars = qvars.filter(tv => ftvs.contains(tv.asTypeVar))
+          
           if (fvars.isEmpty) b else
             PolyType(fvars.map(_.asTypeVar pipe (R(_))).toList, b)
+          // val bs = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+          
+          // if (quantified.isEmpty) b else
+          //   PolyType(quantified.map(_.asTypeVar pipe (R(_))).toList,
+          //     Constrained.mk(b, bs))
+          
         case ConstrainedType(cs, bod) =>
           val (ubs, others1) = cs.groupMap(_._1)(_._2).toList.partition(_._2.sizeIs > 1)
           val lbs = others1.mapValues(_.head).groupMap(_._2)(_._1).toList
@@ -1553,8 +1569,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
         val mems2 = mems.map {
           case fd: NuFunDef =>
             fd.copy(whereClause = mkWhereClause(fd))(fd.declareLoc, fd.signature, fd.outer)
-          // case td: NuTypeDef =>
-          //   td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
+          case td: NuTypeDef =>
+            td.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
           case td: NuTypeDef =>
             td//.copy(whereClause = mkWhereClause(td))(td.declareLoc, td.abstractLoc)
         }

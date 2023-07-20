@@ -1,0 +1,27 @@
+:NewDefs
+
+
+module Test {
+  fun foo(e) = [e, x => [id(x), x + 1]]
+}
+//│ module Test {
+//│   fun foo: forall 'a. 'a -> ('a, forall 'b. (Int & 'b) -> ('b, Int,),)
+//│ }
+
+// :d
+module Test {
+  fun foo(e) =
+    fun f(x) = [f(x.u), x.u]
+    [e, f]
+}
+//│ module Test {
+//│   fun foo: forall 'a. 'a -> ('a, forall 'b 'u 'c. 'b -> 'c
+//│     where
+//│       'b <: {u: 'b & 'u}
+//│       'c :> ('c, 'u,),)
+//│ }
+//│ where
+//│   'c :> ('c, 'u,)
+//│   'b <: {u: 'b & 'u}
+
+

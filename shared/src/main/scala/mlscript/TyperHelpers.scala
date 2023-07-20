@@ -952,6 +952,9 @@ abstract class TyperHelpers { Typer: Typer =>
   
   trait PolymorphicTypeImpl { self: PolymorphicType =>
     
+    /** Note: this assumes a generalized type is essentially sealed/frozen and won't get bounds on quantified variables added later. */
+    lazy val quantifiedVars: Set[TV] = body.varsBetween(polymLevel, MaxLevel)
+    
     def instantiate(implicit ctx:Ctx, shadows: Shadows): SimpleType = {
       implicit val state: MutMap[TV, ST] = MutMap.empty
       println(s"INST [${polymLevel}]   $this")
