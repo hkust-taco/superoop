@@ -105,15 +105,19 @@ class Test4[A, B]
 fun x -> fun y -> x.Bar4 y id
 //│ res: 'a -> (forall 'A 'B. ('A -> 'B) -> 'B
 //│   where
-//│     'a <: Test4['A, 'B])
+//│     'a <: Test4['A, 'B]
+//│ where
+//│   'A :> forall 'b. 'b -> 'b)
 //│ where
 //│   'A :> forall 'b. 'b -> 'b
 //│    = [Function: res]
 
 fun x -> fun y -> x.Baz4 y
-//│ res: 'a -> (forall 'B 'A. ('A & 'B) -> 'B
+//│ res: 'a -> (forall 'A 'B. ('A & 'B) -> 'B
 //│   where
-//│     'a <: Test4['A, 'B])
+//│     'a <: Test4['A, 'B]
+//│ where
+//│   'A <: 'B)
 //│ where
 //│   'A <: 'B
 //│    = [Function: res]

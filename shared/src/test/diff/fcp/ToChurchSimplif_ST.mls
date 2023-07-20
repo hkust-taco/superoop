@@ -37,13 +37,21 @@ def s n f x = (n f x)
 
 :ns
 s
-//│ res: forall 'a 'b 'c 'd 'e. 'c -> (forall 'f. 'f -> (forall 'g 'h. 'g -> 'h))
+//│ res: forall 'a 'g 'h 'e 'f. 'a -> (forall 'b. 'b -> (forall 'c 'd. 'c -> 'd
 //│   where
-//│     'h :> 'd
-//│     'g <: 'a
-//│     'f <: 'b
-//│     'c <: 'b -> 'e
-//│     'e <: 'a -> 'd
+//│     'c <: 'e
+//│     'd :> 'f)
+//│ where
+//│   'b <: 'g)
+//│ where
+//│   'a <: 'g -> 'h
+//│   'h <: 'e -> 'f
+//│ where
+//│   'd :> 'f
+//│   'c <: 'e
+//│   'b <: 'g
+//│   'a <: 'g -> 'h
+//│   'h <: 'e -> 'f
 //│    = [Function: s]
 
 :e // * Works with CT
@@ -52,7 +60,7 @@ succ = s
 //│   <:  succ:
 //│ ChurchInt -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.50: 	succ = s
+//│ ║  l.58: 	succ = s
 //│ ║        	^^^^^^^^
 //│ ╟── type variable `'N` leaks out of its scope
 //│ ║  l.10: 	type ChurchInt = forall 'N. ('N -> 'N) -> ('N -> 'N)
@@ -65,7 +73,7 @@ succ = s
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.50: 	succ = s
+//│ ║  l.58: 	succ = s
 //│ ╙──      	       ^
 //│     = [Function: s]
 
@@ -75,7 +83,7 @@ succ n f = n f
 //│   <:  succ:
 //│ ChurchInt -> ChurchInt
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.73: 	succ n f = n f
+//│ ║  l.81: 	succ n f = n f
 //│ ║        	^^^^^^^^^^^^^^
 //│ ╟── type variable `'N` leaks out of its scope
 //│ ║  l.10: 	type ChurchInt = forall 'N. ('N -> 'N) -> ('N -> 'N)
@@ -85,7 +93,7 @@ succ n f = n f
 //│ ║        	                             ^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this function:
-//│ ║  l.73: 	succ n f = n f
+//│ ║  l.81: 	succ n f = n f
 //│ ╙──      	       ^^^^^^^
 //│     = [Function: succ2]
 
@@ -105,17 +113,17 @@ succ_min n f = n f
 //│   <:  succ_min:
 //│ (forall 'N. 'N -> 'N) -> (forall 'M. 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.103: 	succ_min n f = n f
+//│ ║  l.111: 	succ_min n f = n f
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
-//│ ║  l.98: 	def succ_min : (forall 'N. ('N -> 'N)) -> (forall 'M. ('M -> 'M))
-//│ ║        	                                                       ^^
+//│ ║  l.106: 	def succ_min : (forall 'N. ('N -> 'N)) -> (forall 'M. ('M -> 'M))
+//│ ║         	                                                       ^^
 //│ ╟── back into type variable `'M`
-//│ ║  l.98: 	def succ_min : (forall 'N. ('N -> 'N)) -> (forall 'M. ('M -> 'M))
-//│ ║        	                                                             ^^
+//│ ║  l.106: 	def succ_min : (forall 'N. ('N -> 'N)) -> (forall 'M. ('M -> 'M))
+//│ ║         	                                                             ^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this application:
-//│ ║  l.103: 	succ_min n f = n f
+//│ ║  l.111: 	succ_min n f = n f
 //│ ╙──       	               ^^^
 //│         = [Function: succ_min]
 
@@ -134,7 +142,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.132: 	to_church = to_ch
+//│ ║  l.140: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -147,10 +155,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.126: 	  else s (to_ch n)
+//│ ║  l.134: 	  else s (to_ch n)
 //│ ║         	       ^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.132: 	to_church = to_ch
+//│ ║  l.140: 	to_church = to_ch
 //│ ║         	            ^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.10: 	type ChurchInt = forall 'N. ('N -> 'N) -> ('N -> 'N)
@@ -172,7 +180,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.170: 	to_church = to_ch
+//│ ║  l.178: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -185,10 +193,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.164: 	  else s (to_ch n)
+//│ ║  l.172: 	  else s (to_ch n)
 //│ ║         	       ^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.170: 	to_church = to_ch
+//│ ║  l.178: 	to_church = to_ch
 //│ ║         	            ^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.10: 	type ChurchInt = forall 'N. ('N -> 'N) -> ('N -> 'N)
@@ -210,7 +218,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.208: 	to_church = to_ch
+//│ ║  l.216: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -223,10 +231,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.202: 	  else s (to_church n)
+//│ ║  l.210: 	  else s (to_church n)
 //│ ║         	       ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.208: 	to_church = to_ch
+//│ ║  l.216: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch and zero are not implemented
@@ -245,7 +253,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.243: 	to_church = to_ch
+//│ ║  l.251: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -258,10 +266,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.237: 	  else s (to_church n)
+//│ ║  l.245: 	  else s (to_church n)
 //│ ║         	       ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.243: 	to_church = to_ch
+//│ ║  l.251: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch, to_church, to_ch and zero are not implemented
@@ -280,7 +288,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.278: 	to_church = to_ch
+//│ ║  l.286: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -293,10 +301,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.272: 	  else s (to_church n)
+//│ ║  l.280: 	  else s (to_church n)
 //│ ║         	       ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.278: 	to_church = to_ch
+//│ ║  l.286: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch and zero are not implemented
@@ -314,7 +322,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.312: 	to_church = to_ch
+//│ ║  l.320: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -327,10 +335,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.306: 	  s (to_church n)
+//│ ║  l.314: 	  s (to_church n)
 //│ ║         	  ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.312: 	to_church = to_ch
+//│ ║  l.320: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch, to_church, to_ch and zero are not implemented
@@ -348,7 +356,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.346: 	to_church = to_ch
+//│ ║  l.354: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -361,10 +369,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.340: 	  s (to_church n)
+//│ ║  l.348: 	  s (to_church n)
 //│ ║         	  ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.346: 	to_church = to_ch
+//│ ║  l.354: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch, to_church, to_ch, to_church, to_ch and zero are not implemented
@@ -382,7 +390,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.380: 	to_church = to_ch
+//│ ║  l.388: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -395,10 +403,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.374: 	  s (to_church n)
+//│ ║  l.382: 	  s (to_church n)
 //│ ║         	  ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.380: 	to_church = to_ch
+//│ ║  l.388: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch, to_church, to_ch, to_church, to_ch, to_church, to_ch and zero are not implemented
@@ -419,7 +427,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.417: 	to_church = to_ch
+//│ ║  l.425: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'M` leaks out of its scope
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))
@@ -432,10 +440,10 @@ to_church = to_ch
 //│ ║  l.33: 	def s n f x = (n f x)
 //│ ║        	        ^^^^^^^^^^^^^
 //│ ╟── • this application:
-//│ ║  l.411: 	  s (to_church n)
+//│ ║  l.419: 	  s (to_church n)
 //│ ║         	  ^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.417: 	to_church = to_ch
+//│ ║  l.425: 	to_church = to_ch
 //│ ╙──       	            ^^^^^
 //│          = <no result>
 //│            to_ch, to_church, to_ch, to_church, to_ch, to_church, to_ch, to_church, to_ch and zero are not implemented
@@ -453,7 +461,7 @@ to_church = to_ch
 //│   <:  to_church:
 //│ int -> (forall 'M. ('M -> 'M) -> 'M -> 'M)
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.451: 	to_church = to_ch
+//│ ║  l.459: 	to_church = to_ch
 //│ ║         	^^^^^^^^^^^^^^^^^
 //│ ╟── type `int` is not a function
 //│ ║  l.20: 	def to_church: int -> (forall 'M. ('M -> 'M) -> ('M -> 'M))

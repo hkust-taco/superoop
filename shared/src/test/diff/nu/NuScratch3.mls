@@ -1,0 +1,82 @@
+:NewDefs
+
+
+class Add[E](lhs: E, rhs: E)
+class Lit(n: Int)
+class Neg[E](expr: E)
+// 
+let add11 = Add(Lit(1), Lit(2))
+let add2negadd11 = Add(Lit(2), Neg(add11))
+// 
+mixin EvalAddLit {
+  fun eval(e) =
+    if e is
+      Lit(n) then n
+      Add(l, r) then this.eval(l) + this.eval(r)
+}
+mixin EvalNeg {
+  fun eval(override Neg(d)) = 0 - this.eval(d)
+}
+// 
+module TestLang extends EvalAddLit, EvalNeg
+// 
+let res = TestLang.eval(add2negadd11)
+//│ class Add[E](lhs: E, rhs: E)
+//│ class Lit(n: Int)
+//│ class Neg[E](expr: E)
+//│ let add11: 'E
+//│ let add2negadd11: Add['E0]
+//│ mixin EvalAddLit {
+//│   this: {eval: 'lhs -> Int}
+//│   fun eval: (Add['lhs] | Lit) -> Int
+//│ }
+//│ mixin EvalNeg {
+//│   super: {eval: 'a -> 'b}
+//│   this: {eval: 'expr -> Int}
+//│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)
+//│ }
+//│ module TestLang {
+//│   fun eval: (Neg['E1] | Object & 'c & ~#Neg) -> Int
+//│ } where
+//│     'E1 <: 'd
+//│     'd <: Neg['E1] | Object & 'c & ~#Neg
+//│     'c <: Add['d] | Lit
+//│ let res: Int
+//│ where
+//│   'E :> Add['E0]
+//│   'E0 :> Lit | Neg['E]
+//│ add11
+//│       = Add {}
+//│ add2negadd11
+//│              = Add {}
+//│ res
+//│     = -1
+
+
+class Add[E](lhs: E, rhs: E)
+class Lit(n: Int)
+// 
+let add11 = Add(Lit(1), Lit(2))
+//│ class Add[E](lhs: E, rhs: E)
+//│ class Lit(n: Int)
+//│ let add11: Add[Lit]
+//│ add11
+//│       = Add {}
+
+
+:re
+let a = error : MutArray['A]
+a : Array[Int]
+//│ let a: MutArray['A]
+//│ Array[Int]
+//│ where
+//│   'A <: Int
+//│ a
+//│ Runtime error:
+//│   Error: unexpected runtime error
+//│ res
+//│ Runtime error:
+//│   ReferenceError: a is not defined
+
+
+

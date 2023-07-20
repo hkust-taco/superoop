@@ -28,7 +28,7 @@ mixin EvalLambda {
         this.eval(Cons((x, error), sub), error)
         error
 }
-//│ mixin EvalLambda() {
+//│ mixin EvalLambda {
 //│   this: {eval: (Cons[(string, nothing,) | 'A], nothing,) -> anything}
 //│   fun eval: (Cons['A] | Nil, Abs[anything],) -> nothing
 //│ }

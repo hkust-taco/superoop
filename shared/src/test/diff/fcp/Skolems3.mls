@@ -126,6 +126,9 @@ def baz x =
 //│   where
 //│     's :> ??a0
 //│        <: ??a
+//│ where
+//│   's :> ??a0
+//│      <: ??a
 //│    = [Function: baz3]
 
 
@@ -158,19 +161,19 @@ id2 = id
 def bar y =
   (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.159: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
+//│ ║  l.162: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
 //│ ║         	  ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type `'a` is not a function
-//│ ║  l.159: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
+//│ ║  l.162: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
 //│ ║         	                                       ^^
 //│ ╟── Note: constraint arises from function type:
-//│ ║  l.148: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
+//│ ║  l.151: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
 //│ ║         	                     ^^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.159: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
+//│ ║  l.162: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
 //│ ║         	                   ^
 //│ ╟── Note: quantified type variable 'a is defined at:
-//│ ║  l.159: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
+//│ ║  l.162: 	  (fun x -> y (id2 x, x)) : forall 'a. 'a -> 'a
 //│ ╙──       	                                   ^^
 //│ bar: ((forall 't. 't -> 't, ??a,) -> ??a0) -> (forall 'a. 'a -> 'a)
 //│    = [Function: bar10]
@@ -179,16 +182,16 @@ def bar y =
 def bar y =
   (fun x -> y (id2 x, x)) : forall 'a. ('a -> 'a) -> ('a -> 'a)
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.180: 	  (fun x -> y (id2 x, x)) : forall 'a. ('a -> 'a) -> ('a -> 'a)
+//│ ║  l.183: 	  (fun x -> y (id2 x, x)) : forall 'a. ('a -> 'a) -> ('a -> 'a)
 //│ ║         	  ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type `'s` does not match type `'a`
-//│ ║  l.148: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
+//│ ║  l.151: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
 //│ ║         	                     ^^
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.180: 	  (fun x -> y (id2 x, x)) : forall 'a. ('a -> 'a) -> ('a -> 'a)
+//│ ║  l.183: 	  (fun x -> y (id2 x, x)) : forall 'a. ('a -> 'a) -> ('a -> 'a)
 //│ ║         	                                        ^^
 //│ ╟── Note: quantified type variable 's is defined at:
-//│ ║  l.148: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
+//│ ║  l.151: 	def id2: (forall 's. 's -> 's) -> (forall 't. 't -> 't)
 //│ ╙──       	                 ^^
 //│ bar: ((forall 't. 't -> 't, ??a -> ??a0,) -> ??a0 -> ??a) -> (forall 'a. ('a -> 'a) -> 'a -> 'a)
 //│    = [Function: bar11]
@@ -212,16 +215,16 @@ def bar y =
 def baz x =
   (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
 //│ ╔══[ERROR] Type error in type ascription
-//│ ║  l.213: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.216: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
 //│ ║         	  ^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'a` leaks out of its scope
-//│ ║  l.213: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.216: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
 //│ ║         	                                          ^^
 //│ ╟── back into type variable `'a`
-//│ ║  l.213: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.216: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
 //│ ║         	                                    ^^
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.213: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.216: 	  (x: ('s -> 's) -> 0): forall 'a. ('a -> 'a) -> 0
 //│ ╙──       	             ^^
 //│ baz: (((??a & 's) -> ('s | ??a0)) -> 0) -> (forall 'a. ('a -> 'a) -> 0)
 //│    = [Function: baz4]
@@ -232,13 +235,13 @@ def boo =
   let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
   in 0
 //│ ╔══[ERROR] Type error in type ascription
-//│ ║  l.232: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
+//│ ║  l.235: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
 //│ ║         	            ^^^^^^^^^^^^^^
 //│ ╟── type variable `'a` leaks out of its scope
-//│ ║  l.232: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
+//│ ║  l.235: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
 //│ ║         	                                       ^^
 //│ ╟── back into type variable `'a`
-//│ ║  l.232: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
+//│ ║  l.235: 	  let tmp = (id: 's -> 's): forall 'a. 'a -> 'a
 //│ ╙──       	                                             ^^
 //│ boo: 0
 //│    = [Function: boo]
@@ -260,16 +263,16 @@ def boo x =
   let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
   in 0
 //│ ╔══[ERROR] Type error in type ascription
-//│ ║  l.260: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.263: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
 //│ ║         	            ^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'a` leaks out of its scope
-//│ ║  l.260: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.263: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
 //│ ║         	                                                     ^^
 //│ ╟── back into type variable `'a`
-//│ ║  l.260: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.263: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
 //│ ║         	                                               ^^
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.260: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
+//│ ║  l.263: 	  let tmp = (x: ('s -> 's) -> 't): forall 'a. ('a -> 'a) -> 0
 //│ ╙──       	                       ^^
 //│ boo: (((??a & 's) -> ('s | ??a0)) -> 0) -> 0
 //│    = [Function: boo3]

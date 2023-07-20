@@ -4,7 +4,7 @@
 class Ls[A]
   method HeadTail: (A, Ls[A]) | undefined
 //│ Defined class Ls[+A]
-//│ Declared Ls.HeadTail: Ls['A] -> (('A, Ls['A],) | undefined)
+//│ Declared Ls.HeadTail: Ls['A] -> (undefined | ('A, Ls['A],))
 
 // * Note that a more structural type such as this will raise cycle errors due to `:NoRecursiveTypes`
 // class Ls[A]: { head: A | undefined; tail: Ls[A] | undefined }
@@ -74,6 +74,8 @@ def build0 (g: forall 'b. ('a -> 'b -> 'b) -> 'b) = g (fun x -> fun y -> single 
 //│ build0: (forall 'b. ('a -> 'b -> 'b) -> 'b) -> 'c
 //│   where
 //│     'c :> Ls[('a, 'c,)]
+//│ where
+//│   'c :> Ls[('a, 'c,)]
 //│       = <no result>
 //│         single is not implemented
 
@@ -179,13 +181,13 @@ build: forall 'a. (forall 'b. ('a -> 'b -> 'b) -> 'b -> 'b) -> Ls['a]
 :e
 build: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.180: 	build: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
+//│ ║  l.182: 	build: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
 //│ ║         	^^^^^
 //│ ╟── type `Ls['a]` does not match type `'b`
-//│ ║  l.180: 	build: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
+//│ ║  l.182: 	build: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
 //│ ║         	               ^^^^^^
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.137: 	def build = fun (g: forall 'b. ('a -> 'b -> 'b) -> 'b -> 'b) -> g (fun x -> fun xs -> cons (x, xs)) nil
+//│ ║  l.139: 	def build = fun (g: forall 'b. ('a -> 'b -> 'b) -> 'b -> 'b) -> g (fun x -> fun xs -> cons (x, xs)) nil
 //│ ╙──       	                                      ^^
 //│ res: (('a -> Ls['a] -> Ls['a]) -> Ls['a] -> Ls['a]) -> Ls['a]
 //│    = [Function: build]
@@ -259,16 +261,16 @@ b g x = build_ g x
 //│   <:  b:
 //│ (forall 'b. ('a -> 'b -> 'b) -> 'b -> 'b) -> Ls['a]
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.257: 	b g x = build_ g x
+//│ ║  l.259: 	b g x = build_ g x
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type `Ls['a]` is not a function
 //│ ║  l.22: 	def nil: Ls['a]
 //│ ║        	         ^^^^^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.257: 	b g x = build_ g x
+//│ ║  l.259: 	b g x = build_ g x
 //│ ║         	        ^^^^^^^^^^
 //│ ╟── from application:
-//│ ║  l.198: 	def build_ = fun g -> g (fun x -> fun xs -> cons (x, xs)) nil
+//│ ║  l.200: 	def build_ = fun g -> g (fun x -> fun xs -> cons (x, xs)) nil
 //│ ╙──       	                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│  = [Function: b3]
 

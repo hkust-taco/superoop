@@ -158,6 +158,8 @@ def someRec: { y: 'a } as 'a
 //│ someRec: 'a
 //│   where
 //│     'a :> {y: 'a}
+//│ where
+//│   'a :> {y: 'a}
 //│        = <missing implementation>
 
 :e
@@ -185,6 +187,8 @@ def someRec: { x: 'a; y: 'a } as 'a
 //│ someRec: 'a
 //│   where
 //│     'a :> {x: 'a, y: 'a}
+//│ where
+//│   'a :> {x: 'a, y: 'a}
 //│        = <missing implementation>
 
 :e
@@ -193,7 +197,7 @@ someRec: BadRec
 //│ ║  l.+1: 	someRec: BadRec
 //│ ║        	^^^^^^^
 //│ ╟── type `{x: 'a, y: 'a}` does not match type `'a0`
-//│ ║  l.184: 	def someRec: { x: 'a; y: 'a } as 'a
+//│ ║  l.186: 	def someRec: { x: 'a; y: 'a } as 'a
 //│ ║         	             ^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.142: 	type BadRec = { x: 'a; y: BadRec }
@@ -246,7 +250,7 @@ type ExSigR4 = SigR['a]
 //│ ║        	^
 //│ ╟── integer literal of type `1` does not match type `'a`
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.239: 	type ExSigR4 = SigR['a]
+//│ ║  l.243: 	type ExSigR4 = SigR['a]
 //│ ║         	                    ^^
 //│ ╟── from type reference:
 //│ ║  l.+1: 	1: ExSigR4

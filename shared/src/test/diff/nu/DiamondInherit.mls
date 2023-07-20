@@ -66,8 +66,6 @@ trait T1 extends Foo[Int | Bool]
 //│   fun bar: 'A -> 'A
 //│   fun foo: 'A
 //│ }
-//│ where
-//│   'A := in Bool | Int out Int | false | true
 
 module Bar extends T1, Foo[Int | Str] {
   fun foo = 123
@@ -84,7 +82,7 @@ module Bar extends T1, Foo[Int | Str] {
 //│     = 123
 
 (Bar : Foo['X]).bar
-//│ ('X & (Int | Str)) -> ('X | Int | Str)
+//│ ('X & (Int | Str)) -> (Int | Str | 'X)
 //│ res
 //│     = [Function: id]
 
@@ -95,7 +93,7 @@ module Bar extends T1, Foo[Int | Str] {
 
 let f = (Bar : T1).bar
 f(true)
-//│ let f: ('A & (Bool | Int)) -> ('A | Int | false | true)
+//│ let f: ('A & (Bool | Int)) -> (Int | false | true | 'A)
 //│ Int | false | true
 //│ f
 //│   = [Function: id]
@@ -108,22 +106,22 @@ module Bar extends T1, Foo[Int | Str] {
   fun bar(x) = x + 1
 }
 //│ ╔══[ERROR] Type mismatch in definition of method bar:
-//│ ║  l.108: 	  fun bar(x) = x + 1
+//│ ║  l.106: 	  fun bar(x) = x + 1
 //│ ║         	      ^^^^^^^^^^^^^^
 //│ ╟── type `Bool` is not an instance of `Int`
 //│ ║  l.64: 	trait T1 extends Foo[Int | Bool]
 //│ ║        	                           ^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.108: 	  fun bar(x) = x + 1
+//│ ║  l.106: 	  fun bar(x) = x + 1
 //│ ╙──       	               ^
 //│ ╔══[ERROR] Type mismatch in definition of method bar:
-//│ ║  l.108: 	  fun bar(x) = x + 1
+//│ ║  l.106: 	  fun bar(x) = x + 1
 //│ ║         	      ^^^^^^^^^^^^^^
 //│ ╟── type `Str` is not an instance of `Int`
-//│ ║  l.106: 	module Bar extends T1, Foo[Int | Str] {
+//│ ║  l.104: 	module Bar extends T1, Foo[Int | Str] {
 //│ ║         	                                 ^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.108: 	  fun bar(x) = x + 1
+//│ ║  l.106: 	  fun bar(x) = x + 1
 //│ ╙──       	               ^
 //│ module Bar extends Foo, T1 {
 //│   fun bar: Int -> Int
@@ -146,9 +144,6 @@ trait Derived2 extends Base[(Int | Str, Int | Str)]
 //│   fun bar: 'A0 -> 'A0
 //│   fun foo: 'A0
 //│ }
-//│ where
-//│   'A0 := (Int | Str, Int | Str,)
-//│   'A := A
 
 class Final extends Derived1[(Int, Int)], Derived2 {
   fun foo = (123, 456)
@@ -159,25 +154,12 @@ class Final extends Derived1[(Int, Int)], Derived2 {
 //│   fun foo: (123, 456,)
 //│ }
 
-:e
 class Final extends Derived1[(Int, Int)], Derived2 {
   fun foo = (123, 456)
   fun bar([x, y]) = [y, x]
 }
-//│ ╔══[ERROR] Type mismatch in definition of method bar:
-//│ ║  l.165: 	  fun bar([x, y]) = [y, x]
-//│ ║         	      ^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `Str` is not an instance of `Int`
-//│ ║  l.136: 	trait Derived2 extends Base[(Int | Str, Int | Str)]
-//│ ║         	                                   ^^^
-//│ ╟── Note: constraint arises from type reference:
-//│ ║  l.163: 	class Final extends Derived1[(Int, Int)], Derived2 {
-//│ ║         	                                   ^^^
-//│ ╟── from reference:
-//│ ║  l.165: 	  fun bar([x, y]) = [y, x]
-//│ ╙──       	                        ^
 //│ class Final extends Base, Derived1, Derived2 {
-//│   fun bar: (Int, Int,) -> (Int | Str, Int | Str,)
+//│   fun bar: forall 'a 'b. ('a, 'b,) -> ('b, 'a,)
 //│   fun foo: (123, 456,)
 //│ }
 

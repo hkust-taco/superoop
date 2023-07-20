@@ -50,6 +50,8 @@ Bar3
 //│ res: forall 'x. {x: 'x} -> (#Bar2 & {Foo2#A = int, x: 'x})
 //│   where
 //│     'x <: int
+//│ where
+//│   'x <: int
 //│    = [Function: res]
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
 //│ ║  l.49: 	Bar3
@@ -69,7 +71,7 @@ Bar3
 //│ res: {x: int & 'x} -> (Bar2 with {x: 'x})
 //│    = [Function: res]
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.68: 	Bar3
+//│ ║  l.70: 	Bar3
 //│ ║        	^^^^
 //│ ╟── Note that class Bar3 is abstract:
 //│ ║  l.43: 	class Bar3: Foo2[int]
@@ -83,7 +85,7 @@ Bar3
 :e
 {A = 1}
 //│ ╔══[ERROR] Field identifiers must start with a small letter
-//│ ║  l.84: 	{A = 1}
+//│ ║  l.86: 	{A = 1}
 //│ ╙──      	^^^^^^^
 //│ res: {A <: 1}
 //│    = { A: 1 }
@@ -91,7 +93,7 @@ Bar3
 :e
 error: {A: 1}
 //│ ╔══[ERROR] Field identifiers must start with a small letter
-//│ ║  l.92: 	error: {A: 1}
+//│ ║  l.94: 	error: {A: 1}
 //│ ╙──      	        ^
 //│ res: {A <: 1}
 //│ Runtime error:
@@ -104,13 +106,13 @@ b = Bar2{x = 1}
 :e
 c = b: Foo2[string]
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.105: 	c = b: Foo2[string]
+//│ ║  l.107: 	c = b: Foo2[string]
 //│ ║         	    ^
 //│ ╟── type `int` is not an instance of type `string`
 //│ ║  l.36: 	class Bar2: Foo2[int] & { x: int }
 //│ ║        	                 ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.105: 	c = b: Foo2[string]
+//│ ║  l.107: 	c = b: Foo2[string]
 //│ ╙──       	            ^^^^^^
 //│ c: Foo2[string]
 //│  = Bar2 { x: 1 }
@@ -134,13 +136,13 @@ d: Foo2['a]
 :e
 d: Foo2[string]
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.135: 	d: Foo2[string]
+//│ ║  l.137: 	d: Foo2[string]
 //│ ║         	^
 //│ ╟── type `int` is not an instance of type `string`
 //│ ║  l.36: 	class Bar2: Foo2[int] & { x: int }
 //│ ║        	                 ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.135: 	d: Foo2[string]
+//│ ║  l.137: 	d: Foo2[string]
 //│ ╙──       	        ^^^^^^
 //│ res: Foo2[string]
 //│    = Bar2 { x: 1 }

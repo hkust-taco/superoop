@@ -88,6 +88,8 @@ addNTimes n 12
 //│ addNTimes: Addable['A] -> int -> 'A
 //│   where
 //│     'A :> 0
+//│ where
+//│   'A :> 0
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+3: 	addNTimes n 12
 //│ ║        	^^^^^^^^^^^
@@ -108,15 +110,21 @@ rec def addNTimes a n =
 //│     'A :> 'addNTimes
 //│        <: 'a -> int -> 'b
 //│     'b :> 0
+//│ where
+//│   'addNTimes :> 'a -> int -> 'b
+//│   'a <: Addable['A]
+//│   'A :> 'addNTimes
+//│      <: 'a -> int -> 'b
+//│   'b :> 0
 
 addNTimes n 12
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	addNTimes n 12
 //│ ║        	^^^^^^^^^^^
 //│ ╟── function of type `?a -> ?b -> ?c` is not an instance of type `Numb`
-//│ ║  l.102: 	rec def addNTimes a n =
+//│ ║  l.104: 	rec def addNTimes a n =
 //│ ║         	                  ^^^^^
-//│ ║  l.103: 	  if n <= 0 then 0 else a.Add addNTimes a (n - 1)
+//│ ║  l.105: 	  if n <= 0 then 0 else a.Add addNTimes a (n - 1)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from type reference:
 //│ ║  l.7: 	class Numb: Addable[Numb] & { val: int }
@@ -130,7 +138,7 @@ addSame n n
 //│ ╟── application of type `Numb & {val: ?val}` is not a function
 //│ ║  l.17: 	n = Numb { val = 1 }
 //│ ║        	    ^^^^^^^^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `(forall ?a. ?a) -> ?b`
+//│ ╟── but it flows into reference with expected type `(forall ?a ?val0. ?a) -> ?b`
 //│ ║  l.+1: 	addSame n n
 //│ ╙──      	        ^
 //│ res: error

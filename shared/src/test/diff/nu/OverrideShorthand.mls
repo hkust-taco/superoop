@@ -22,7 +22,7 @@ fun f(override Pair(x, y)) = x + y
 mixin Test {
   fun f(override Pair(x, y)) = x + y
 }
-//│ mixin Test() {
+//│ mixin Test {
 //│   super: {f: 'a -> 'b}
 //│   fun f: (Object & 'a & ~#Pair | Pair) -> (Int | 'b)
 //│ }

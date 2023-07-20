@@ -8,7 +8,7 @@ mixin EvalAddLit {
       Lit(n) then n
 }
 //│ class Lit(n: Int)
-//│ mixin EvalAddLit() {
+//│ mixin EvalAddLit {
 //│   fun eval: Lit -> Int
 //│ }
 //│ // Prelude

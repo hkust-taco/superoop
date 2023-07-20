@@ -5,6 +5,8 @@ let rec r a = r
 //│ r: 'r
 //│   where
 //│     'r :> anything -> 'r
+//│ where
+//│   'r :> anything -> 'r
 
 let join a b = if true then a else b
 //│ join: 'a -> 'a -> 'a
@@ -14,4 +16,6 @@ let s = join r r
 //│ s: 'r
 //│   where
 //│     'r :> anything -> 'r
+//│ where
+//│   'r :> anything -> 'r
 

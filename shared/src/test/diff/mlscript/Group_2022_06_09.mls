@@ -14,6 +14,8 @@ rec def eval e = case e of {
 //│ eval: 'a -> int
 //│   where
 //│     'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit
+//│ where
+//│   'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit
 //│     = [Function: eval]
 
 e = Add { lhs = Lit {n=1}; rhs = Lit {n=2} }
@@ -39,13 +41,13 @@ e2.e.lhs.n
 :e
 eval e2
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.40: 	eval e2
+//│ ║  l.42: 	eval e2
 //│ ║        	^^^^^^^
 //│ ╟── application of type `Neg & {e: ?e}` does not match type `Add & ?a | Lit & ?b`
-//│ ║  l.31: 	e2 = Neg { e }
+//│ ║  l.33: 	e2 = Neg { e }
 //│ ║        	     ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `Add & ?c | Lit & ?d`
-//│ ║  l.40: 	eval e2
+//│ ║  l.42: 	eval e2
 //│ ║        	     ^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.10: 	rec def eval e = case e of {
@@ -86,6 +88,8 @@ ev = evalN evalN!
 //│ ev: ((Add with {lhs: 'a, rhs: 'a}) | (Lit with {n: 'n}) | (Neg with {e: 'a})) -> (int | 'n)
 //│   where
 //│     'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
+//│ where
+//│   'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
 //│   = [Function (anonymous)]
 
 (ev e, ev e2)
@@ -119,12 +123,16 @@ def evalComposed evalComposed = evalN evalN! (fun e -> eval evalComposed e)
 //│ evalComposed: ('a -> 'rhs -> int & 'a) -> ((Add with {lhs: 'rhs, rhs: 'rhs}) | (Lit with {n: 'n}) | (Neg with {e: 'b})) -> (int | 'n)
 //│   where
 //│     'b <: (Add with {lhs: 'rhs, rhs: 'rhs}) | Lit | (Neg with {e: 'b})
+//│ where
+//│   'b <: (Add with {lhs: 'rhs, rhs: 'rhs}) | Lit | (Neg with {e: 'b})
 //│             = [Function: evalComposed]
 
 def evalComposed evalComposed = evalN evalN! (eval evalComposed)
 //│ evalComposed: ('a -> 'lhs -> int & 'a) -> ((Add with {lhs: 'lhs, rhs: 'lhs}) | (Lit with {n: 'n}) | (Neg with {e: 'b})) -> (int | 'n)
 //│   where
 //│     'b <: (Add with {lhs: 'lhs, rhs: 'lhs}) | Lit | (Neg with {e: 'b})
+//│ where
+//│   'b <: (Add with {lhs: 'lhs, rhs: 'lhs}) | Lit | (Neg with {e: 'b})
 //│             = [Function: evalComposed1]
 
 
@@ -134,10 +142,15 @@ def evalComposed evalComposed = evalN evalN! (eval evalComposed)
 ev2 = evalComposed evalComposed!
 //│ ev2: ((Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | (Lit with {n: 'n}) | (Neg with {e: 'c})) -> (int | 'n)
 //│   where
-//│     'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
 //│     'a <: {e: 'd}
 //│     'd <: 'b | (Neg with {e: 'd})
 //│     'b <: Add & {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg} | Lit
+//│     'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
+//│ where
+//│   'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
+//│   'a <: {e: 'd}
+//│   'd <: 'b | (Neg with {e: 'd})
+//│   'b <: Add & {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg} | Lit
 //│    = [Function (anonymous)]
 
 ev2 e3
@@ -149,18 +162,27 @@ def ev2_ty: (Add & { lhs: 'a; rhs: 'a } | Lit | Neg & { e: 'a } as 'a) -> int
 //│ ev2_ty: 'a -> int
 //│   where
 //│     'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
+//│ where
+//│   'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
 //│       = <missing implementation>
 
 ev2_ty = ev2
 //│ ((Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | (Lit with {n: 'n}) | (Neg with {e: 'c})) -> (int | 'n)
 //│   where
-//│     'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
 //│     'a <: {e: 'd}
 //│     'd <: 'b | (Neg with {e: 'd})
 //│     'b <: Add & {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg} | Lit
+//│     'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
+//│ where
+//│   'c <: (Add with {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg}) | Lit | (Neg with {e: 'c})
+//│   'a <: {e: 'd}
+//│   'd <: 'b | (Neg with {e: 'd})
+//│   'b <: Add & {lhs: Neg & 'a | 'b & ~#Neg, rhs: Neg & 'a | 'b & ~#Neg} | Lit
 //│   <:  ev2_ty:
 //│ 'a -> int
 //│   where
 //│     'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
+//│ where
+//│   'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit | (Neg with {e: 'a})
 //│       = [Function (anonymous)]
 

@@ -95,7 +95,7 @@ mixin M { fun x : Int }
 //│ ╟── Declared here:
 //│ ║  l.91: 	mixin M { fun x : Int }
 //│ ╙──      	              ^^^^^^^
-//│ mixin M() {
+//│ mixin M {
 //│   fun x: Int
 //│ }
 

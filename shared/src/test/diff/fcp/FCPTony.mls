@@ -127,11 +127,13 @@ def succ n f x = f (n f x)
 
 :ns
 def add n m = n succ m
-//│ add: forall 'a. 'a -> (forall 'b 'c 'd. 'b -> 'd
+//│ add: forall 'a. 'a -> (forall 'b 'd 'c. 'b -> 'c
 //│   where
-//│     'a <: (ChurchInt -> ChurchInt) -> 'c)
+//│     'a <: (ChurchInt -> ChurchInt) -> 'd
 //│ where
-//│   'c <: 'b -> 'd
+//│   'd <: 'b -> 'c)
+//│ where
+//│   'd <: 'b -> 'c
 //│    = [Function: add]
 
 add
@@ -142,13 +144,17 @@ add
 
 :ns
 def f x y = add x y
-//│ f: forall 'a. 'a -> (forall 'b 'c 'd 'e 'f. 'c -> 'd
+//│ f: forall 'a. 'a -> (forall 'b 'c 'd 'e 'f. 'b -> 'c
 //│   where
-//│     'a <: (ChurchInt -> ChurchInt) -> 'e)
+//│     'a <: (ChurchInt -> ChurchInt) -> 'd
 //│ where
-//│   'c <: 'f
-//│   'e <: 'f -> 'b
-//│   'b <: 'd
+//│   'b <: 'e
+//│   'd <: 'e -> 'f
+//│   'f <: 'c)
+//│ where
+//│   'b <: 'e
+//│   'd <: 'e -> 'f
+//│   'f <: 'c
 //│  = [Function: f]
 
 // :ds
@@ -161,10 +167,10 @@ f
 :e
 f {} {}
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.162: 	f {} {}
+//│ ║  l.168: 	f {} {}
 //│ ║         	^^^^^^^
 //│ ╟── record literal of type `anything` is not a function
-//│ ║  l.162: 	f {} {}
+//│ ║  l.168: 	f {} {}
 //│ ║         	  ^^
 //│ ╟── Note: constraint arises from application:
 //│ ║  l.129: 	def add n m = n succ m

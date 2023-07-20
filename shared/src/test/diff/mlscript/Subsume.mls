@@ -212,7 +212,7 @@ def f a b = if gt a b then a else b
 //│  = [Function: f3]
 
 f 1 
-//│ res: (int & 'a) -> ('a | 1)
+//│ res: (int & 'a) -> (1 | 'a)
 //│    = [Function (anonymous)]
 
 :e
@@ -235,7 +235,7 @@ def f a b = if gt a b then a else b b // mistake!
 //│  = [Function: f4]
 
 f 1 
-//│ res: (int & 'a) -> ('a | 1)
+//│ res: (int & 'a) -> (1 | 'a)
 //│    = [Function (anonymous)]
 
 :re
@@ -352,6 +352,8 @@ def self2: 'a -> 'b as 'a
 //│ self2: 'a
 //│   where
 //│     'a := 'a -> 'b
+//│ where
+//│   'a := 'a -> 'b
 //│      = <missing implementation>
 
 // :e // fails since the fix to spurious-TV-cycles // works since assigned TVs
@@ -361,6 +363,8 @@ def self2 = self1
 //│ 'a
 //│   where
 //│     'a := 'a -> 'b
+//│ where
+//│   'a := 'a -> 'b
 //│      = [Function: self2]
 
 
@@ -370,9 +374,12 @@ fun p -> fun q -> p q p
 
 :ns
 fun p -> fun q -> p q p
-//│ res: forall 'a 'b 'c 'd. 'a -> 'b -> 'd
+//│ res: forall 'a 'b 'd 'c. 'a -> 'b -> 'c
 //│   where
-//│     'a <: 'b -> 'c
-//│     'c <: 'a -> 'd
+//│     'a <: 'b -> 'd
+//│     'd <: 'a -> 'c
+//│ where
+//│   'a <: 'b -> 'd
+//│   'd <: 'a -> 'c
 //│    = [Function: res]
 

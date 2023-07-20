@@ -45,7 +45,7 @@ typeof(cls)
 
 
 mixin Base
-//│ mixin Base()
+//│ mixin Base
 
 class Derived() extends Base
 //│ class Derived()

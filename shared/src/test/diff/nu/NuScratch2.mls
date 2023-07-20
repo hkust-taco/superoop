@@ -1,0 +1,82 @@
+:NewDefs
+
+
+module Test {
+  fun foo(e) = [e, x => [id(x), x + 1]]
+}
+//│ module Test {
+//│   fun foo: forall 'a. 'a -> ('a, forall 'b. (Int & 'b) -> ('b, Int,),)
+//│ }
+
+// :d
+module Test {
+  fun foo(e) =
+    fun f(x) = [f(x.u), x.u]
+    [e, f]
+}
+//│ module Test {
+//│   fun foo: forall 'a. 'a -> ('a, forall 'b 'u 'c. 'b -> 'c
+//│     where
+//│       'b <: {u: 'b & 'u}
+//│       'c :> ('c, 'u,),)
+//│ }
+
+// :d
+mixin Test {
+  fun g(x) = [g(x.u), x.u]
+  fun foo(e) =
+    fun f(x) = [f(x.u), x.u]
+    [e, f]
+  fun bar = this.f(super.x)
+  // fun baz = this.g(this.x)
+  // fun baz =
+  //   // let [a, b] = foo
+  //   // this.g(a)
+  //   (([a, b]) => this.g(b)(a))(foo(super.y))
+  fun baz =
+    // let [a, b] = foo
+    // this.g(a)
+    // (([a, b]) => this.g(b)(this.y))(foo(super.y))
+    g(this.x)
+  mixin T {
+    fun h(x) = h(x.u)
+    fun baz = h(this.x)
+  }
+}
+//│ mixin Test {
+//│   super: {x: 'x}
+//│   this: {f: 'x -> 'a, x: 'b}
+//│   mixin T {
+//│     this: {x: 'c}
+//│     fun baz: nothing
+//│     fun h: 'c -> nothing
+//│   } where
+//│       'c <: {u: 'c}
+//│   fun bar: 'a
+//│   fun baz: 'd
+//│   fun foo: 'e -> ('e, forall 'f 'u 'g. 'f -> 'g
+//│     where
+//│       'f <: {u: 'f & 'u}
+//│       'g :> ('g, 'u,),)
+//│   fun g: 'b -> 'd
+//│ } where
+//│     'b <: {u: 'b & 'u0}
+//│     'd :> ('d, 'u0,)
+
+
+
+// TODO support
+let [a, b] = foo
+//│ ╔══[PARSE ERROR] Expected a function name; found square bracket section instead
+//│ ║  l.69: 	let [a, b] = foo
+//│ ╙──      	    ^^^^^^
+//│ ╔══[ERROR] identifier not found: foo
+//│ ║  l.69: 	let [a, b] = foo
+//│ ╙──      	             ^^^
+//│ let <error>: error
+//│ Code generation encountered an error:
+//│   unresolved symbol foo
+
+
+
+

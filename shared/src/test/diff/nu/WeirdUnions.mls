@@ -20,10 +20,10 @@ fun f: Str | (Str, Int)
 
 
 fun f: Str | ([Str, Int])
-//│ fun f: (Str, Int,) | Str
+//│ fun f: Str | (Str, Int,)
 
 fun f: Str | ((Str, Int))
-//│ fun f: (Str, Int,) | Str
+//│ fun f: Str | (Str, Int,)
 
 
 
@@ -66,7 +66,7 @@ if true then id else [x, y] => [y, x]
 
 // * Note: the correct version:
 if true then id else ([x, y]) => [y, x]
-//│ forall 'a. (('b, 'c,) & 'a) -> (('c, 'b,) | 'a)
+//│ forall 'c. (('a, 'b,) & 'c) -> (('b, 'a,) | 'c)
 //│ res
 //│     = [Function: id]
 

@@ -115,7 +115,7 @@ let f = choose id in (f auto) (f succ)
 //│ ╟── Note: quantified type variable 'a is defined at:
 //│ ║  l.29: 	def auto (x: forall 'a. 'a -> 'a) = x x
 //│ ╙──      	                    ^^
-//│ res: int -> int | error
+//│ res: error | int -> int
 
 // Reproduced with an unnanotated auto:
 
@@ -136,15 +136,15 @@ res (choose id succ)
 //│ ╟── but it flows into application with expected type `int`
 //│ ║  l.129: 	res (choose id succ)
 //│ ╙──       	     ^^^^^^^^^^^^^^
-//│ res: int -> int | error | int
+//│ res: error | int | int -> int
 
 // Didier Le Botlan suggested this fix by email:
 
 let f = choose id in (f auto, f succ)
-//│ res: (forall 'b 'a. (forall 'a0. 'a0 -> 'a0 & 'b) -> ('a -> 'a | 'b), forall 'b. (int & 'b) -> (int | 'b),)
+//│ res: (forall 'b 'a0. (forall 'a. 'a -> 'a & 'b) -> ('a0 -> 'a0 | 'b), forall 'b. (int & 'b) -> (int | 'b),)
 
 let f = choose id in (f auto2, f succ)
-//│ res: (forall 'a 'b 'c. ('c -> 'a & 'c & 'b) -> ('a | 'b), forall 'b. (int & 'b) -> (int | 'b),)
+//│ res: (forall 'a 'b 'c. ('a -> 'b & 'a & 'c) -> ('b | 'c), forall 'c. (int & 'c) -> (int | 'c),)
 
 // ------------ Sec 6 ------------
 
@@ -197,13 +197,13 @@ let tmp = I I in K K
 
 fun z -> (z omegad)
 fun z -> (z omega)
-//│ res: ((forall 'a. (forall 'a0. 'a0 -> 'a0) -> 'a -> 'a) -> 'b) -> 'b
-//│ res: ((forall 'a 'b. ('b -> 'a & 'b) -> 'a) -> 'c) -> 'c
+//│ res: ((forall 'a0. (forall 'a. 'a -> 'a) -> 'a0 -> 'a0) -> 'b) -> 'b
+//│ res: ((forall 'a 'b. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
 
 (fun y -> fun z -> z y) omegad
 (fun y -> fun z -> z y) omega
-//│ res: ((forall 'a. (forall 'a0. 'a0 -> 'a0) -> 'a -> 'a) -> 'b) -> 'b
-//│ res: ((forall 'a 'b. ('b -> 'a & 'b) -> 'a) -> 'c) -> 'c
+//│ res: ((forall 'a0. (forall 'a. 'a -> 'a) -> 'a0 -> 'a0) -> 'b) -> 'b
+//│ res: ((forall 'a 'b. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
 
 fun z -> omegad z
 fun z -> omega z

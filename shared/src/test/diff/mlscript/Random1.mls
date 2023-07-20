@@ -14,6 +14,8 @@ def g: G['a] & {a: 'a} as 'a
 //│ g: 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 //│  = <missing implementation>
 
 :NoJS
@@ -28,14 +30,16 @@ g = g2
 //│ 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.25: 	g = g2
+//│ ║  l.27: 	g = g2
 //│ ║        	^^^^^^
 //│ ╟── function of type `?a -> (forall ?b. ?b)` is not an instance of type `G`
-//│ ║  l.21: 	rec def g2 a = G { a }
+//│ ║  l.23: 	rec def g2 a = G { a }
 //│ ║        	           ^^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `G[?]`
-//│ ║  l.25: 	g = g2
+//│ ║  l.27: 	g = g2
 //│ ║        	    ^^
 //│ ╟── Note: constraint arises from applied type reference:
 //│ ║  l.13: 	def g: G['a] & {a: 'a} as 'a
@@ -48,41 +52,53 @@ rec def g2 = G { a = g2 }
 //│ g2: 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 
 g = g2
 //│ 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 //│   <:  g:
 //│ 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 
 g = g
 //│ 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 //│   <:  g:
 //│ 'a
 //│   where
 //│     'a :> G[?] with {a: 'a}
+//│ where
+//│   'a :> G[?] with {a: 'a}
 
 
 def manual: 'a -> nothing as 'a
 //│ manual: 'a
 //│   where
 //│     'a := 'a -> nothing
+//│ where
+//│   'a := 'a -> nothing
 
 :e
 manual id
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.77: 	manual id
+//│ ║  l.93: 	manual id
 //│ ║        	^^^^^^^^^
 //│ ╟── type `'a -> nothing` does not match type `nothing`
-//│ ║  l.71: 	def manual: 'a -> nothing as 'a
+//│ ║  l.85: 	def manual: 'a -> nothing as 'a
 //│ ║        	            ^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.71: 	def manual: 'a -> nothing as 'a
+//│ ║  l.85: 	def manual: 'a -> nothing as 'a
 //│ ╙──      	                  ^^^^^^^
 //│ res: error
 
@@ -90,6 +106,8 @@ def manual: 'a -> anything as 'a
 //│ manual: 'a
 //│   where
 //│     'a := 'a -> anything
+//│ where
+//│   'a := 'a -> anything
 
 manual id
 //│ res: anything
@@ -105,6 +123,8 @@ f = { mut x = 1 }
 //│ {mut x: 'x}
 //│   where
 //│     'x :> 1
+//│ where
+//│   'x :> 1
 //│   <:  f:
 //│ {mut x: int}
 

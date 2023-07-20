@@ -15,7 +15,7 @@ mixin AA(a: Int) {
 //│ mixin AA(a: Int)
 
 mixin BB {}
-//│ mixin BB()
+//│ mixin BB
 
 
 class C(x: Int) extends BB

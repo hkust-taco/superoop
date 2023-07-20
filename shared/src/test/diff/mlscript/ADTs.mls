@@ -27,6 +27,8 @@ rec def evalStub2 e = case e of {
 //│ evalStub2: 'a -> int
 //│   where
 //│     'a <: Lit | Nega[?] & {arg: 'a}
+//│ where
+//│   'a <: Lit | Nega[?] & {arg: 'a}
 //│          = [Function: evalStub2]
 
 rec def eval e = case e of {
@@ -37,6 +39,8 @@ rec def eval e = case e of {
 //│ eval: 'a -> int
 //│   where
 //│     'a <: Add[?] & {lhs: 'a, rhs: 'a} | Lit | Nega[?] & {arg: 'a}
+//│ where
+//│   'a <: Add[?] & {lhs: 'a, rhs: 'a} | Lit | Nega[?] & {arg: 'a}
 //│     = [Function: eval]
 
 ex = add (lit 2) (lit 2)
@@ -51,18 +55,24 @@ def e: Add['e] as 'e
 //│ e: 'e
 //│   where
 //│     'e :> Add['e]
+//│ where
+//│   'e :> Add['e]
 //│  = <missing implementation>
 
 def e: Lit | Add['e] as 'e
 //│ e: 'e
 //│   where
 //│     'e :> Add['e] | Lit
+//│ where
+//│   'e :> Add['e] | Lit
 //│  = <missing implementation>
 
 def e: Lit | Add['e] | Nega['e] as 'e
 //│ e: 'e
 //│   where
 //│     'e :> Add['e] | Lit | Nega['e]
+//│ where
+//│   'e :> Add['e] | Lit | Nega['e]
 //│  = <missing implementation>
 
 e = ex
@@ -71,6 +81,8 @@ e = ex
 //│ 'e
 //│   where
 //│     'e :> Add['e] | Lit | Nega['e]
+//│ where
+//│   'e :> Add['e] | Lit | Nega['e]
 //│  = Add { lhs: Lit { val: 2 }, rhs: Lit { val: 2 } }
 
 eval e
@@ -109,7 +121,7 @@ eval exp
 //│ ║  l.+2: 	eval exp
 //│ ║        	     ^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.32: 	rec def eval e = case e of {
+//│ ║  l.34: 	rec def eval e = case e of {
 //│ ╙──      	                      ^
 //│ res: error | int
 
@@ -119,7 +131,7 @@ eval (e : Lit | Add['e] | Nega[int] as 'e)
 //│ ║  l.+1: 	eval (e : Lit | Add['e] | Nega[int] as 'e)
 //│ ║        	      ^
 //│ ╟── type `Lit` is not an instance of type `int`
-//│ ║  l.62: 	def e: Lit | Add['e] | Nega['e] as 'e
+//│ ║  l.70: 	def e: Lit | Add['e] | Nega['e] as 'e
 //│ ║        	       ^^^
 //│ ╟── Note: constraint arises from type reference:
 //│ ║  l.+1: 	eval (e : Lit | Add['e] | Nega[int] as 'e)
@@ -131,10 +143,10 @@ eval (e : Lit | Add['e] | Nega[int] as 'e)
 //│ ║  l.+1: 	eval (e : Lit | Add['e] | Nega[int] as 'e)
 //│ ║        	                               ^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.32: 	rec def eval e = case e of {
+//│ ║  l.34: 	rec def eval e = case e of {
 //│ ║        	                      ^
 //│ ╟── from field selection:
-//│ ║  l.35: 	  | Nega -> 0 - (eval e.arg)
+//│ ║  l.37: 	  | Nega -> 0 - (eval e.arg)
 //│ ╙──      	                      ^^^^^
 //│ res: error | int
 

@@ -335,7 +335,7 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
               case _ => die
             }
             val (tn, success) = yeetSpaces match {
-              case (IDENT(idStr, false), l1) :: _ =>
+              case (IDENT(idStr, _), l1) :: _ =>
                 consume
                 (TypeName(idStr).withLoc(S(l1)), true)
               case c =>
@@ -399,16 +399,19 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
               case c: Constructor => L(c)
               case t => R(t)
             }
-
+            
             val ctor =
               if (ctors.lengthIs > 1) {
                 err(msg"A class may only have at most one explicit constructor" -> S(l0) :: Nil)
                 N
               }
               else ctors.headOption
-
+            
+            val whereClause = Nil // TODO parse where clause
+            
             val res =
-              NuTypeDef(kind, tn, tparams, params, ctor, sig, ps, N, N, TypingUnit(body))(isDecl, isAbs)
+              NuTypeDef(kind, tn, tparams, params, ctor, sig, ps, N, N, TypingUnit(body), whereClause)(
+                isDecl, isAbs)
             R(res.withLoc(S(l0 ++ res.getLoc)))
           
           case ModifierSet(mods, (KEYWORD(kwStr @ ("fun" | "val" | "let")), l0) :: c) => // TODO support rec?
@@ -477,22 +480,29 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
                   val body = expr(0)
                   val newBody = transformBody.fold(body)(_(body))
                   val annotatedBody = asc.fold(newBody)(ty => Asc(newBody, ty))
-                  R(NuFunDef(isLetRec, v, tparams, L(ps.foldRight(annotatedBody)((i, acc) => Lam(i, acc))))(isDecl, N))
+                  val whereClause = Nil // TODO parse where clause
+                  R(NuFunDef(isLetRec, v, tparams,
+                    L(ps.foldRight(annotatedBody)((i, acc) => Lam(i, acc))),
+                    whereClause
+                  )(isDecl, N, N))
                 case c =>
                   asc match {
                     case S(ty) =>
                       if (transformBody.nonEmpty) die // TODO
+                      val whereClause = Nil // TODO parse where clause
                       R(NuFunDef(isLetRec, v, tparams, R(PolyType(Nil, ps.foldRight(ty)((p, r) => Function(p.toType match {
                         case L(diag) => raise(diag); Top // TODO better
                         case R(tp) => tp
-                      }, r)))))(isDecl, N)) // TODO rm PolyType after FCP is merged
+                      }, r)))), whereClause)(isDecl, N, N)) // TODO rm PolyType after FCP is merged
                     case N =>
                       // TODO dedup:
                       val (tkstr, loc) = c.headOption.fold(("end of input", lastLoc))(_.mapFirst(_.describe).mapSecond(some))
                       err((
                         msg"Expected ':' or '=' followed by a function body or signature; found ${tkstr} instead" -> loc :: Nil))
                       consume
-                      R(NuFunDef(isLetRec, v, Nil, L(ps.foldRight(errExpr: Term)((i, acc) => Lam(i, acc))))(isDecl, N))
+                      val whereClause = Nil // TODO parse where clause
+                      R(NuFunDef(isLetRec, v, Nil,
+                        L(ps.foldRight(errExpr: Term)((i, acc) => Lam(i, acc))), whereClause)(isDecl, N, N))
                   }
               }
             }
@@ -573,6 +583,10 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
       case (KEYWORD("super"), l0) :: _ =>
         consume
         exprCont(Super().withLoc(S(l0)), prec, allowNewlines = false)
+      case (IDENT("~", _), l0) :: _ =>
+        consume
+        val rest = expr(prec, allowSpace = true)
+        exprCont(App(Var("~").withLoc(S(l0)), rest).withLoc(S(l0 ++ rest.toLoc)), prec, allowNewlines = false)
       case (br @ BRACKETS(bk @ (Round | Square | Curly), toks), loc) :: _ =>
         consume
         val res = rec(toks, S(br.innerLoc), br.describe).concludeWith(_.argsMaybeIndented()) // TODO
@@ -723,6 +737,13 @@ abstract class NewParser(origin: Origin, tokens: Ls[Stroken -> Loc], raiseFun: D
   
   final def exprCont(acc: Term, prec: Int, allowNewlines: Bool)(implicit et: ExpectThen, fe: FoundErr, l: Line): IfBody \/ Term = wrap(prec, s"`$acc`", allowNewlines) { l =>
     cur match {
+      case (IDENT(".", _), l0) :: (br @ BRACKETS(Square, toks), l1) :: _ =>
+        consume
+        consume
+        val idx = rec(toks, S(br.innerLoc), br.describe)
+          .concludeWith(_.expr(0, allowSpace = true))
+        val newAcc = Subs(acc, idx).withLoc(S(l0 ++ l1 ++ idx.toLoc))
+        exprCont(newAcc, prec, allowNewlines)
       case (IDENT(opStr, true), l0) :: _ if /* isInfix(opStr) && */ opPrec(opStr)._1 > prec =>
         consume
         val v = Var(opStr).withLoc(S(l0))

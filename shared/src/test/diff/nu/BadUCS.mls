@@ -51,7 +51,7 @@ fun foo(x) = if x is F() then 0
 
 
 mixin M
-//│ mixin M()
+//│ mixin M
 
 :e
 fun foo(x) = if x is M then 0

@@ -4,7 +4,7 @@
 mixin M0 {
   fun f = 42
 }
-//│ mixin M0() {
+//│ mixin M0 {
 //│   fun f: 42
 //│ }
 
@@ -15,7 +15,7 @@ mixin M1 {
 //│ ╔══[ERROR] Illegal use of `super`
 //│ ║  l.13: 	  fun g = super
 //│ ╙──      	          ^^^^^
-//│ mixin M1() {
+//│ mixin M1 {
 //│   super: 'super
 //│   fun g: 'super
 //│ }

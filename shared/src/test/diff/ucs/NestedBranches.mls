@@ -51,8 +51,8 @@ mapPartition(x => Left(x + 1), zeroToThree)
 mapPartition(f, zeroToThree)
 //│ Pair[Cons['A] | Nil, Cons['A0] | Nil]
 //│   where
-//│     'A0 :> 0 | 1 | 2 | 3
 //│     'A :> 0 | 1 | 2 | 3
+//│     'A0 :> 0 | 1 | 2 | 3
 //│ res
 //│     = Pair {}
 
@@ -63,13 +63,13 @@ fun mapPartition(f, xs) = if xs is
     mapPartition(f, xs) is Pair(l, r) and f(x) is
       Left(v)  then Pair(Cons(v, l), r)
       Right(v) then Pair(l, Cons(v, r))
-//│ fun mapPartition: forall 'A 'head 'A0. ('head -> (Left['A0] | Right['A]), Cons['head] | Nil,) -> Pair[Cons['A0] | Nil, Cons['A] | Nil]
+//│ fun mapPartition: forall 'head 'A 'A0. ('head -> (Left['A] | Right['A0]), Cons['head] | Nil,) -> Pair[Cons['A] | Nil, Cons['A0] | Nil]
 
 mapPartition(f, zeroToThree)
 //│ Pair[Cons['A] | Nil, Cons['A0] | Nil]
 //│   where
-//│     'A0 :> 0 | 1 | 2 | 3
 //│     'A :> 0 | 1 | 2 | 3
+//│     'A0 :> 0 | 1 | 2 | 3
 //│ res
 //│     = Pair {}
 
@@ -90,8 +90,8 @@ fun mapPartition(f, xs) = if xs is
 mapPartition(f, zeroToThree)
 //│ Pair[Cons['A] | Nil, Cons['A0] | Nil]
 //│   where
-//│     'A0 :> 0 | 1 | 2 | 3
 //│     'A :> 0 | 1 | 2 | 3
+//│     'A0 :> 0 | 1 | 2 | 3
 //│ res
 //│     = Pair {}
 
@@ -160,6 +160,6 @@ fun mapPartition(f, xs) = if xs is
 //│ ╟── from application:
 //│ ║  l.126: 	  Cons(x, xs) and mapPartition(f, xs) is (l, r)
 //│ ╙──       	                  ^^^^^^^^^^^^^^^^^^^
-//│ fun mapPartition: forall 'A. (anything, Cons['A] | Nil,) -> ((Nil, Nil,) | error)
+//│ fun mapPartition: forall 'A. (anything, Cons['A] | Nil,) -> (error | (Nil, Nil,))
 //│ Code generation encountered an error:
 //│   unknown match case: Tuple#2

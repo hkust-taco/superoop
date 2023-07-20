@@ -66,7 +66,8 @@ object Helpers {
     case IfBlock(lines) => s"IfBlock(${
       lines.iterator.map {
         case L(body) => inspect(body)
-        case R(NuFunDef(S(isRec), nme, _, L(rhs))) =>
+        case R(NuFunDef(S(isRec), nme, _, L(rhs), wc)) =>
+          if (wc.nonEmpty) ???
           s"Let($isRec, ${nme.name}, ${inspect(rhs)})"
         case R(_) => ???
       }.mkString(";")
@@ -83,11 +84,14 @@ object Helpers {
   def inspect(t: TypingUnit): Str = t.entities.iterator
     .map {
       case term: Term => inspect(term)
-      case NuFunDef(lt, nme, targs, L(term)) =>
+      case NuFunDef(lt, nme, targs, L(term), wc) =>
+        if (wc.nonEmpty) ???
         s"NuFunDef(${lt}, ${nme.name}, ${targs.mkString("[", ", ", "]")}, ${inspect(term)})"
-      case NuFunDef(lt, nme, targs, R(ty)) =>
+      case NuFunDef(lt, nme, targs, R(ty), wc) =>
+        if (wc.nonEmpty) ???
         s"NuFunDef(${lt}, ${nme.name}, ${targs.mkString("[", ", ", "]")}, $ty)"
-      case NuTypeDef(kind, nme, tparams, params, ctor, sig, parents, sup, ths, body) =>
+      case NuTypeDef(kind, nme, tparams, params, ctor, sig, parents, sup, ths, body, wc) =>
+        if (wc.nonEmpty) ???
         s"NuTypeDef(${kind.str}, ${nme.name}, ${tparams.mkString("(", ", ", ")")}, ${
           inspect(params.getOrElse(Tup(Nil)))}, ${parents.map(inspect).mkString("(", ", ", ")")}, $sup, $ths, ${inspect(body)})"
       case others => others.toString()

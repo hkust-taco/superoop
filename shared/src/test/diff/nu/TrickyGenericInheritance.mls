@@ -55,11 +55,11 @@ c1.f
 (c1 : T1['X]).f
 //│ 'f
 //│   where
-//│     'f :> 'X -> 'X
 //│     'X :> Int
 //│        <: 'FigureItOut
 //│     'FigureItOut :> Int
 //│                  <: 'X & Int
+//│     'f :> 'X -> 'X
 //│ res
 //│     = [Function: f]
 

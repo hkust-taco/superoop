@@ -55,6 +55,8 @@ let rec x = { f = x } in x
 //│ res: 'x
 //│   where
 //│     'x :> {f: 'x}
+//│ where
+//│   'x :> {f: 'x}
 //│ Code generation encountered an error:
 //│   recursive non-function definition x is not supported
 
@@ -63,6 +65,8 @@ let x = { f = x } in x
 //│ res: 'x
 //│   where
 //│     'x :> {f: 'x}
+//│ where
+//│   'x :> {f: 'x}
 //│ Code generation encountered an error:
 //│   unresolved symbol x
 
@@ -75,6 +79,8 @@ class A
 //│ Defined A.M: A -> 'M
 //│   where
 //│     'M :> anything -> 'M
+//│ where
+//│   'M :> anything -> 'M
 //│ Code generation encountered an error:
 //│   unresolved symbol M
 

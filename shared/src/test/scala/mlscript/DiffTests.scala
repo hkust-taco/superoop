@@ -498,7 +498,7 @@ class DiffTests
             val (typeDefs, stmts, newDefsResults) = if (newDefs) {
               
               val vars: Map[Str, typer.SimpleType] = Map.empty
-              val tpd = typer.typeTypingUnit(TypingUnit(p.tops), topLevel = true)(ctx, raise, vars)
+              val tpd = typer.typeTypingUnit(TypingUnit(p.tops), N)(ctx, raise, vars)
               
               def showTTU(ttu: typer.TypedTypingUnit, ind: Int): Unit = {
                 val indStr = "  " * ind
@@ -563,34 +563,9 @@ class DiffTests
               
               output(expStr.stripSuffix("\n"))
               
-              // // val exp = getType(typer.PolymorphicType(0, res_ty))
-              // // output(s"Typed: ${exp}")
-              // tpd.result.foreach { res_ty =>
-              //   val exp = getType(typer.PolymorphicType(0, res_ty))
-              //   output(s"Typed: ${exp.show}")
-              // }
-              // // */
-              
-              /* 
-              import typer._
-              
-              val mod = NuTypeDef(Nms, TypeName("ws"), Nil, Tup(Nil), Nil, TypingUnit(p.tops))
-              val info = new LazyTypeInfo(ctx.lvl, mod)(ctx, Map.empty)
-              // val modTpe = DeclType(ctx.lvl, info)
-              info.force()(raise)
-               */
-              
-              // val tpd = info
-              
-              
-              // val exp = typer.expandType(modTpe)(ctx)
-              // FirstClassDefn()
-              
-              
-              // (Nil, Nil, N)
               (Nil, Nil, S(p.tops.collect {
                 // case LetS(isRec, pat, bod) => ("res", Nil, Nil, false)
-                case NuFunDef(isLet @ S(_), nme, tparams, bod) =>
+                case NuFunDef(isLet @ S(_), nme, tparams, bod, wc) =>
                   (nme.name + " ", nme.name :: Nil, Nil, false)
                 case t: Term => ("res ", "res" :: Nil, Nil, false)
               }))

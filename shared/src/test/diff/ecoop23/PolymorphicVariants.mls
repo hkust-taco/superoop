@@ -39,7 +39,7 @@ mixin EvalVar {
         NotFound then v
         Success(r) then r
 }
-//│ mixin EvalVar() {
+//│ mixin EvalVar {
 //│   fun eval: (Cons[{_1: anything, _2: 'result}] | Nil, Var,) -> (Var | 'result)
 //│ }
 
@@ -70,7 +70,7 @@ mixin EvalLambda {
     else
       super.eval(sub, v)
 }
-//│ mixin EvalLambda() {
+//│ mixin EvalLambda {
 //│   super: {eval: ('a, 'b,) -> 'c}
 //│   this: {eval: ('a, 's,) -> ('A & 'd) & (Cons[(Str, 'd,)], 't,) -> 'c & (Cons[(Str, Var,) | 'A0], 't0,) -> 'A1}
 //│   fun eval: ('a & (Cons['A0] | Nil), Abs['t0] | App['s & (Abs['t] | Object & ~#Abs)] | Object & 'b & ~#Abs & ~#App,) -> (Abs['A1] | App['A] | 'c)
@@ -78,43 +78,48 @@ mixin EvalLambda {
 
 module Test1 extends EvalVar, EvalLambda
 //│ module Test1 {
-//│   fun eval: forall 'a. (Cons[{_1: anything, _2: 'result}] | Nil, Abs['b] | App['A] | Var,) -> ('result | 'a)
-//│ }
-//│ where
-//│   'b <: Abs['b] | App['A] | Var
-//│   'A <: 'b & (Abs['b] | Object & ~#Abs)
-//│   'result :> Var | 'a
-//│   'a :> App['result] | Abs['result]
+//│   fun eval: forall 'b. (Cons[{_1: anything, _2: 'result}] | Nil, Abs['a] | App['A] | Var,) -> ('result | 'b)
+//│     where
+//│       'b :> App['result] | Abs['result]
+//│ } where
+//│     'result :> Var | 'b
+//│     'b :> App['result] | Abs['result]
+//│     'a <: Abs['a] | App['A] | Var
+//│     'A <: 'a & (Abs['a] | Object & ~#Abs)
 
 Test1.eval(Nil, Var("a"))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Var
 //│ res
 //│     = Var {}
 
 Test1.eval(Nil, Abs("b", Var("a")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> Var | 'a
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> Var | 'a
 //│ res
 //│     = Abs {}
 
 Test1.eval(Cons(("c", Var("d")), Nil), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Var
 //│ res
 //│     = Var {}
 
 Test1.eval(Cons(("c", Abs("d", Var("d"))), Nil), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Var
 //│ res
 //│     = Var {}
 
@@ -143,7 +148,7 @@ mixin EvalExpr {
       Mul(Numb(l), Numb(r)) then Numb(l * r)
     else v
 }
-//│ mixin EvalExpr() {
+//│ mixin EvalExpr {
 //│   super: {eval: ('a, Var,) -> 'b}
 //│   this: {eval: ('a, 'c,) -> Object}
 //│   fun eval: ('a, 'b & (Add['c] | Mul['c] | Numb | Var),) -> (Numb | 'b)
@@ -152,9 +157,8 @@ mixin EvalExpr {
 module Test2 extends EvalVar, EvalExpr
 //│ module Test2 {
 //│   fun eval: forall 'a. (Cons[{_1: anything, _2: Object & 'result}] | Nil, 'a & (Add['b] | Mul['b] | Numb | Var),) -> (Numb | Var | 'result | 'a | 'b)
-//│ }
-//│ where
-//│   'b <: Add['b] | Mul['b] | Numb | Var
+//│ } where
+//│     'b <: Add['b] | Mul['b] | Numb | Var
 
 Test2.eval(Nil, Var("a"))
 //│ Numb | Var
@@ -175,16 +179,16 @@ Test2.eval(Cons(("a", Numb(1)), Nil), Var("a"))
 :e
 Test2.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.176: 	Test2.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
+//│ ║  l.180: 	Test2.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Abs[?A]` does not match type `Add[?A0] | Mul[?A1] | Numb | Var`
-//│ ║  l.176: 	Test2.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
+//│ ║  l.180: 	Test2.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ║         	                                                 ^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.129: 	  if v is
+//│ ║  l.134: 	  if v is
 //│ ║         	     ^
 //│ ╟── from reference:
-//│ ║  l.139: 	    let vv = map_expr(eta, v)
+//│ ║  l.144: 	    let vv = map_expr(eta, v)
 //│ ╙──       	                           ^
 //│ Abs[Var] | Numb | Var | error
 //│ res
@@ -198,30 +202,34 @@ Test2.eval(Cons(("a", Abs("d", Var("d"))), Nil), Add(Numb(1), Var("a")))
 
 module Test3 extends EvalVar, EvalExpr, EvalLambda
 //│ module Test3 {
-//│   fun eval: forall 'a 'A. (Cons[{_1: anything, _2: 'result}] | Nil, Abs['b] | App['A] | Object & 'c & ~#Abs & ~#App,) -> ('A0 | 'a)
-//│ }
-//│ where
-//│   'result :> 'A0 | Var
-//│           <: Object
-//│   'A0 :> 'a | Numb | Var | 'result | 'c
-//│   'c <: Add['b] | Mul['b] | Numb | Var
-//│   'b <: Abs['b] | App['A] | Object & 'c & ~#Abs & ~#App
-//│   'A <: 'b & (Abs['b] | Object & ~#Abs)
-//│   'a :> App['A0] | Abs['A0]
+//│   fun eval: forall 'A 'c. (Cons[{_1: anything, _2: 'result}] | Nil, Abs['a] | App['A] | Object & 'b & ~#Abs & ~#App,) -> ('A0 | 'c)
+//│     where
+//│       'A <: 'a & (Abs['a] | Object & ~#Abs)
+//│       'c :> App['A0] | Abs['A0]
+//│ } where
+//│     'result :> 'A0
+//│             <: Object
+//│     'A0 :> Numb | Var | 'result | 'b | 'c
+//│     'b <: Add['a] | Mul['a] | Numb | Var
+//│     'a <: Abs['a] | App['A] | Object & 'b & ~#Abs & ~#App
+//│     'A <: 'a & (Abs['a] | Object & ~#Abs)
+//│     'c :> App['A0] | Abs['A0]
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Numb | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Numb | Var
 //│ res
 //│     = Abs {}
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), App(Abs("a", Var("a")), Add(Numb(1), Var("c"))))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Add[Numb | Var] | Numb | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Add[Numb | Var] | Numb | Var
 //│ res
 //│     = Var {}
 
@@ -229,30 +237,29 @@ Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), App(Abs("a", Var("a")), Add(Num
 module Test3 extends EvalVar, EvalLambda, EvalExpr
 //│ module Test3 {
 //│   fun eval: (Cons[{_1: anything, _2: 'result}] | Nil, 'result & (Add['a] | Mul['a] | Numb | Var),) -> ('A | 'result | 'a)
-//│ }
-//│ where
-//│   'result :> 'A | Var | 'a
-//│           <: Object
-//│   'a <: Add['a] | Mul['a] | Numb | Var
-//│   'A :> Numb | 'result | Abs['A] | App['A] | Var
+//│ } where
+//│     'result :> 'A | 'a
+//│             <: Object
+//│     'A :> Numb | 'result | Abs['A] | App['A] | Var
+//│     'a <: Add['a] | Mul['a] | Numb | Var
 
 // * Because EvalExpr does not dispatch lambdas to super and map_expr only
 // * handles exprs
 :e
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.242: 	Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
+//│ ║  l.249: 	Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Abs[?A]` does not match type `Add[?A0] | Mul[?A1] | Numb | Var`
-//│ ║  l.242: 	Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
+//│ ║  l.249: 	Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil), Abs("a", Var("a")))
 //│ ║         	                                                 ^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.129: 	  if v is
+//│ ║  l.134: 	  if v is
 //│ ║         	     ^
 //│ ╟── from reference:
-//│ ║  l.139: 	    let vv = map_expr(eta, v)
+//│ ║  l.144: 	    let vv = map_expr(eta, v)
 //│ ╙──       	                           ^
-//│ 'A | Abs[Var] | Numb | error
+//│ error | 'A
 //│   where
 //│     'A :> Abs[Var] | Numb | Abs['A] | App['A] | Var
 //│ res

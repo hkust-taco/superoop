@@ -23,7 +23,7 @@ module Foo {
 
 
 mixin Foo { fun f = this.x }
-//│ mixin Foo() {
+//│ mixin Foo {
 //│   this: {x: 'x}
 //│   fun f: 'x
 //│ }

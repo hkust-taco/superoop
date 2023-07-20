@@ -102,7 +102,7 @@ class Bar extends Foo {
 //│ }
 
 mixin M { fun x = false }
-//│ mixin M() {
+//│ mixin M {
 //│   fun x: false
 //│ }
 

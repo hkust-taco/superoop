@@ -2,7 +2,7 @@
 
 
 mixin T { fun a = "hi" }
-//│ mixin T() {
+//│ mixin T {
 //│   fun a: "hi"
 //│ }
 
@@ -29,7 +29,7 @@ class C(a: Int) extends B
 
 
 mixin M { let b = "hi" }
-//│ mixin M() {
+//│ mixin M {
 //│   let b: "hi"
 //│ }
 

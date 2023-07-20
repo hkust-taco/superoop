@@ -50,9 +50,11 @@ fun foo = {x: foo}
 fun foo = {x: bar}
 fun bar = {y: foo}
 //│ fun foo: forall 'foo. 'foo
+//│   where
+//│     'foo :> {x: {y: 'foo}}
 //│ fun bar: forall 'foo. {y: 'foo}
-//│ where
-//│   'foo :> {x: {y: 'foo}}
+//│   where
+//│     'foo :> {x: {y: 'foo}}
 
 :re
 foo
@@ -95,17 +97,19 @@ foo.x.y
 fun foo(a) = {h: a, t: bar(a)}
 fun bar(b) = foo(b)
 //│ fun foo: forall 'a 'b. 'a -> 'b
+//│   where
+//│     'b :> {h: 'a, t: 'b}
 //│ fun bar: forall 'a 'b. 'a -> 'b
-//│ where
-//│   'b :> {h: 'a, t: 'b}
+//│   where
+//│     'b :> {h: 'a, t: 'b}
 
 :ns
 foo
-//│ forall 'a 'b 'c. 'a -> {h: 'a, t: 'c}
+//│ forall 'a 'c 'b. 'a -> {h: 'a, t: 'b}
 //│   where
-//│     'c :> {h: 'a, t: 'c}
-//│     'a <: 'b
-//│     'b <: 'a
+//│     'a <: 'c
+//│     'c <: 'a
+//│     'b :> {h: 'a, t: 'b}
 //│ res
 //│     = [Function: foo3]
 
@@ -113,10 +117,13 @@ foo
 fun foo(a) = {h1: a, t1: bar(a)}
 fun bar(b) = {h2: b, t2: foo(b)}
 //│ fun foo: forall 'a 'b 'c. 'a -> 'b
-//│ fun bar: forall 'a 'c. 'a -> 'c
-//│ where
-//│   'b :> {h1: 'a, t1: 'c}
-//│   'c :> {h2: 'a, t2: 'b}
+//│   where
+//│     'b :> {h1: 'a, t1: 'c}
+//│     'c :> {h2: 'a, t2: 'b}
+//│ fun bar: forall 'a 'b 'c. 'a -> 'c
+//│   where
+//│     'b :> {h1: 'a, t1: 'c}
+//│     'c :> {h2: 'a, t2: 'b}
 
 
 
@@ -160,7 +167,7 @@ module Test1_2 {
   fun b = Test1_1.a
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.160: 	  fun b = Test1_1.a
+//│ ║  l.167: 	  fun b = Test1_1.a
 //│ ╙──       	                 ^^
 //│ module Test1_1 {
 //│   fun a: error
@@ -185,7 +192,7 @@ class Test1_2 {
   fun b = Test1_1().a
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.185: 	  fun b = Test1_1().a
+//│ ║  l.192: 	  fun b = Test1_1().a
 //│ ╙──       	                   ^^
 //│ class Test1_1 {
 //│   fun a: error
@@ -208,7 +215,7 @@ module Test2_2 {
   fun e = Test2_1.n
 }
 //│ ╔══[ERROR] Indirectly-recursive member should have type annotation
-//│ ║  l.207: 	  fun c = Test2_1.a
+//│ ║  l.214: 	  fun c = Test2_1.a
 //│ ╙──       	                 ^^
 //│ module Test2_1 {
 //│   fun a: 123 | error

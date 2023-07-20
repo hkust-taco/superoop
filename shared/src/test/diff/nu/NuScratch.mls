@@ -1,3 +1,68 @@
 :NewDefs
 
+:s
+class Add[out E](lhs: E, rhs: E)
+class Lit(n: Int)
+class Neg[out E](expr: E)
+let add11 = Add(Lit(1), Lit(2))
+let add2negadd11 = Add(Lit(2), Neg(add11))
+mixin EvalAddLit {
+  fun eval(e) =
+    if e is
+      Lit(n) then n
+      Add(l, r) then this.eval(l) + this.eval(r)
+}
+mixin EvalNeg {
+  fun eval(override Neg(d)) = 0 - this.eval(d)
+}
+module TestLang extends EvalAddLit, EvalNeg
+let res = TestLang.eval(add2negadd11)
+//│ class Add[E](lhs: E, rhs: E)
+//│ class Lit(n: Int)
+//│ class Neg[E](expr: E)
+//│ let add11: Add[Lit]
+//│ let add2negadd11: Add[Lit | Neg[Add[Lit]]]
+//│ mixin EvalAddLit {
+//│   this: {eval: 'lhs -> Int}
+//│   fun eval: (Add['lhs] | Lit) -> Int
+//│ }
+//│ mixin EvalNeg {
+//│   super: {eval: 'a -> 'b}
+//│   this: {eval: 'expr -> Int}
+//│   fun eval: (Neg['expr] | Object & 'a & ~#Neg) -> (Int | 'b)
+//│ }
+//│ module TestLang {
+//│   fun eval: 'c -> Int
+//│ } where
+//│     'c <: Neg['c] | Object & (Add['c] | Lit) & ~#Neg
+//│ let res: Int
+//│ add11
+//│       = Add {}
+//│ add2negadd11
+//│              = Add {}
+//│ res
+//│     = -1
+
+
+:re
+class Foo[X](x: X -> X)
+let a = Foo(error)
+a.x(0)
+[a]
+//│ class Foo[X](x: X -> X)
+//│ let a: Foo['X]
+//│ (Foo['X],)
+//│ where
+//│   'X :> 0
+//│ a
+//│ Runtime error:
+//│   Error: unexpected runtime error
+//│ res
+//│ Runtime error:
+//│   ReferenceError: a is not defined
+//│ res
+//│ Runtime error:
+//│   ReferenceError: a is not defined
+
+
 

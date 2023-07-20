@@ -21,8 +21,11 @@ Bar.Fun
 f = Foo { x = 1; y = 2 }
 //│ f: Foo['A, 'B] & {x: 1, y: 2}
 //│   where
-//│     'B :> 2
 //│     'A :> 1
+//│     'B :> 2
+//│ where
+//│   'B :> 2
+//│   'A :> 1
 //│  = Foo { x: 1, y: 2 }
 
 f.(Foo.Fun)
@@ -249,19 +252,19 @@ class Class3C: Class2C
     method MtdA = 42
     method MtdB = 42
 //│ ╔══[ERROR] Type mismatch in method definition:
-//│ ║  l.250: 	    method MtdB = 42
+//│ ║  l.253: 	    method MtdB = 42
 //│ ║         	           ^^^^^^^^^
 //│ ╟── integer literal of type `42` is not an instance of type `bool`
-//│ ║  l.250: 	    method MtdB = 42
+//│ ║  l.253: 	    method MtdB = 42
 //│ ║         	                  ^^
 //│ ╟── but it flows into method definition with expected type `bool`
-//│ ║  l.250: 	    method MtdB = 42
+//│ ║  l.253: 	    method MtdB = 42
 //│ ║         	           ^^^^^^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.234: 	class Class2C: Class2B[int, bool]
+//│ ║  l.237: 	class Class2C: Class2B[int, bool]
 //│ ║         	                            ^^^^
 //│ ╟── from inherited method declaration:
-//│ ║  l.233: 	    method MtdB: B
+//│ ║  l.236: 	    method MtdB: B
 //│ ╙──       	           ^^^^^^^
 //│ Defined class Class3C
 //│ Defined Class3C.MtdA: Class3C -> 42
@@ -283,10 +286,10 @@ class Test2[B]: Test1[Id[B]] & { x: B }
 class Test3A: Test1['a -> 'a]
 Test3A.F
 //│ ╔══[ERROR] cannot inherit from a polymorphic type
-//│ ║  l.283: 	class Test3A: Test1['a -> 'a]
+//│ ║  l.286: 	class Test3A: Test1['a -> 'a]
 //│ ╙──       	      ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] identifier not found: Test3A
-//│ ║  l.284: 	Test3A.F
+//│ ║  l.287: 	Test3A.F
 //│ ╙──       	^^^^^^
 //│ res: nothing
 //│    = undefined
@@ -301,10 +304,10 @@ Test3A.F
 class Test3B: Test1['a -> 'a] & { x: 'a }
 Test3B.F
 //│ ╔══[ERROR] cannot inherit from a polymorphic type
-//│ ║  l.301: 	class Test3B: Test1['a -> 'a] & { x: 'a }
+//│ ║  l.304: 	class Test3B: Test1['a -> 'a] & { x: 'a }
 //│ ╙──       	      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] identifier not found: Test3B
-//│ ║  l.302: 	Test3B.F
+//│ ║  l.305: 	Test3B.F
 //│ ╙──       	^^^^^^
 //│ res: nothing
 //│    = undefined
@@ -315,10 +318,10 @@ Test3B.F
 class Test4A[A]: { x: A }
     method Mth4A[A]: A
 //│ ╔══[WARNING] Method type parameter A
-//│ ║  l.315: 	class Test4A[A]: { x: A }
+//│ ║  l.318: 	class Test4A[A]: { x: A }
 //│ ║         	             ^
 //│ ╟── shadows class type parameter A
-//│ ║  l.316: 	    method Mth4A[A]: A
+//│ ║  l.319: 	    method Mth4A[A]: A
 //│ ╙──       	                 ^
 //│ Defined class Test4A[+A]
 //│ Declared Test4A.Mth4A: Test4A[?] -> nothing
@@ -370,13 +373,13 @@ Ber.F
 :e
 Ber
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.371: 	Ber
+//│ ║  l.374: 	Ber
 //│ ║         	^^^
 //│ ╟── Note that class Ber is abstract:
-//│ ║  l.363: 	class Ber: Fee & Fee2
+//│ ║  l.366: 	class Ber: Fee & Fee2
 //│ ║         	      ^^^^^^^^^^^^^^^
 //│ ╟── Hint: method F is abstract
-//│ ║  l.363: 	class Ber: Fee & Fee2
+//│ ║  l.366: 	class Ber: Fee & Fee2
 //│ ╙──       	      ^^^^^^^^^^^^^^^
 //│ res: error
 //│    = [Function: res]

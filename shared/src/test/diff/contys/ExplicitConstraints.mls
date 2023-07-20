@@ -51,7 +51,7 @@ fun f: 'a => ('a where 'a : string) where int : 'a
 //│ ╟── from type variable:
 //│ ║  l.41: 	fun f: 'a => ('a where 'a : string) where int : 'a
 //│ ╙──      	                                                ^^
-//│ f: (string & 'a) -> ('a | int)
+//│ f: (string & 'a) -> (int | 'a)
 
 
 :e
@@ -70,7 +70,7 @@ fun f: 'a => 'a where
 //│ ╟── from type variable:
 //│ ║  l.60: 	  int : 'a
 //│ ╙──      	        ^^
-//│ f: (string & 'a) -> ('a | int)
+//│ f: (string & 'a) -> (int | 'a)
 
 
 :e
@@ -90,22 +90,24 @@ fun f: 'a => forall 'b; 'a where
 //│ ╟── from type variable:
 //│ ║  l.80: 	  int : 'a
 //│ ╙──      	        ^^
-//│ f: (string & 'a) -> ('a | int)
+//│ f: (string & 'a) -> (int | 'a)
 
 
 // * Constraint is stashed!
 fun f: 'a => forall 'b; 'a where
   'a : 'b => 'b
   int : 'a
-//│ f: 'a -> ('a | int
+//│ f: 'a -> (int | 'a
 //│   where
-//│     'a | int <: 'b -> 'b)
+//│     int | 'a <: 'b -> 'b)
 
 :ns
 f
 //│ res: forall 'a. 'a -> (forall 'b. 'a
 //│   where
 //│     'a <: 'b -> 'b)
+//│ where
+//│   'a :> int
 //│ where
 //│   'a :> int
 
@@ -122,11 +124,16 @@ r
 //│       where
 //│         'a <: 'b -> 'b
 //│     'a :> int
+//│ where
+//│   'c :> forall 'b. 'a
+//│     where
+//│       'a <: 'b -> 'b
+//│   'a :> int
 
 :e
 r(2)
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.127: 	r(2)
+//│ ║  l.134: 	r(2)
 //│ ║         	^^^^
 //│ ╟── type `int` is not a function
 //│ ║  l.99: 	  int : 'a
@@ -139,7 +146,7 @@ r(2)
 :e
 r + 1
 //│ ╔══[ERROR] Type mismatch in operator application:
-//│ ║  l.140: 	r + 1
+//│ ║  l.147: 	r + 1
 //│ ║         	^^^
 //│ ╟── type `int` is not a function
 //│ ║  l.99: 	  int : 'a
@@ -155,13 +162,15 @@ fun f: 'a => forall 'b; 'b where
   int : 'a
 //│ f: 'a -> ('b
 //│   where
-//│     'a | int <: 'b -> 'b)
+//│     int | 'a <: 'b -> 'b)
 
 :ns
 f
 //│ res: forall 'a. 'a -> (forall 'b. 'b
 //│   where
 //│     'a <: 'b -> 'b)
+//│ where
+//│   'a :> int
 //│ where
 //│   'a :> int
 
@@ -173,26 +182,26 @@ let r = f(1)
 :e
 r(2)
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.174: 	r(2)
+//│ ║  l.183: 	r(2)
 //│ ║         	^^^^
 //│ ╟── type `int` is not a function
-//│ ║  l.155: 	  int : 'a
+//│ ║  l.162: 	  int : 'a
 //│ ║         	  ^^^
 //│ ╟── Note: constraint arises from function type:
-//│ ║  l.154: 	  'a : 'b => 'b
+//│ ║  l.161: 	  'a : 'b => 'b
 //│ ╙──       	       ^^^^^^^^
 //│ res: error
 
 :e
 r + 1
 //│ ╔══[ERROR] Type mismatch in operator application:
-//│ ║  l.187: 	r + 1
+//│ ║  l.196: 	r + 1
 //│ ║         	^^^
 //│ ╟── type `int` is not a function
-//│ ║  l.155: 	  int : 'a
+//│ ║  l.162: 	  int : 'a
 //│ ║         	  ^^^
 //│ ╟── Note: constraint arises from function type:
-//│ ║  l.154: 	  'a : 'b => 'b
+//│ ║  l.161: 	  'a : 'b => 'b
 //│ ╙──       	       ^^^^^^^^
 //│ res: error | int
 
