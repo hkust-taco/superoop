@@ -194,6 +194,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )
     }}
     
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    
     // def varsBetween(lb: Level, ub: Level): Set[TV] = 
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
@@ -308,6 +310,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )(this.instanceType.freshenAbove(lim, rigidify))
     }}
     
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuCls =
         TypedNuCls(level, td,
@@ -366,6 +370,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
       )
     }}
     
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
+    
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuMxn =
       TypedNuMxn(level, td, f(pol.map(!_), thisTy), f(pol.map(!_), superTy),
@@ -394,6 +400,7 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
     def freshenAbove(lim: Int, rigidify: Bool)
           (implicit ctx: Ctx, shadows: Shadows, freshened: MutMap[TV, ST]) =
       this
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuTermDef =
       this
@@ -418,6 +425,8 @@ class NuTypeDefs extends ConstraintSolver { self: Typer =>
         TypedNuFun(outer.lvl, fd, ty.freshenAbove(lim, rigidify))(isImplemented)
           // .tap(res => println(s"Freshen[$level,${ctx.lvl}] $this ~> $res"))
     }}}
+    
+    def varsBetween(lb: Level, ub: Level): Set[TV] = ???
     
     def mapPol(pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): TypedNuFun =
