@@ -6,12 +6,16 @@ def foo: ('a,) as 'a
 //│ foo: 'a
 //│   where
 //│     'a :> ('a,)
+//│ where
+//│   'a :> ('a,)
 //│    = <missing implementation>
 
 def bar: (('b,) as 'b) -> ()
 //│ bar: 'b -> ()
 //│   where
 //│     'b <: ('b,)
+//│ where
+//│   'b <: ('b,)
 //│    = <missing implementation>
 
 
@@ -33,6 +37,9 @@ def f = id : 'c -> 'c
 //│   where
 //│     'c <: 'a
 //│     'a <: 'c
+//│ where
+//│   'c <: 'a
+//│   'a <: 'c
 //│  = [Function: f]
 
 f 1 + 2
@@ -47,7 +54,7 @@ f 1 + 2
 :e
 bar foo
 //│ ╔══[ERROR] Cyclic-looking constraint while typing application; a type annotation may be required
-//│ ║  l.48: 	bar foo
+//│ ║  l.55: 	bar foo
 //│ ║        	^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ res: error | ()

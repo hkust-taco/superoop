@@ -155,12 +155,15 @@ def stepImpl_Ann_4 arrImpl = {
 //│   where
 //│     'r :> ('c, "hey" | "hi",)
 //│        <: ('b, anything,)
+//│ where
+//│   'r :> ('c, "hey" | "hi",)
+//│      <: ('b, anything,)
 //│               = [Function: stepImpl_Ann_4]
 
 :e // * Since "sound extrusion"
 test = stepImpl_Ann_4 baseImpl
 //│ ╔══[ERROR] Type error in application
-//│ ║  l.161: 	test = stepImpl_Ann_4 baseImpl
+//│ ║  l.164: 	test = stepImpl_Ann_4 baseImpl
 //│ ║         	       ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'b` leaks out of its scope
 //│ ║  l.15: 	    fold: forall 'b. (A -> 'b -> 'b) -> 'b -> Rep -> 'b
@@ -186,10 +189,13 @@ stepImpl_ty = stepImpl_Ann_4
 //│   where
 //│     'r :> ('c, "hey" | "hi",)
 //│        <: ('b, anything,)
+//│ where
+//│   'r :> ('c, "hey" | "hi",)
+//│      <: ('b, anything,)
 //│   <:  stepImpl_ty:
 //│ ArraysRep['a, 'r] -> ArraysRep['a, ('r, string,)]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.184: 	stepImpl_ty = stepImpl_Ann_4
+//│ ║  l.187: 	stepImpl_ty = stepImpl_Ann_4
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'b` leaks out of its scope
 //│ ║  l.15: 	    fold: forall 'b. (A -> 'b -> 'b) -> 'b -> Rep -> 'b
@@ -207,7 +213,7 @@ stepImpl_ty = stepImpl_Ann_4
 // def stepImpl2 (arr: Arrays['a]) = arr stepImpl
 
 def stepImpl2 arr = arr stepImpl
-//│ stepImpl2: ((forall 'e 'a 'k 'j 'f 'b 'i 'g 'm 'c 'h 'l 'd. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> 'n
+//│ stepImpl2: ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> 'n
 //│          = [Function: stepImpl2]
 
 def stepImpl2_ arr = arr stepImpl_ty
@@ -222,14 +228,17 @@ def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
 //│                = [Function: stepImpl2_Ann_2]
 
 def stepImpl2_Ann_3 arr = arr stepImpl_Ann_3
-//│ stepImpl2_Ann_3: ((forall 'c 'h 'f 'd 'e 'a 'b 'i 'g. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> 'j
+//│ stepImpl2_Ann_3: ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> 'j
 //│                = [Function: stepImpl2_Ann_3]
 
 def stepImpl2_Ann_4 arr = arr stepImpl_Ann_4
-//│ stepImpl2_Ann_4: ((forall 'a 'b 'c 'r. {fold: ('a -> ??b -> ??b0) -> ??b0 -> 'b -> ??b, init: 'a -> ('b & 'c), sub: 'b -> int -> 'a, update: 'b -> int -> 'a -> ('b & 'c)} -> ArraysRep['a, 'r]) -> 'd) -> 'd
+//│ stepImpl2_Ann_4: ((forall 'a 'b 'c 'r. {fold: ('a -> ??b -> ??b0) -> ??b0 -> 'b -> ??b, init: 'a -> ('b & 'c), sub: 'b -> int -> 'a, update: 'b -> int -> 'a -> ('b & 'c)} -> ArraysRep['a, 'r]
 //│   where
 //│     'r :> ('c, "hey" | "hi",)
-//│        <: ('b, anything,)
+//│        <: ('b, anything,)) -> 'd) -> 'd
+//│ where
+//│   'r :> ('c, "hey" | "hi",)
+//│      <: ('b, anything,)
 //│                = [Function: stepImpl2_Ann_4]
 
 def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
@@ -249,21 +258,21 @@ def step: Arrays['a] -> Arrays['a]
 // * But this problem actually disappeared after fixing a subtle bug in type freshening...!
 :e // * Since "sound extrusion"
 def step arr f = f (stepImpl2 arr)
-//│ ((forall 'e 'l 'm 'f 'i 'c 'b 'k 'a 'h 'd 'j 'g. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> ('n -> 'o) -> 'o
+//│ ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm. {fold: 'a -> 'b -> 'c -> 'd, init: 'e -> 'f, sub: 'g -> 'h -> 'i, update: 'j -> 'k -> 'l -> 'm} -> {fold: 'a -> 'b -> ('c, anything,) -> 'd, init: 'e -> ('f, "hi",), sub: ('g, anything,) -> 'h -> 'i, update: ('j, anything,) -> 'k -> 'l -> ('m, "hey",)}) -> 'n) -> ('n -> 'o) -> 'o
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.251: 	def step arr f = f (stepImpl2 arr)
+//│ ║  l.260: 	def step arr f = f (stepImpl2 arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.19: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
 //│ ║        	                                            ^^^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this applied expression:
-//│ ║  l.209: 	def stepImpl2 arr = arr stepImpl
+//│ ║  l.215: 	def stepImpl2 arr = arr stepImpl
 //│ ║         	                    ^^^
 //│ ╟── • this reference:
-//│ ║  l.251: 	def step arr f = f (stepImpl2 arr)
+//│ ║  l.260: 	def step arr f = f (stepImpl2 arr)
 //│ ║         	                              ^^^
 //│ ╟── • this function:
 //│ ║  l.57: 	def stepImpl arrImpl = {
@@ -279,7 +288,7 @@ def step arr f = f (stepImpl2 arr)
 //│ ║  l.62: 	  }
 //│ ║        	^^^
 //│ ╟── • this reference:
-//│ ║  l.209: 	def stepImpl2 arr = arr stepImpl
+//│ ║  l.215: 	def stepImpl2 arr = arr stepImpl
 //│ ║         	                        ^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.59: 	    sub    = fun ((r0, r1)) -> fun i -> arrImpl.sub r0 i;
@@ -295,17 +304,17 @@ def step arr f = f (stepImpl2_Ann_2 arr)
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.293: 	def step arr f = f (stepImpl2_Ann_2 arr)
+//│ ║  l.302: 	def step arr f = f (stepImpl2_Ann_2 arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.19: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
 //│ ║        	                                            ^^^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this applied expression:
-//│ ║  l.220: 	def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
+//│ ║  l.226: 	def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
 //│ ║         	                          ^^^
 //│ ╟── • this reference:
-//│ ║  l.293: 	def step arr f = f (stepImpl2_Ann_2 arr)
+//│ ║  l.302: 	def step arr f = f (stepImpl2_Ann_2 arr)
 //│ ║         	                                    ^^^
 //│ ╟── • this function:
 //│ ║  l.104: 	def stepImpl_Ann_2 (arrImpl: ArraysRep['a, 'r]) = {
@@ -321,7 +330,7 @@ def step arr f = f (stepImpl2_Ann_2 arr)
 //│ ║  l.109: 	  }
 //│ ║         	^^^
 //│ ╟── • this reference:
-//│ ║  l.220: 	def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
+//│ ║  l.226: 	def stepImpl2_Ann_2 arr = arr stepImpl_Ann_2
 //│ ║         	                              ^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.106: 	    sub    = fun ((r0, r1)) -> fun i -> arrImpl.sub r0 i;
@@ -330,14 +339,14 @@ def step arr f = f (stepImpl2_Ann_2 arr)
 
 :e
 def step arr f = f (stepImpl2_Ann_3 arr)
-//│ ((forall 'h 'a 'e 'i 'd 'c 'g 'b 'f. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> ('j -> 'k) -> 'k
+//│ ((forall 'a 'b 'c 'd 'e 'f 'g 'h 'i. {fold: (??a -> ??b -> ??b0) -> ??b0 -> ??rep -> ??b, init: 'a -> 'b, sub: 'c -> 'd -> 'e, update: 'f -> 'g -> 'h -> 'i} -> {fold: Fold[nothing, (anything, string,)], init: 'a -> ('b, "hi",), sub: ('c, anything,) -> 'd -> 'e, update: ('f, anything,) -> 'g -> 'h -> ('i, "hey",)}) -> 'j) -> ('j -> 'k) -> 'k
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.332: 	def step arr f = f (stepImpl2_Ann_3 arr)
+//│ ║  l.341: 	def step arr f = f (stepImpl2_Ann_3 arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'a` leaks out of its scope
-//│ ║  l.243: 	def step: Arrays['a] -> Arrays['a]
+//│ ║  l.252: 	def step: Arrays['a] -> Arrays['a]
 //│ ║         	                 ^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this function:
@@ -348,14 +357,17 @@ def step arr f = f (stepImpl2_Ann_3 arr)
 // * This used to be the only working one based on an internal annotation
 :e // * Since "sound extrusion"
 def step arr f = f (stepImpl2_Ann_4 arr)
-//│ ((forall 'a 'b 'c 'r. {fold: ('a -> ??b -> ??b0) -> ??b0 -> 'b -> ??b, init: 'a -> ('b & 'c), sub: 'b -> int -> 'a, update: 'b -> int -> 'a -> ('b & 'c)} -> ArraysRep['a, 'r]) -> 'd) -> ('d -> 'e) -> 'e
+//│ ((forall 'a 'b 'c 'r. {fold: ('a -> ??b -> ??b0) -> ??b0 -> 'b -> ??b, init: 'a -> ('b & 'c), sub: 'b -> int -> 'a, update: 'b -> int -> 'a -> ('b & 'c)} -> ArraysRep['a, 'r]
 //│   where
 //│     'r :> ('c, "hey" | "hi",)
-//│        <: ('b, anything,)
+//│        <: ('b, anything,)) -> 'd) -> ('d -> 'e) -> 'e
+//│ where
+//│   'r :> ('c, "hey" | "hi",)
+//│      <: ('b, anything,)
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.350: 	def step arr f = f (stepImpl2_Ann_4 arr)
+//│ ║  l.359: 	def step arr f = f (stepImpl2_Ann_4 arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'b` leaks out of its scope
 //│ ║  l.15: 	    fold: forall 'b. (A -> 'b -> 'b) -> 'b -> Rep -> 'b
@@ -375,7 +387,7 @@ def step arr f = f (stepImpl2_Ann_2_Ann arr)
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.373: 	def step arr f = f (stepImpl2_Ann_2_Ann arr)
+//│ ║  l.385: 	def step arr f = f (stepImpl2_Ann_2_Ann arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.19: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
@@ -395,10 +407,10 @@ def step arr f = f (stepImpl2_Ann_2_Ann arr)
 //│ ║  l.109: 	  }
 //│ ║         	^^^
 //│ ╟── • this reference:
-//│ ║  l.235: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
+//│ ║  l.244: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
 //│ ║         	                                                ^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.235: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
+//│ ║  l.244: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
 //│ ║         	                                            ^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.106: 	    sub    = fun ((r0, r1)) -> fun i -> arrImpl.sub r0 i;
@@ -407,11 +419,11 @@ def step arr f = f (stepImpl2_Ann_2_Ann arr)
 
 :e // * Since "sound extrusion"
 def step (arr: Arrays['a]) f = f (stepImpl2_Ann_2_Ann arr)
-//│ Arrays['a] -> ((forall 'r 'a0. {fold: forall 'b. ('a0 -> 'b -> 'b) -> 'b -> (??Rep & 'r, anything,) -> 'b, init: 'a0 -> ('r | ??Rep0, "hi",), sub: (??Rep & 'r, anything,) -> int -> 'a0, update: (??Rep & 'r, anything,) -> int -> 'a0 -> ('r | ??Rep0, "hey",)}) -> 'c) -> 'c
+//│ Arrays['a] -> ((forall 'a0 'r. {fold: forall 'b. ('a0 -> 'b -> 'b) -> 'b -> (??Rep & 'r, anything,) -> 'b, init: 'a0 -> ('r | ??Rep0, "hi",), sub: (??Rep & 'r, anything,) -> int -> 'a0, update: (??Rep & 'r, anything,) -> int -> 'a0 -> ('r | ??Rep0, "hey",)}) -> 'c) -> 'c
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.409: 	def step (arr: Arrays['a]) f = f (stepImpl2_Ann_2_Ann arr)
+//│ ║  l.421: 	def step (arr: Arrays['a]) f = f (stepImpl2_Ann_2_Ann arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.19: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
@@ -431,10 +443,10 @@ def step (arr: Arrays['a]) f = f (stepImpl2_Ann_2_Ann arr)
 //│ ║  l.109: 	  }
 //│ ║         	^^^
 //│ ╟── • this reference:
-//│ ║  l.235: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
+//│ ║  l.244: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
 //│ ║         	                                                ^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.235: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
+//│ ║  l.244: 	def stepImpl2_Ann_2_Ann (arr: Arrays['a]) = arr stepImpl_Ann_2
 //│ ║         	                                            ^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.106: 	    sub    = fun ((r0, r1)) -> fun i -> arrImpl.sub r0 i;
@@ -448,20 +460,20 @@ def step arr f = f (stepImpl2_ arr)
 //│   <:  step:
 //│ Arrays['a] -> Arrays['a]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.446: 	def step arr f = f (stepImpl2_ arr)
+//│ ║  l.458: 	def step arr f = f (stepImpl2_ arr)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.19: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
 //│ ║        	                                            ^^^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this applied expression:
-//│ ║  l.213: 	def stepImpl2_ arr = arr stepImpl_ty
+//│ ║  l.219: 	def stepImpl2_ arr = arr stepImpl_ty
 //│ ║         	                     ^^^
 //│ ╟── • this reference:
-//│ ║  l.446: 	def step arr f = f (stepImpl2_ arr)
+//│ ║  l.458: 	def step arr f = f (stepImpl2_ arr)
 //│ ║         	                               ^^^
 //│ ╟── • this reference:
-//│ ║  l.213: 	def stepImpl2_ arr = arr stepImpl_ty
+//│ ║  l.219: 	def stepImpl2_ arr = arr stepImpl_ty
 //│ ║         	                         ^^^^^^^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.52: 	def stepImpl_ty: ArraysRep['a, 'r] -> ArraysRep['a, ('r, string)]

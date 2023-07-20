@@ -1232,6 +1232,8 @@ add
 //│ res: 'x
 //│   where
 //│     'x :> {u: 0, v: 'x}
+//│ where
+//│   'x :> {u: 0, v: 'x}
 
 (let x = {u: 0, v: 0.v}; x)
 //│ ╔══[ERROR] Type mismatch in field selection:
@@ -1261,6 +1263,8 @@ add
 //│ res: 'x
 //│   where
 //│     'x :> {u: 'x}
+//│ where
+//│   'x :> {u: 'x}
 
 (x => (0 0))
 //│ ╔══[ERROR] Type mismatch in application:
@@ -2295,9 +2299,11 @@ add
 //│ res: {u: {v: int -> int -> int}}
 
 (let rec x = {v: x}; {u: x})
-//│ res: {u: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {v: 'x}
+//│     'x :> {v: 'x}}
+//│ where
+//│   'x :> {v: 'x}
 
 (x => {u: x, v: 0})
 //│ res: 'a -> {u: 'a, v: 0}
@@ -2405,24 +2411,40 @@ add
 //│ res: {u: {u: int -> int -> int}, v: {u: int -> int -> int}}
 
 (let rec x = {u: x}; {u: x, v: x})
-//│ res: {u: forall 'x. 'x, v: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {u: 'x}
+//│     'x :> {u: 'x}, v: forall 'x. 'x
+//│   where
+//│     'x :> {u: 'x}}
+//│ where
+//│   'x :> {u: 'x}
 
 (let rec x = {u: x, v: 0}; {u: x, v: x})
-//│ res: {u: forall 'x. 'x, v: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {u: 'x, v: 0}
+//│     'x :> {u: 'x, v: 0}, v: forall 'x. 'x
+//│   where
+//│     'x :> {u: 'x, v: 0}}
+//│ where
+//│   'x :> {u: 'x, v: 0}
 
 (let rec x = {u: x, v: add}; {u: x, v: x})
-//│ res: {u: forall 'x. 'x, v: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {u: 'x, v: int -> int -> int}
+//│     'x :> {u: 'x, v: int -> int -> int}, v: forall 'x. 'x
+//│   where
+//│     'x :> {u: 'x, v: int -> int -> int}}
+//│ where
+//│   'x :> {u: 'x, v: int -> int -> int}
 
 (let rec x = {u: x, v: x}; {u: x, v: x})
-//│ res: {u: forall 'x. 'x, v: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {u: 'x, v: 'x}
+//│     'x :> {u: 'x, v: 'x}, v: forall 'x. 'x
+//│   where
+//│     'x :> {u: 'x, v: 'x}}
+//│ where
+//│   'x :> {u: 'x, v: 'x}
 
 (let x = {v: 0}; {u: x, v: x})
 //│ res: {u: {v: 0}, v: {v: 0}}
@@ -2431,9 +2453,13 @@ add
 //│ res: {u: {v: int -> int -> int}, v: {v: int -> int -> int}}
 
 (let rec x = {v: x}; {u: x, v: x})
-//│ res: {u: forall 'x. 'x, v: forall 'x. 'x}
+//│ res: {u: forall 'x. 'x
 //│   where
-//│     'x :> {v: 'x}
+//│     'x :> {v: 'x}, v: forall 'x. 'x
+//│   where
+//│     'x :> {v: 'x}}
+//│ where
+//│   'x :> {v: 'x}
 
 (x => {u: 0.v})
 //│ ╔══[ERROR] Type mismatch in field selection:

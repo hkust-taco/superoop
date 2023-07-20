@@ -26,6 +26,8 @@ let rec recursive_monster = x =>
 //│ recursive_monster: 'a -> 'b
 //│   where
 //│     'b :> {self: 'b, thing: 'a}
+//│ where
+//│   'b :> {self: 'b, thing: 'a}
 
 
 
@@ -48,15 +50,21 @@ let rec consume = strm => add strm.head (consume strm.tail)
 //│ produce: int -> 'a
 //│   where
 //│     'a :> {head: int, tail: 'a}
+//│ where
+//│   'a :> {head: int, tail: 'a}
 //│ consume: 'a -> int
 //│   where
 //│     'a <: {head: int, tail: 'a}
+//│ where
+//│   'a <: {head: int, tail: 'a}
 
 let codata = produce 42
 let res = consume codata
 //│ codata: 'a
 //│   where
 //│     'a :> {head: int, tail: 'a}
+//│ where
+//│   'a :> {head: int, tail: 'a}
 //│ res: int
 
 let rec codata2 = { head: 0, tail: { head: 1, tail: codata2 } }
@@ -64,19 +72,24 @@ let res = consume codata2
 //│ codata2: 'codata2
 //│   where
 //│     'codata2 :> {head: 0, tail: {head: 1, tail: 'codata2}}
+//│ where
+//│   'codata2 :> {head: 0, tail: {head: 1, tail: 'codata2}}
 //│ res: int
 
 // TODO better parser error
 :pe
 let rec produce3 = b => { head: 123, tail: if b then codata else codata2 }
-//│ /!\ Parse error: Expected let binding:1:1, found "let rec pr" at l.71:1: let rec produce3 = b => { head: 123, tail: if b then codata else codata2 }
+//│ /!\ Parse error: Expected let binding:1:1, found "let rec pr" at l.81:1: let rec produce3 = b => { head: 123, tail: if b then codata else codata2 }
 
 let rec produce3 = b => { head: 123, tail: (if b then codata else codata2) }
 let res = x => consume (produce3 x)
-//│ produce3: bool -> {head: 123, tail: forall 'codata2 'a. 'codata2 | 'a}
+//│ produce3: bool -> {head: 123, tail: forall 'codata2 'a. 'codata2 | 'a
 //│   where
-//│     'a :> {head: int, tail: 'a}
 //│     'codata2 :> {head: 0, tail: {head: 1, tail: 'codata2}}
+//│     'a :> {head: int, tail: 'a}}
+//│ where
+//│   'a :> {head: int, tail: 'a}
+//│   'codata2 :> {head: 0, tail: {head: 1, tail: 'codata2}}
 //│ res: bool -> int
 
 let consume2 =
@@ -88,5 +101,7 @@ let res = consume2 codata2
 //│ consume2: 'a -> int
 //│   where
 //│     'a <: {head: int, tail: 'a}
+//│ where
+//│   'a <: {head: int, tail: 'a}
 //│ res: int
 

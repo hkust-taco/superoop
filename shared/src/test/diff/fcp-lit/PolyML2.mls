@@ -29,6 +29,8 @@ rec def mem x l = case l of
 //│ mem: anything -> 'a -> Bool
 //│   where
 //│     'a <: (Cons[?] with {tail: 'a}) | Nil
+//│ where
+//│   'a <: (Cons[?] with {tail: 'a}) | Nil
 
 rec def fold_left f x l = case l of
   { Nil -> x
@@ -37,6 +39,8 @@ rec def fold_left f x l = case l of
 //│ fold_left: ('a -> 'head -> 'a) -> 'a -> 'b -> 'a
 //│   where
 //│     'b <: (Cons[?] with {head: 'head, tail: 'b}) | Nil
+//│ where
+//│   'b <: (Cons[?] with {head: 'head, tail: 'b}) | Nil
 
 // ------------ polymorphic methods ------------
 
@@ -57,7 +61,11 @@ def simple_and_double c =
   let l1 = c.Fold (fun y -> fun x -> Cons x y) Nil in
   let l2 = c.Fold (fun y -> fun x -> Cons ((x, x),) y) Nil in
   (l1, l2)
-//│ simple_and_double: Collection['a] -> (forall 'tail. 'tail, forall 'tail0. 'tail0,)
+//│ simple_and_double: Collection['a] -> (forall 'tail. 'tail
 //│   where
-//│     'tail0 :> (Cons[('a, 'a,)] with {tail: 'tail0}) | Nil
-//│     'tail :> (Cons['a] with {tail: 'tail}) | Nil
+//│     'tail :> (Cons['a] with {tail: 'tail}) | Nil, forall 'tail0. 'tail0
+//│   where
+//│     'tail0 :> (Cons[('a, 'a,)] with {tail: 'tail0}) | Nil,)
+//│ where
+//│   'tail0 :> (Cons[('a, 'a,)] with {tail: 'tail0}) | Nil
+//│   'tail :> (Cons['a] with {tail: 'tail}) | Nil

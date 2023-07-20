@@ -44,10 +44,15 @@ def simpleStepImpl arrImpl = ArraysImpl {
   }
 //│ simpleStepImpl: ArraysRep[in 'A | 'A0 | 'A1 | 'A2 & 'A3 out 'A0 & 'A2, in 'Rep | 'Rep0 out nothing] -> (ArraysImpl['A3, 'Rep1] with {fold: forall 'b. ('A2 -> 'b -> 'b) -> 'b -> ('Rep0, anything,) -> 'b, init: 'A -> (nothing, "initialized",), sub: ('Rep, anything,) -> int -> 'A0, update: forall 'a. ('Rep2 & 'a, anything,) -> int -> 'A1 -> ('a, "updated",)})
 //│   where
-//│     'Rep1 :> (nothing, "initialized" | "updated",)
-//│           <: (nothing, anything,)
 //│     'A3 :> 'A0
 //│         <: nothing
+//│     'Rep1 :> (nothing, "initialized" | "updated",)
+//│           <: (nothing, anything,)
+//│ where
+//│   'Rep1 :> (nothing, "initialized" | "updated",)
+//│         <: (nothing, anything,)
+//│   'A3 :> 'A0
+//│       <: nothing
 //│               = [Function: simpleStepImpl]
 
 
@@ -55,8 +60,8 @@ def simpleStepImpl arrImpl = ArraysImpl {
 // * Something off is going on here (see stats)
 :stats
 simpleStepImpl : ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string)]
-//│ ╔══[ERROR] Subtyping constraint of the form `forall ?b ?a. ?a -> ?b <: ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string,)]` took too many steps and ran out of fuel (5000)
-//│ ║  l.57: 	simpleStepImpl : ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string)]
+//│ ╔══[ERROR] Subtyping constraint of the form `forall ?A ?A0 ?Rep ?A1 ?Rep0 ?a ?A2 ?A3 ?c ?A4 ?A5 ?d ?A6 ?A7 ?A8 ?Rep1 ?Rep2 ?e ?Rep3 ?Rep4 ?f ?Rep5 ?g ?Rep6 ?h ?Rep7 ?A9 ?Rep8 ?Rep9 ?b ?init ?Rep10 ?i ?j ?k ?fold ?update ?sub. ?a -> ?b <: ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string,)]` took too many steps and ran out of fuel (5000)
+//│ ║  l.62: 	simpleStepImpl : ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string)]
 //│ ║        	^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ res: ArraysImpl['a, 'r] -> ArraysImpl['a, ('r, string,)]
@@ -97,18 +102,18 @@ mkArrays impl k = k impl
 :e
 def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
 //│ ╔══[ERROR] Type error in application
-//│ ║  l.98: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
-//│ ║        	              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.103: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
+//│ ║         	              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── type variable `'Rep` leaks out of its scope
 //│ ║  l.35: 	type Arrays[A] = (forall 'Rep. ArraysRep[A, 'Rep] -> 'r) -> 'r
 //│ ║        	                                            ^^^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this function:
-//│ ║  l.98: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
-//│ ║        	                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.103: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
+//│ ║         	                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── • this reference:
-//│ ║  l.98: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
-//│ ║        	              ^^^
+//│ ║  l.103: 	def stepped = arr (fun arrImpl -> fun k -> k (simpleStepImpl arrImpl))
+//│ ║         	              ^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.41: 	    sub    = fun ((r0, r1)) -> fun i -> arrImpl.Sub r0 i;
 //│ ╙──      	                                                    ^^

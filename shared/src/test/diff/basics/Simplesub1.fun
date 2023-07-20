@@ -234,6 +234,8 @@ let rec trutru = g => trutru (g true)
 //│ trutru: 'a -> nothing
 //│   where
 //│     'a <: true -> 'a
+//│ where
+//│   'a <: true -> 'a
 
 i => if ((i i) true) then true else true
 //│ res: ('a -> true -> bool & 'a) -> true
@@ -271,6 +273,8 @@ let rec f = x => f x.u
 //│ f: 'a -> nothing
 //│   where
 //│     'a <: {u: 'a}
+//│ where
+//│   'a <: {u: 'a}
 
 
 // from https://www.cl.cam.ac.uk/~sd601/mlsub/
@@ -278,6 +282,8 @@ let rec recursive_monster = x => { thing: x, self: recursive_monster x }
 //│ recursive_monster: 'a -> 'b
 //│   where
 //│     'b :> {self: 'b, thing: 'a}
+//│ where
+//│   'b :> {self: 'b, thing: 'a}
 
 
 
@@ -288,11 +294,15 @@ let rec recursive_monster = x => { thing: x, self: recursive_monster x }
 //│ res: 'x
 //│   where
 //│     'x :> {a: 'x, b: 'x}
+//│ where
+//│   'x :> {a: 'x, b: 'x}
 
 (let rec x = v => {a: x v, b: x v}; x)
 //│ res: anything -> 'a
 //│   where
 //│     'a :> {a: 'a, b: 'a}
+//│ where
+//│   'a :> {a: 'a, b: 'a}
 
 :e
 let rec x = (let rec y = {u: y, v: (x y)}; 0); 0
@@ -320,6 +330,9 @@ let rec x = (let rec y = {u: y, v: (x y)}; 0); 0
 //│   where
 //│     'a <: 'b -> 'b
 //│     'b <: 'a
+//│ where
+//│   'a <: 'b -> 'b
+//│   'b <: 'a
 
 :e // * Note: this works with precise-rec-typing (see below)
 res (z => (z, z))
@@ -330,7 +343,7 @@ res (z => (z, z))
 //│ ║  l.+1: 	res (z => (z, z))
 //│ ║        	           ^^^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.318: 	(let rec x = (y => (y (x x))); x)
+//│ ║  l.328: 	(let rec x = (y => (y (x x))); x)
 //│ ╙──       	                    ^^^^^^^
 //│ res: error | 'a
 //│   where
@@ -354,6 +367,8 @@ next => 0
 //│ res: 'a -> nothing
 //│   where
 //│     'a <: 'a -> 'a
+//│ where
+//│   'a <: 'a -> 'a
 
 x => (y => (x (y y)))
 //│ res: ('a -> 'b) -> ('c -> 'a & 'c) -> 'b
@@ -363,32 +378,49 @@ x => (y => (x (y y)))
 //│   where
 //│     'x :> 'a -> 'a
 //│     'a :> 'x
+//│ where
+//│   'x :> 'a -> 'a
+//│   'a :> 'x
 
 (let rec x = (y => (let z = (x x); y)); x)
 //│ res: 'x
 //│   where
 //│     'x :> 'a -> 'a
 //│     'a :> 'x
+//│ where
+//│   'x :> 'a -> 'a
+//│   'a :> 'x
 
 (let rec x = (y => {u: y, v: (x x)}); x)
 //│ res: 'x
 //│   where
 //│     'x :> 'a -> 'b
-//│     'b :> {u: 'a, v: 'b}
 //│     'a :> 'x
+//│     'b :> {u: 'a, v: 'b}
+//│ where
+//│   'x :> 'a -> 'b
+//│   'b :> {u: 'a, v: 'b}
+//│   'a :> 'x
 
 (let rec x = (y => {u: (x x), v: y}); x)
 //│ res: 'x
 //│   where
 //│     'x :> 'a -> 'b
-//│     'b :> {u: 'b, v: 'a}
 //│     'a :> 'x
+//│     'b :> {u: 'b, v: 'a}
+//│ where
+//│   'x :> 'a -> 'b
+//│   'b :> {u: 'b, v: 'a}
+//│   'a :> 'x
 
 (let rec x = (y => (let z = (y x); y)); x)
 //│ res: 'x
 //│   where
 //│     'x :> 'a -> 'a
 //│     'a <: 'x -> anything
+//│ where
+//│   'x :> 'a -> 'a
+//│   'a <: 'x -> anything
 
 (x => (let y = (x x.v); 0))
 //│ res: ('v -> anything & {v: 'v}) -> 0
@@ -398,6 +430,9 @@ let rec x = (let y = (x x); (z => z)); (x (y => y.u)) // [test:T1]
 //│   where
 //│     'x :> 'a -> 'a
 //│     'a :> 'x
+//│ where
+//│   'x :> 'a -> 'a
+//│   'a :> 'x
 //│ res: ({u: 'u} & 'a) -> ('u | 'a) | 'b
 //│   where
 //│     'a :> forall 'u. ({u: 'u} & 'a) -> ('u | 'a)
@@ -405,12 +440,17 @@ let rec x = (let y = (x x); (z => z)); (x (y => y.u)) // [test:T1]
 
 :ns
 let rec x = (let y = (x x); (z => z))
-//│ x: forall 'x 'a 'b. 'x
+//│ x: forall 'x 'b 'a. 'x
 //│   where
-//│     'x := 'b -> 'b
-//│     'b :> 'b -> 'b
-//│        <: 'a
-//│     'a :> 'b -> 'b
+//│     'x := 'a -> 'a
+//│     'b :> 'a -> 'a
+//│     'a :> 'a -> 'a
+//│        <: 'b
+//│ where
+//│   'x := 'a -> 'a
+//│   'a :> 'a -> 'a
+//│      <: 'b
+//│   'b :> 'a -> 'a
 
 
 
@@ -435,7 +475,7 @@ let rec x = (let y = (x x); (z => z))
 // * Z combinator:
 // :e // Works thanks to inconsistent constrained types...
 (f => (x => f (v => (x x) v)) (x => f (v => (x x) v)))
-//│ res: ((forall 'b 'a. 'a -> 'b
+//│ res: ((forall 'a 'b. 'a -> 'b
 //│   where
 //│     forall 'c 'd. 'c -> 'd
 //│       where

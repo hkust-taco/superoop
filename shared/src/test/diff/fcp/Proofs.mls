@@ -454,7 +454,7 @@ EM_to_DNE: EM -> DNE
 
 def DNE_to_EM dne =
   dne (fun not_em -> not_em (Right { v = fun a -> not_em (Left { v = a }) }))
-//│ DNE_to_EM: ((forall 'c 'b. ((Right & {v: forall 'v 'a. 'v -> 'a
+//│ DNE_to_EM: ((forall 'b 'c. ((Right & {v: forall 'v 'a. 'v -> 'a
 //│   where
 //│     'b <: (Left with {v: 'v}) -> 'a}) -> 'c & 'b) -> 'c) -> 'd) -> 'd
 

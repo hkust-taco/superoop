@@ -15,6 +15,9 @@ let res = EvalAddLit.eval(add11)
 //│     'E :> Add['E]
 //│ module EvalAddLit {
 //│   fun eval: forall 'lhs 'A. (e: 'lhs,) -> nothing
+//│     where
+//│       'lhs <: Add['A]
+//│       'A <: 'lhs
 //│ }
 //│ where
 //│   'lhs <: Add['A]

@@ -6,6 +6,8 @@ def e2: Add['e] as 'e
 //│ e2: 'e
 //│   where
 //│     'e := Add['e]
+//│ where
+//│   'e := Add['e]
 //│   = <missing implementation>
 
 e2 : Add['e] as 'e
@@ -20,6 +22,8 @@ def f0: ('a -> int) as 'a
 //│ f0: 'a
 //│   where
 //│     'a := 'a -> int
+//│ where
+//│   'a := 'a -> int
 //│   = <missing implementation>
 
 // :e // * Did not work before when added subtype checking to constraining...
@@ -27,10 +31,14 @@ f0 = f0
 //│ 'a
 //│   where
 //│     'a := 'a -> int
+//│ where
+//│   'a := 'a -> int
 //│   <:  f0:
 //│ 'a
 //│   where
 //│     'a := 'a -> int
+//│ where
+//│   'a := 'a -> int
 //│   = <no result>
 //│     f0 is not implemented
 

@@ -30,6 +30,8 @@ def ty4B: MyArray[MyArray[MyArray['a]]] as 'a
 //│ ty4B: 'a
 //│   where
 //│     'a := MyArray[MyArray[MyArray['a]]]
+//│ where
+//│   'a := MyArray[MyArray[MyArray['a]]]
 //│     = <missing implementation>
 
 

@@ -25,9 +25,11 @@ def gensym = let n = { mut a = 0 } in fun () -> (incr n, n)
 //│   ])({ a: 0 }));
 //│ };
 //│ // End of generated code
-//│ gensym: () -> (unit, forall 'a. {mut a: 'a},)
+//│ gensym: () -> (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│       = [Function: gensym]
 
 :js
@@ -42,9 +44,11 @@ gensym1 = let n = { mut a = 0 } in fun () -> (incr n, n)
 //│   n
 //│ ])({ a: 0 });
 //│ // End of generated code
-//│ gensym1: () -> (unit, forall 'a. {mut a: 'a},)
+//│ gensym1: () -> (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│        = [Function (anonymous)]
 
 :js
@@ -52,9 +56,11 @@ gensym ()
 //│ // Query 1
 //│ res = gensym()();
 //│ // End of generated code
-//│ res: (unit, forall 'a. {mut a: 'a},)
+//│ res: (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│    = [ [], { a: 1 } ]
 
 :js
@@ -62,9 +68,11 @@ gensym ()
 //│ // Query 1
 //│ res = gensym()();
 //│ // End of generated code
-//│ res: (unit, forall 'a. {mut a: 'a},)
+//│ res: (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│    = [ [], { a: 1 } ]
 
 :js
@@ -72,15 +80,19 @@ gensym1 ()
 //│ // Query 1
 //│ res = gensym1();
 //│ // End of generated code
-//│ res: (unit, forall 'a. {mut a: 'a},)
+//│ res: (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│    = [ [], { a: 1 } ]
 
 gensym1 ()
-//│ res: (unit, forall 'a. {mut a: 'a},)
+//│ res: (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│    = [ [], { a: 2 } ]
 
 :js
@@ -88,9 +100,11 @@ gensym1 ()
 //│ // Query 1
 //│ res = gensym1();
 //│ // End of generated code
-//│ res: (unit, forall 'a. {mut a: 'a},)
+//│ res: (unit, forall 'a. {mut a: 'a}
 //│   where
-//│     'a :> 0
+//│     'a :> 0,)
+//│ where
+//│   'a :> 0
 //│    = [ [], { a: 3 } ]
 
 :js
@@ -145,6 +159,8 @@ rec def xs = Cons 0 (Cons 1 xs)
 //│ xs: 'tail
 //│   where
 //│     'tail :> Cons[0 | 1] with {head: 0, tail: Cons[0 | 1] with {head: 1, tail: 'tail}}
+//│ where
+//│   'tail :> Cons[0 | 1] with {head: 0, tail: Cons[0 | 1] with {head: 1, tail: 'tail}}
 //│   = [Function: xs]
 
 :re
@@ -152,5 +168,7 @@ xs
 //│ res: 'tail
 //│   where
 //│     'tail :> Cons[0 | 1] with {head: 0, tail: Cons[0 | 1] with {head: 1, tail: 'tail}}
+//│ where
+//│   'tail :> Cons[0 | 1] with {head: 0, tail: Cons[0 | 1] with {head: 1, tail: 'tail}}
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded

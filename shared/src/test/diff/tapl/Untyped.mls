@@ -103,8 +103,11 @@ fun listConcat(xs, ys) =
     Cons(x, xs') then Cons(x, listConcat(xs', ys))
 //│ listConcat: ('tail, 'tail0,) -> 'tail0
 //│   where
-//│     'tail0 :> Cons & {head: 'head, tail: 'tail0}
 //│     'tail <: Cons & {head: 'head, tail: 'tail} | Nil
+//│     'tail0 :> Cons & {head: 'head, tail: 'tail0}
+//│ where
+//│   'tail0 :> Cons & {head: 'head, tail: 'tail0}
+//│   'tail <: Cons & {head: 'head, tail: 'tail} | Nil
 //│           = [Function: listConcat]
 
 fun listContains(xs, x) =
@@ -116,6 +119,8 @@ fun listContains(xs, x) =
 //│ listContains: ('tail, anything,) -> Bool
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│             = [Function: listContains]
 
 // Remove all occurrences of x from xs.
@@ -127,8 +132,11 @@ fun listWithout(xs, x) =
       _ then Cons(x', listWithout(xs', x))
 //│ listWithout: ('tail, anything,) -> 'tail0
 //│   where
-//│     'tail0 :> Nil | Cons & {head: 'head, tail: 'tail0}
 //│     'tail <: Cons & {head: 'head, tail: 'tail} | Nil
+//│     'tail0 :> Nil | Cons & {head: 'head, tail: 'tail0}
+//│ where
+//│   'tail0 :> Nil | Cons & {head: 'head, tail: 'tail0}
+//│   'tail <: Cons & {head: 'head, tail: 'tail} | Nil
 //│            = [Function: listWithout]
 
 fun listJoin(xs, sep) =
@@ -139,6 +147,8 @@ fun listJoin(xs, sep) =
 //│ listJoin: ('tail, string,) -> string
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│         = [Function: listJoin]
 
 listJoin(list3("x", "y", "z"), ", ")
@@ -172,6 +182,8 @@ fun showTerm(t) =
 //│ showTerm: 'rhs -> string
 //│   where
 //│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
+//│ where
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│         = [Function: showTerm]
 
 showTerm(Var("x"))
@@ -216,14 +228,19 @@ fun hasFree(t, n) =
 //│ hasFree: ('rhs, anything,) -> bool
 //│   where
 //│     'rhs <: Abs & {rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'rhs <: Abs & {rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var | ~Abs & ~App & ~Var
 //│        = [Function: hasFree]
 
 fun showHasFree(t, n) =
   concat4(showTerm(t), if hasFree(t, n) then " has " else " DOES NOT have ", "free variable ", n)
 //│ showHasFree: ('rhs & 'rhs0, string,) -> string
 //│   where
-//│     'rhs0 <: Abs & {rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var | ~Abs & ~App & ~Var
 //│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
+//│     'rhs0 <: Abs & {rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'rhs0 <: Abs & {rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var | ~Abs & ~App & ~Var
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│            = [Function: showHasFree]
 
 showHasFree(Var("x"), "x")
@@ -270,11 +287,21 @@ fun fv(t) =
     App(lhs, rhs) then listConcat(fv(lhs), fv(rhs))
 //│ fv: 'rhs -> 'a
 //│   where
-//│     'a :> forall 'tail 'tail0. Cons & {head: 'name, tail: Nil} | 'tail | 'tail0
-//│     'tail0 :> Cons & {head: 'head, tail: 'tail0} | 'a
-//│     'tail :> Nil | Cons & {head: 'head, tail: 'tail}
-//│     'head :> 'name
 //│     'rhs <: Abs & {lhs: Var, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var & {name: 'name}
+//│     'a :> forall 'tail 'tail0. Cons & {head: 'name, tail: Nil} | 'tail | 'tail0
+//│       where
+//│         'tail :> Nil | Cons & {head: 'head, tail: 'tail}
+//│         'tail0 :> Cons & {head: 'head, tail: 'tail0} | 'a
+//│     'head :> 'name
+//│ where
+//│   'a :> forall 'tail 'tail0. Cons & {head: 'name, tail: Nil} | 'tail | 'tail0
+//│     where
+//│       'tail :> Nil | Cons & {head: 'head, tail: 'tail}
+//│       'tail0 :> Cons & {head: 'head, tail: 'tail0} | 'a
+//│   'tail0 :> Cons & {head: 'head, tail: 'tail0} | 'a
+//│   'tail :> Nil | Cons & {head: 'head, tail: 'tail}
+//│   'head :> 'name
+//│   'rhs <: Abs & {lhs: Var, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var & {name: 'name}
 //│   = [Function: fv]
 
 fun showFv(t) =
@@ -284,8 +311,11 @@ fun showFv(t) =
   )
 //│ showFv: ('rhs & 'rhs0) -> string
 //│   where
-//│     'rhs0 <: Abs & {lhs: Var, rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var
 //│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
+//│     'rhs0 <: Abs & {lhs: Var, rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var
+//│ where
+//│   'rhs0 <: Abs & {lhs: Var, rhs: 'rhs0} | App & {lhs: 'rhs0, rhs: 'rhs0} | Var
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│       = [Function: showFv]
 
 showFv(Var("x"))
@@ -315,6 +345,8 @@ fun tryNextAlphabet(initialCode, currentCode, freeNames) =
 //│ tryNextAlphabet: (number, int, 'tail,) -> (None | Some & {value: string})
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│                = [Function: tryNextAlphabet]
 
 tryNextAlphabet(97, 97, list1("a"))
@@ -342,6 +374,8 @@ fun tryAppendDigits(name, index, freeNames) =
 //│ tryAppendDigits: (string, int, 'tail,) -> string
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│                = [Function: tryAppendDigits]
 
 // Note: some weird behavior here... Just try the commented code.
@@ -355,6 +389,8 @@ fun findFreshName(name, freeNames) =
 //│ findFreshName: (string, 'tail,) -> string
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│              = [Function: findFreshName]
 
 // Find a fresh name to replace `name` that does not conflict with any bound
@@ -363,6 +399,8 @@ fun freshName(name, body) = findFreshName(name, fv(body))
 //│ freshName: (string, 'rhs,) -> string
 //│   where
 //│     'rhs <: Abs & {lhs: Var, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var
+//│ where
+//│   'rhs <: Abs & {lhs: Var, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var
 //│          = [Function: freshName]
 
 fun subst(t, n, v) =
@@ -376,34 +414,61 @@ fun subst(t, n, v) =
     _ then t
 //│ subst: ('rhs, anything, 'rhs & 'rhs0 & 'rhs1 & 'rhs2,) -> 'rhs0
 //│   where
-//│     'rhs2 <: Abs & {rhs: 'rhs2} | App & {lhs: 'rhs2, rhs: 'rhs2} | Var | ~Abs & ~App & ~Var
 //│     'rhs <: Abs & 'a | App & 'b | Var & 'c | 'd & ~#Abs & ~#App & ~#Var
 //│     'a :> Abs & {lhs: Var & {name: string}, rhs: 'rhs0} | 'e
 //│        <: 'rhs1 & (Abs & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} | App & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'b | Var & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'c | {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'd & ~#Abs & ~#App & ~#Var)
-//│     'rhs0 :> Var & {name: string} | 'c | 'a | 'd | (forall 'e. 'e) | App & {lhs: 'rhs0, rhs: 'rhs0}
-//│     'e :> Abs & {lhs: Var & {name: 'name}, rhs: 'rhs0}
-//│     'name <: string
+//│     'rhs0 :> Var & {name: string} | 'c | 'a | 'd | (forall 'e. 'e
+//│       where
+//│         'e :> Abs & {lhs: Var & {name: 'name}, rhs: 'rhs0}) | App & {lhs: 'rhs0, rhs: 'rhs0}
 //│     'c :> Var & {name: string}
 //│        <: 'rhs1 & (Abs & {name: anything} & 'a | App & {name: anything} & 'b | Var | {name: anything} & 'd & ~#Abs & ~#App & ~#Var)
-//│     'd <: 'rhs1 & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
-//│     'b <: {lhs: 'rhs, rhs: 'rhs}
 //│     'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
+//│     'b <: {lhs: 'rhs, rhs: 'rhs}
+//│     'd <: 'rhs1 & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
+//│     'name <: string
+//│     'rhs2 <: Abs & {rhs: 'rhs2} | App & {lhs: 'rhs2, rhs: 'rhs2} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'rhs2 <: Abs & {rhs: 'rhs2} | App & {lhs: 'rhs2, rhs: 'rhs2} | Var | ~Abs & ~App & ~Var
+//│   'rhs <: Abs & 'a | App & 'b | Var & 'c | 'd & ~#Abs & ~#App & ~#Var
+//│   'a :> Abs & {lhs: Var & {name: string}, rhs: 'rhs0} | 'e
+//│      <: 'rhs1 & (Abs & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} | App & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'b | Var & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'c | {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs & 'rhs1} & 'd & ~#Abs & ~#App & ~#Var)
+//│   'rhs0 :> Var & {name: string} | 'c | 'a | 'd | (forall 'e. 'e
+//│     where
+//│       'e :> Abs & {lhs: Var & {name: 'name}, rhs: 'rhs0}) | App & {lhs: 'rhs0, rhs: 'rhs0}
+//│   'e :> Abs & {lhs: Var & {name: 'name}, rhs: 'rhs0}
+//│   'name <: string
+//│   'c :> Var & {name: string}
+//│      <: 'rhs1 & (Abs & {name: anything} & 'a | App & {name: anything} & 'b | Var | {name: anything} & 'd & ~#Abs & ~#App & ~#Var)
+//│   'd <: 'rhs1 & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
+//│   'b <: {lhs: 'rhs, rhs: 'rhs}
+//│   'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
 //│      = [Function: subst]
 
 fun showSubst(t, n, v) =
   concat8(showTerm(t), " [", n, " / ", showTerm(v), "]", " => ", showTerm(subst(t, n, v)))
 //│ showSubst: ('rhs & 'rhs0, string, 'rhs0 & 'rhs1 & 'lhs & 'rhs2 & 'rhs & 'rhs3,) -> string
 //│   where
-//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│     'rhs0 <: Abs & 'a | App & 'b | Var & 'c | 'd & ~#Abs & ~#App & ~#Var
 //│     'a <: 'rhs2 & 'rhs1 & 'lhs & (Abs & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} | App & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'b | Var & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'c | {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'd & ~#Abs & ~#App & ~#Var)
-//│     'c <: 'rhs2 & 'rhs1 & 'lhs & (Abs & {name: anything} & 'a | App & {name: anything} & 'b | Var | {name: anything} & 'd & ~#Abs & ~#App & ~#Var)
-//│     'd <: 'rhs2 & 'rhs1 & 'lhs & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
-//│     'b <: {lhs: 'rhs0, rhs: 'rhs0}
-//│     'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
 //│     'rhs2 <: Abs & {lhs: 'rhs2, rhs: 'rhs2} | App & {lhs: 'lhs & 'rhs2, rhs: 'rhs2} | Var
 //│     'lhs <: Abs & {lhs: 'rhs2, rhs: 'rhs2} | ~Abs
-//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
+//│     'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
+//│     'b <: {lhs: 'rhs0, rhs: 'rhs0}
+//│     'c <: 'rhs2 & 'rhs1 & 'lhs & (Abs & {name: anything} & 'a | App & {name: anything} & 'b | Var | {name: anything} & 'd & ~#Abs & ~#App & ~#Var)
+//│     'd <: 'rhs2 & 'rhs1 & 'lhs & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
+//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│   'rhs0 <: Abs & 'a | App & 'b | Var & 'c | 'd & ~#Abs & ~#App & ~#Var
+//│   'a <: 'rhs2 & 'rhs1 & 'lhs & (Abs & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} | App & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'b | Var & {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'c | {lhs: Var & {name: string} | ~Var, rhs: 'rhs0 & 'rhs1} & 'd & ~#Abs & ~#App & ~#Var)
+//│   'c <: 'rhs2 & 'rhs1 & 'lhs & (Abs & {name: anything} & 'a | App & {name: anything} & 'b | Var | {name: anything} & 'd & ~#Abs & ~#App & ~#Var)
+//│   'd <: 'rhs2 & 'rhs1 & 'lhs & (Abs & 'a | App & 'b | Var & 'c | ~#Abs & ~#App & ~#Var)
+//│   'b <: {lhs: 'rhs0, rhs: 'rhs0}
+//│   'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
+//│   'rhs2 <: Abs & {lhs: 'rhs2, rhs: 'rhs2} | App & {lhs: 'lhs & 'rhs2, rhs: 'rhs2} | Var
+//│   'lhs <: Abs & {lhs: 'rhs2, rhs: 'rhs2} | ~Abs
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│          = [Function: showSubst]
 
 showSubst(Var("x"), "x", Var("y"))
@@ -435,23 +500,44 @@ fun stepByValue(t) =
           _ then None()
 //│ stepByValue: 'a -> (None | Some & {value: 'value})
 //│   where
-//│     'value :> 'value0 | App & {lhs: 'value, rhs: 'rhs} | App & {lhs: 'lhs, rhs: 'value}
 //│     'a <: Abs | App & {lhs: 'lhs, rhs: 'rhs} | Var
 //│     'lhs <: 'a & (Abs & {rhs: 'rhs0} | ~#Abs)
 //│     'rhs0 <: Abs & 'b | App & 'c | Var & 'd | 'e & ~#Abs & ~#App & ~#Var
 //│     'b :> Abs & {lhs: Var & {name: string}, rhs: 'value0} | 'f
 //│        <: 'rhs1 & (Abs & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} | App & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'c | Var & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'd | {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'e & ~#Abs & ~#App & ~#Var)
-//│     'value0 :> Var & {name: string} | 'rhs | 'd | 'b | 'e | (forall 'f. 'f) | App & {lhs: 'value0, rhs: 'value0}
-//│     'f :> Abs & {lhs: Var & {name: 'name}, rhs: 'value0}
-//│     'name <: string
-//│     'd :> Var & {name: string}
-//│        <: 'rhs1 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
-//│     'e <: 'rhs1 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
-//│     'c <: {lhs: 'rhs0, rhs: 'rhs0}
+//│     'value0 :> Var & {name: string} | 'rhs | 'd | 'b | 'e | (forall 'f. 'f
+//│       where
+//│         'f :> Abs & {lhs: Var & {name: 'name}, rhs: 'value0}) | App & {lhs: 'value0, rhs: 'value0}
 //│     'rhs <: 'a & 'rhs2 & 'rhs3
-//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
 //│     'rhs2 <: 'rhs0 & 'rhs1
 //│     'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
+//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│     'd :> Var & {name: string}
+//│        <: 'rhs1 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
+//│     'c <: {lhs: 'rhs0, rhs: 'rhs0}
+//│     'e <: 'rhs1 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
+//│     'name <: string
+//│     'value :> 'value0 | App & {lhs: 'value, rhs: 'rhs} | App & {lhs: 'lhs, rhs: 'value}
+//│ where
+//│   'value :> 'value0 | App & {lhs: 'value, rhs: 'rhs} | App & {lhs: 'lhs, rhs: 'value}
+//│   'a <: Abs | App & {lhs: 'lhs, rhs: 'rhs} | Var
+//│   'lhs <: 'a & (Abs & {rhs: 'rhs0} | ~#Abs)
+//│   'rhs0 <: Abs & 'b | App & 'c | Var & 'd | 'e & ~#Abs & ~#App & ~#Var
+//│   'b :> Abs & {lhs: Var & {name: string}, rhs: 'value0} | 'f
+//│      <: 'rhs1 & (Abs & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} | App & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'c | Var & {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'd | {lhs: Var & {name: 'name} | ~Var, rhs: 'rhs2} & 'e & ~#Abs & ~#App & ~#Var)
+//│   'value0 :> Var & {name: string} | 'rhs | 'd | 'b | 'e | (forall 'f. 'f
+//│     where
+//│       'f :> Abs & {lhs: Var & {name: 'name}, rhs: 'value0}) | App & {lhs: 'value0, rhs: 'value0}
+//│   'f :> Abs & {lhs: Var & {name: 'name}, rhs: 'value0}
+//│   'name <: string
+//│   'd :> Var & {name: string}
+//│      <: 'rhs1 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
+//│   'e <: 'rhs1 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
+//│   'c <: {lhs: 'rhs0, rhs: 'rhs0}
+//│   'rhs <: 'a & 'rhs2 & 'rhs3
+//│   'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│   'rhs2 <: 'rhs0 & 'rhs1
+//│   'rhs1 <: Abs & {lhs: Var, rhs: 'rhs1} | App & {lhs: 'rhs1, rhs: 'rhs1} | Var
 //│            = [Function: stepByValue]
 
 fun showStepByValue(t) =
@@ -461,18 +547,31 @@ fun showStepByValue(t) =
   )
 //│ showStepByValue: ('rhs & (Abs | App & 'a | Var)) -> string
 //│   where
+//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│     'a <: {lhs: 'lhs & 'rhs0 & (Abs & {rhs: 'rhs1} | Abs & ~#Abs | App & 'a | Var), rhs: 'rhs2 & 'lhs & 'rhs0 & 'rhs3 & (Abs | App & 'a | Var)}
-//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
-//│     'rhs1 <: Abs & 'b | App & 'c | Var & 'd | 'e & ~#Abs & ~#App & ~#Var
-//│     'b <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} | App & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'c | Var & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'd | {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'e & ~#Abs & ~#App & ~#Var)
-//│     'd <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
-//│     'e <: 'rhs4 & 'lhs & 'rhs0 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
-//│     'c <: {lhs: 'rhs1, rhs: 'rhs1}
-//│     'rhs2 <: 'rhs1 & 'rhs4
-//│     'rhs4 <: Abs & {lhs: Var, rhs: 'rhs4} | App & {lhs: 'rhs4, rhs: 'rhs4} | Var
 //│     'lhs <: Abs & {lhs: 'rhs0, rhs: 'rhs0} | ~Abs
 //│     'rhs0 <: Abs & {lhs: 'rhs0, rhs: 'rhs0} | App & {lhs: 'lhs & 'rhs0, rhs: 'rhs0} | Var
-//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
+//│     'rhs1 <: Abs & 'b | App & 'c | Var & 'd | 'e & ~#Abs & ~#App & ~#Var
+//│     'b <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} | App & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'c | Var & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'd | {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'e & ~#Abs & ~#App & ~#Var)
+//│     'rhs4 <: Abs & {lhs: Var, rhs: 'rhs4} | App & {lhs: 'rhs4, rhs: 'rhs4} | Var
+//│     'rhs2 <: 'rhs1 & 'rhs4
+//│     'c <: {lhs: 'rhs1, rhs: 'rhs1}
+//│     'd <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
+//│     'e <: 'rhs4 & 'lhs & 'rhs0 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
+//│     'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'a <: {lhs: 'lhs & 'rhs0 & (Abs & {rhs: 'rhs1} | Abs & ~#Abs | App & 'a | Var), rhs: 'rhs2 & 'lhs & 'rhs0 & 'rhs3 & (Abs | App & 'a | Var)}
+//│   'rhs3 <: Abs & {rhs: 'rhs3} | App & {lhs: 'rhs3, rhs: 'rhs3} | Var | ~Abs & ~App & ~Var
+//│   'rhs1 <: Abs & 'b | App & 'c | Var & 'd | 'e & ~#Abs & ~#App & ~#Var
+//│   'b <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} | App & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'c | Var & {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'd | {lhs: Var & {name: string} | ~Var, rhs: 'rhs2} & 'e & ~#Abs & ~#App & ~#Var)
+//│   'd <: 'rhs4 & 'lhs & 'rhs0 & (Abs & {name: anything} & 'b | App & {name: anything} & 'c | Var | {name: anything} & 'e & ~#Abs & ~#App & ~#Var)
+//│   'e <: 'rhs4 & 'lhs & 'rhs0 & (Abs & 'b | App & 'c | Var & 'd | ~#Abs & ~#App & ~#Var)
+//│   'c <: {lhs: 'rhs1, rhs: 'rhs1}
+//│   'rhs2 <: 'rhs1 & 'rhs4
+//│   'rhs4 <: Abs & {lhs: Var, rhs: 'rhs4} | App & {lhs: 'rhs4, rhs: 'rhs4} | Var
+//│   'lhs <: Abs & {lhs: 'rhs0, rhs: 'rhs0} | ~Abs
+//│   'rhs0 <: Abs & {lhs: 'rhs0, rhs: 'rhs0} | App & {lhs: 'lhs & 'rhs0, rhs: 'rhs0} | Var
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, rhs: 'rhs} | ~#Abs), rhs: 'rhs} | Var
 //│                = [Function: showStepByValue]
 
 showStepByValue(Var("x"))
@@ -496,7 +595,11 @@ fun equalTerm(a, b) =
     _ then false
 //│ equalTerm: ('rhs, 'rhs0,) -> bool
 //│   where
+//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var | ~Abs & ~App & ~Var
 //│     'rhs0 <: Abs & 'a | App & 'a | Var | ~Abs & ~App & ~Var
 //│     'a <: {lhs: 'rhs0, rhs: 'rhs0}
-//│     'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var | ~Abs & ~App & ~Var
+//│ where
+//│   'rhs0 <: Abs & 'a | App & 'a | Var | ~Abs & ~App & ~Var
+//│   'a <: {lhs: 'rhs0, rhs: 'rhs0}
+//│   'rhs <: Abs & {lhs: 'rhs, rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Var | ~Abs & ~App & ~Var
 //│          = [Function: equalTerm]

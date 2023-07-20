@@ -144,7 +144,7 @@ let f = choose id in (f auto, f succ)
 //│ res: (forall 'b 'a0. (forall 'a. 'a -> 'a & 'b) -> ('a0 -> 'a0 | 'b), forall 'b. (int & 'b) -> (int | 'b),)
 
 let f = choose id in (f auto2, f succ)
-//│ res: (forall 'b 'c 'a. ('a -> 'b & 'a & 'c) -> ('b | 'c), forall 'c. (int & 'c) -> (int | 'c),)
+//│ res: (forall 'a 'b 'c. ('a -> 'b & 'a & 'c) -> ('b | 'c), forall 'c. (int & 'c) -> (int | 'c),)
 
 // ------------ Sec 6 ------------
 
@@ -198,12 +198,12 @@ let tmp = I I in K K
 fun z -> (z omegad)
 fun z -> (z omega)
 //│ res: ((forall 'a0. (forall 'a. 'a -> 'a) -> 'a0 -> 'a0) -> 'b) -> 'b
-//│ res: ((forall 'b 'a. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
+//│ res: ((forall 'a 'b. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
 
 (fun y -> fun z -> z y) omegad
 (fun y -> fun z -> z y) omega
 //│ res: ((forall 'a0. (forall 'a. 'a -> 'a) -> 'a0 -> 'a0) -> 'b) -> 'b
-//│ res: ((forall 'b 'a. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
+//│ res: ((forall 'a 'b. ('a -> 'b & 'a) -> 'b) -> 'c) -> 'c
 
 fun z -> omegad z
 fun z -> omega z

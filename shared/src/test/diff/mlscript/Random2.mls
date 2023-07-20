@@ -9,6 +9,8 @@ def f: { x: 'a } as 'a
 //│ f: 'a
 //│   where
 //│     'a :> {x: 'a}
+//│ where
+//│   'a :> {x: 'a}
 
 
 // :stdout
@@ -19,24 +21,37 @@ rec def l x = l
 //│ l: 'l
 //│   where
 //│     'l :> anything -> 'l
+//│ where
+//│   'l :> anything -> 'l
 
 l
 //│ res: 'l
 //│   where
 //│     'l :> anything -> 'l
+//│ where
+//│   'l :> anything -> 'l
 
 :ns
 m y = l y
 //│ m: forall 'a 'b 'c. 'a -> 'b
 //│   where
-//│     'b :> forall 'l. 'l
-//│     'l := 'c -> 'l
 //│     'a <: 'c
+//│     'b :> forall 'l. 'l
+//│       where
+//│         'l := 'c -> 'l
+//│ where
+//│   'b :> forall 'l. 'l
+//│     where
+//│       'l := 'c -> 'l
+//│   'l := 'c -> 'l
+//│   'a <: 'c
 
 m
 //│ res: 'l
 //│   where
 //│     'l :> anything -> 'l
+//│ where
+//│   'l :> anything -> 'l
 
 
 fun a -> a a
@@ -54,10 +69,12 @@ rec def f a = a a
 //│ 'a
 //│   where
 //│     'a :> {x: 'a}
+//│ where
+//│   'a :> {x: 'a}
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.51: 	rec def f a = a a
+//│ ║  l.66: 	rec def f a = a a
 //│ ║        	^^^^^^^^^^^^^^^^^
-//│ ╟── expression of type `forall ?f. ?f` does not have field 'x'
+//│ ╟── expression of type `forall ?a ?f ?b. ?f` does not have field 'x'
 //│ ╟── Note: constraint arises from record type:
 //│ ║  l.8: 	def f: { x: 'a } as 'a
 //│ ╙──     	       ^^^^^^^^^

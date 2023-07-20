@@ -32,16 +32,20 @@ rec def id x = let tmp = id id x in x
 //│     'id :> 'a -> 'a
 //│     'a :> 'id
 //│        <: 'a -> anything
+//│ where
+//│   'id :> 'a -> 'a
+//│   'a :> 'id
+//│      <: 'a -> anything
 //│   = [Function: id1]
 
 :e
 :re
 id 1
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.39: 	id 1
+//│ ║  l.43: 	id 1
 //│ ║        	^^^^
 //│ ╟── integer literal of type `1` is not a function
-//│ ║  l.39: 	id 1
+//│ ║  l.43: 	id 1
 //│ ║        	   ^
 //│ ╟── Note: constraint arises from application:
 //│ ║  l.29: 	rec def id x = let tmp = id id x in x
@@ -63,10 +67,14 @@ id_ty = id
 //│     'id :> 'a -> 'a
 //│     'a :> 'id
 //│        <: 'a -> anything
+//│ where
+//│   'id :> 'a -> 'a
+//│   'a :> 'id
+//│      <: 'a -> anything
 //│   <:  id_ty:
 //│ 'a -> 'a
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.60: 	id_ty = id
+//│ ║  l.64: 	id_ty = id
 //│ ║        	^^^^^^^^^^
 //│ ╟── type `'a` is not a function
 //│ ║  l.4: 	def id_ty: forall 'a. 'a -> 'a
@@ -105,7 +113,7 @@ id_ty = id
 :e
 rec def id x = if true then x else id id x
 //│ ╔══[ERROR] Cyclic-looking constraint while typing binding of lambda expression; a type annotation may be required
-//│ ║  l.106: 	rec def id x = if true then x else id id x
+//│ ║  l.114: 	rec def id x = if true then x else id id x
 //│ ║         	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ id: 'id
@@ -115,6 +123,12 @@ rec def id x = if true then x else id id x
 //│        <: 'b
 //│     'b :> 'id
 //│        <: 'a -> 'b
+//│ where
+//│   'id :> 'a -> 'b
+//│   'a :> 'id
+//│      <: 'b
+//│   'b :> 'id
+//│      <: 'a -> 'b
 //│   = [Function: id3]
 
 :e
@@ -126,19 +140,25 @@ id_ty = id
 //│        <: 'b
 //│     'b :> 'id
 //│        <: 'a -> 'b
+//│ where
+//│   'id :> 'a -> 'b
+//│   'a :> 'id
+//│      <: 'b
+//│   'b :> 'id
+//│      <: 'a -> 'b
 //│   <:  id_ty:
 //│ 'a -> 'a
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.121: 	id_ty = id
+//│ ║  l.135: 	id_ty = id
 //│ ║         	^^^^^^^^^^
 //│ ╟── type `'a` is not a function
 //│ ║  l.4: 	def id_ty: forall 'a. 'a -> 'a
 //│ ║       	                      ^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.106: 	rec def id x = if true then x else id id x
+//│ ║  l.114: 	rec def id x = if true then x else id id x
 //│ ║         	                                   ^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.106: 	rec def id x = if true then x else id id x
+//│ ║  l.114: 	rec def id x = if true then x else id id x
 //│ ║         	                            ^
 //│ ╟── Note: quantified type variable 'a is defined at:
 //│ ║  l.4: 	def id_ty: forall 'a. 'a -> 'a
@@ -162,19 +182,43 @@ rec def id1 x = choose x (id1 id1 x)
 //│        <: 'b
 //│     'b :> 'id1
 //│        <: 'a -> 'b
+//│ where
+//│   'id1 :> 'a -> 'b
+//│   'a :> 'id1
+//│      <: 'b
+//│   'b :> 'id1
+//│      <: 'a -> 'b
 
 id1 id
 //│ res: 'a -> 'b | 'id
 //│   where
-//│     'a :> forall 'id 'c 'd. 'a -> 'b | 'id
-//│        <: 'b
-//│     'b :> forall 'id 'c 'd. 'id
-//│        <: 'a -> 'b
 //│     'id :> 'c -> 'd
 //│     'c :> 'id
 //│        <: 'd
 //│     'd :> 'id
 //│        <: 'c -> 'd
+//│ where
+//│   'a :> forall 'id 'c 'd. 'a -> 'b | 'id
+//│     where
+//│       'id :> 'c -> 'd
+//│       'c :> 'id
+//│          <: 'd
+//│       'd :> 'id
+//│          <: 'c -> 'd
+//│      <: 'b
+//│   'b :> forall 'id 'c 'd. 'id
+//│     where
+//│       'id :> 'c -> 'd
+//│       'c :> 'id
+//│          <: 'd
+//│       'd :> 'id
+//│          <: 'c -> 'd
+//│      <: 'a -> 'b
+//│   'id :> 'c -> 'd
+//│   'c :> 'id
+//│      <: 'd
+//│   'd :> 'id
+//│      <: 'c -> 'd
 
 rec def id1 x = if true then x else id1 id1 x
 //│ id1: 'id1
@@ -184,18 +228,42 @@ rec def id1 x = if true then x else id1 id1 x
 //│        <: 'b
 //│     'b :> 'id1
 //│        <: 'a -> 'b
+//│ where
+//│   'id1 :> 'a -> 'b
+//│   'a :> 'id1
+//│      <: 'b
+//│   'b :> 'id1
+//│      <: 'a -> 'b
 
 id1 id
 //│ res: 'a -> 'b | 'id
 //│   where
-//│     'a :> forall 'id 'c 'd. 'a -> 'b | 'id
-//│        <: 'b
-//│     'b :> forall 'id 'c 'd. 'id
-//│        <: 'a -> 'b
 //│     'id :> 'c -> 'd
 //│     'c :> 'id
 //│        <: 'd
 //│     'd :> 'id
 //│        <: 'c -> 'd
+//│ where
+//│   'a :> forall 'id 'c 'd. 'a -> 'b | 'id
+//│     where
+//│       'id :> 'c -> 'd
+//│       'c :> 'id
+//│          <: 'd
+//│       'd :> 'id
+//│          <: 'c -> 'd
+//│      <: 'b
+//│   'b :> forall 'id 'c 'd. 'id
+//│     where
+//│       'id :> 'c -> 'd
+//│       'c :> 'id
+//│          <: 'd
+//│       'd :> 'id
+//│          <: 'c -> 'd
+//│      <: 'a -> 'b
+//│   'id :> 'c -> 'd
+//│   'c :> 'id
+//│      <: 'd
+//│   'd :> 'id
+//│      <: 'c -> 'd
 
 

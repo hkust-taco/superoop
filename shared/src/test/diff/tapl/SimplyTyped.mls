@@ -131,14 +131,21 @@ fun find(t, k) =
 //│      = [Function: empty]
 //│ insert: ('a, string & 'key, 'value,) -> 'right
 //│   where
-//│     'right :> Node & {key: 'key, left: Empty | 'left | 'right, right: Empty | 'right | 'right0, value: 'value}
 //│     'a <: Empty | Node & {key: string & 'key, left: 'left, right: 'right0}
-//│     'right0 <: 'a
 //│     'left <: 'a
+//│     'right0 <: 'a
+//│     'right :> Node & {key: 'key, left: Empty | 'left | 'right, right: Empty | 'right | 'right0, value: 'value}
+//│ where
+//│   'right :> Node & {key: 'key, left: Empty | 'left | 'right, right: Empty | 'right | 'right0, value: 'value}
+//│   'a <: Empty | Node & {key: string & 'key, left: 'left, right: 'right0}
+//│   'right0 <: 'a
+//│   'left <: 'a
 //│       = [Function: insert]
 //│ find: ('right, string,) -> (Some & {value: 'value} | None)
 //│   where
 //│     'right <: Empty | Node & {key: string, left: 'right, right: 'right, value: 'value}
+//│ where
+//│   'right <: Empty | Node & {key: string, left: 'right, right: 'right, value: 'value}
 //│     = [Function: find]
 
 fun showType(ty) =
@@ -149,6 +156,8 @@ fun showType(ty) =
 //│ showType: 'lhs -> string
 //│   where
 //│     'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
+//│ where
+//│   'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
 //│         = [Function: showType]
 
 showType(_t("int"))
@@ -173,6 +182,8 @@ fun typeEqual(t1, t2) =
 //│ typeEqual: ('rhs, 'rhs,) -> bool
 //│   where
 //│     'rhs <: FunctionType & {lhs: 'rhs, rhs: 'rhs} | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│ where
+//│   'rhs <: FunctionType & {lhs: 'rhs, rhs: 'rhs} | PrimitiveType | ~FunctionType & ~PrimitiveType
 //│          = [Function: typeEqual]
 
 fun showTerm(t) =
@@ -187,6 +198,9 @@ fun showTerm(t) =
 //│   where
 //│     'rhs <: Abs & {lhs: 'rhs, lty: 'lty, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, lty: 'lty} | ~#Abs), rhs: 'rhs} | Lit | Var
 //│     'lty <: FunctionType & {lhs: 'lty & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lty} | PrimitiveType & {name: string}
+//│ where
+//│   'rhs <: Abs & {lhs: 'rhs, lty: 'lty, rhs: 'rhs} | App & {lhs: 'rhs & (Abs & {lhs: 'rhs, lty: 'lty} | ~#Abs), rhs: 'rhs} | Lit | Var
+//│   'lty <: FunctionType & {lhs: 'lty & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lty} | PrimitiveType & {name: string}
 //│         = [Function: showTerm]
 
 showTerm(Var("x"))
@@ -221,90 +235,102 @@ fun typeTerm(t, ctx) =
       Ok(PrimitiveType(name)) then Err(concat3("cannot apply primitive type `", name, "`"))
       Err(message) then Err(message)
 //│ ╔══[ERROR] Cyclic-looking constraint while typing binding of lambda expression; a type annotation may be required
-//│ ║  l.206: 	fun typeTerm(t, ctx) =
+//│ ║  l.220: 	fun typeTerm(t, ctx) =
 //│ ║         	            ^^^^^^^^^^
-//│ ║  l.207: 	  if t is
+//│ ║  l.221: 	  if t is
 //│ ║         	^^^^^^^^^
-//│ ║  l.208: 	    Lit(_, ty) then Ok(ty)
+//│ ║  l.222: 	    Lit(_, ty) then Ok(ty)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.209: 	    Var(name) and find(ctx, name) is
+//│ ║  l.223: 	    Var(name) and find(ctx, name) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.210: 	      Some(ty) then Ok(ty)
+//│ ║  l.224: 	      Some(ty) then Ok(ty)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.211: 	      None then Err(concat3("unbound variable `", name, "`"))
+//│ ║  l.225: 	      None then Err(concat3("unbound variable `", name, "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.212: 	    Abs(Var(name), ty, body) and typeTerm(body, insert(ctx, name, ty)) is
+//│ ║  l.226: 	    Abs(Var(name), ty, body) and typeTerm(body, insert(ctx, name, ty)) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.213: 	      Ok(resTy) then Ok(FunctionType(ty, resTy))
+//│ ║  l.227: 	      Ok(resTy) then Ok(FunctionType(ty, resTy))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.214: 	      Err(message) then Err(message)
+//│ ║  l.228: 	      Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.215: 	    App(lhs, rhs) and typeTerm(lhs, ctx) is
+//│ ║  l.229: 	    App(lhs, rhs) and typeTerm(lhs, ctx) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.216: 	      Ok(FunctionType(pTy, resTy)) and typeTerm(rhs, ctx) is
+//│ ║  l.230: 	      Ok(FunctionType(pTy, resTy)) and typeTerm(rhs, ctx) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.217: 	        Ok(aTy) and
+//│ ║  l.231: 	        Ok(aTy) and
 //│ ║         	^^^^^^^^^^^^^^^^^^^
-//│ ║  l.218: 	          typeEqual(pTy, aTy) then Ok(resTy)
+//│ ║  l.232: 	          typeEqual(pTy, aTy) then Ok(resTy)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.219: 	          _ then Err(concat5("expect the argument to be of type `", showType(pTy), "` but found `", showType(aTy), "`"))
+//│ ║  l.233: 	          _ then Err(concat5("expect the argument to be of type `", showType(pTy), "` but found `", showType(aTy), "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.220: 	        Err(message) then Err(message)
+//│ ║  l.234: 	        Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.221: 	      Ok(PrimitiveType(name)) then Err(concat3("cannot apply primitive type `", name, "`"))
+//│ ║  l.235: 	      Ok(PrimitiveType(name)) then Err(concat3("cannot apply primitive type `", name, "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.222: 	      Err(message) then Err(message)
+//│ ║  l.236: 	      Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ ╔══[ERROR] Cyclic-looking constraint while typing binding of lambda expression; a type annotation may be required
-//│ ║  l.206: 	fun typeTerm(t, ctx) =
+//│ ║  l.220: 	fun typeTerm(t, ctx) =
 //│ ║         	            ^^^^^^^^^^
-//│ ║  l.207: 	  if t is
+//│ ║  l.221: 	  if t is
 //│ ║         	^^^^^^^^^
-//│ ║  l.208: 	    Lit(_, ty) then Ok(ty)
+//│ ║  l.222: 	    Lit(_, ty) then Ok(ty)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.209: 	    Var(name) and find(ctx, name) is
+//│ ║  l.223: 	    Var(name) and find(ctx, name) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.210: 	      Some(ty) then Ok(ty)
+//│ ║  l.224: 	      Some(ty) then Ok(ty)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.211: 	      None then Err(concat3("unbound variable `", name, "`"))
+//│ ║  l.225: 	      None then Err(concat3("unbound variable `", name, "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.212: 	    Abs(Var(name), ty, body) and typeTerm(body, insert(ctx, name, ty)) is
+//│ ║  l.226: 	    Abs(Var(name), ty, body) and typeTerm(body, insert(ctx, name, ty)) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.213: 	      Ok(resTy) then Ok(FunctionType(ty, resTy))
+//│ ║  l.227: 	      Ok(resTy) then Ok(FunctionType(ty, resTy))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.214: 	      Err(message) then Err(message)
+//│ ║  l.228: 	      Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.215: 	    App(lhs, rhs) and typeTerm(lhs, ctx) is
+//│ ║  l.229: 	    App(lhs, rhs) and typeTerm(lhs, ctx) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.216: 	      Ok(FunctionType(pTy, resTy)) and typeTerm(rhs, ctx) is
+//│ ║  l.230: 	      Ok(FunctionType(pTy, resTy)) and typeTerm(rhs, ctx) is
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.217: 	        Ok(aTy) and
+//│ ║  l.231: 	        Ok(aTy) and
 //│ ║         	^^^^^^^^^^^^^^^^^^^
-//│ ║  l.218: 	          typeEqual(pTy, aTy) then Ok(resTy)
+//│ ║  l.232: 	          typeEqual(pTy, aTy) then Ok(resTy)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.219: 	          _ then Err(concat5("expect the argument to be of type `", showType(pTy), "` but found `", showType(aTy), "`"))
+//│ ║  l.233: 	          _ then Err(concat5("expect the argument to be of type `", showType(pTy), "` but found `", showType(aTy), "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.220: 	        Err(message) then Err(message)
+//│ ║  l.234: 	        Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.221: 	      Ok(PrimitiveType(name)) then Err(concat3("cannot apply primitive type `", name, "`"))
+//│ ║  l.235: 	      Ok(PrimitiveType(name)) then Err(concat3("cannot apply primitive type `", name, "`"))
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.222: 	      Err(message) then Err(message)
+//│ ║  l.236: 	      Err(message) then Err(message)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ typeTerm: ('rhs, 'right,) -> (Err & {message: 'message} | Ok & {value: 'ty})
 //│   where
-//│     'right <: 'right0 & (Empty | Node & {key: string, left: 'right, right: 'right})
-//│     'right0 <: Empty | Node & {key: string, left: 'right0, right: 'right0, value: 'ty & 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))}
 //│     'rhs <: Abs & {lhs: Var & {name: string}, lty: 'rhs0 & 'lhs & 'lty & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType)), rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Lit & {ty: 'ty & 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))} | Var & {name: string}
+//│     'rhs0 <: FunctionType & {lhs: 'rhs0, rhs: 'rhs0} | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│     'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
 //│     'a <: {lhs: 'rhs0 & 'lhs, rhs: 'rhs1}
 //│     'rhs1 :> 'ty
 //│           <: 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))
+//│     'ty :> 'lty | FunctionType & {lhs: 'lty, rhs: 'ty} | 'rhs1
 //│     'b <: {lhs: 'rhs2, rhs: 'rhs2}
 //│     'rhs2 <: FunctionType & 'b | PrimitiveType | ~FunctionType & ~PrimitiveType
-//│     'ty :> 'lty | FunctionType & {lhs: 'lty, rhs: 'ty} | 'rhs1
-//│     'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
-//│     'rhs0 <: FunctionType & {lhs: 'rhs0, rhs: 'rhs0} | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│     'right <: 'right0 & (Empty | Node & {key: string, left: 'right, right: 'right})
+//│     'right0 <: Empty | Node & {key: string, left: 'right0, right: 'right0, value: 'ty & 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))}
+//│ where
+//│   'right <: 'right0 & (Empty | Node & {key: string, left: 'right, right: 'right})
+//│   'right0 <: Empty | Node & {key: string, left: 'right0, right: 'right0, value: 'ty & 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))}
+//│   'rhs <: Abs & {lhs: Var & {name: string}, lty: 'rhs0 & 'lhs & 'lty & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType)), rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Lit & {ty: 'ty & 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))} | Var & {name: string}
+//│   'a <: {lhs: 'rhs0 & 'lhs, rhs: 'rhs1}
+//│   'rhs1 :> 'ty
+//│         <: 'lhs & (PrimitiveType & {name: string} | 'a & (FunctionType & 'b | FunctionType & ~#FunctionType))
+//│   'b <: {lhs: 'rhs2, rhs: 'rhs2}
+//│   'rhs2 <: FunctionType & 'b | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│   'ty :> 'lty | FunctionType & {lhs: 'lty, rhs: 'ty} | 'rhs1
+//│   'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
+//│   'rhs0 <: FunctionType & {lhs: 'rhs0, rhs: 'rhs0} | PrimitiveType | ~FunctionType & ~PrimitiveType
 //│         = [Function: typeTerm]
 
 fun showTypeTerm(t, ctx) =
@@ -313,24 +339,43 @@ fun showTypeTerm(t, ctx) =
     Err(message) then concat2("Type error: ", message)
 //│ showTypeTerm: ('rhs & 'rhs0, 'right & (Empty | Node & 'a),) -> string
 //│   where
+//│     'rhs <: Abs & {lhs: Var & {name: string}, lty: 'lhs & 'rhs1 & (PrimitiveType & {name: string} | 'b & (FunctionType & 'c | FunctionType & ~#FunctionType)), rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Lit & {ty: 'rhs2} | Var & {name: string}
+//│     'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
+//│     'rhs1 <: FunctionType & {lhs: 'rhs1, rhs: 'rhs1} | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│     'b <: {lhs: 'rhs1 & 'lhs, rhs: 'rhs2}
+//│     'rhs2 <: 'lhs & (PrimitiveType & {name: string} | 'b & (FunctionType & 'c | FunctionType & ~#FunctionType))
+//│     'c <: {lhs: 'rhs3, rhs: 'rhs3}
+//│     'rhs3 <: FunctionType & 'c | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│     'rhs0 <: Abs & {lhs: 'rhs0, lty: 'lhs, rhs: 'rhs0} | App & {lhs: 'rhs0 & (Abs & {lhs: 'rhs0, lty: 'lhs} | ~#Abs), rhs: 'rhs0} | Lit | Var
+//│     'right <: Empty | Node & {key: string, left: 'right, right: 'right, value: 'rhs4}
+//│     'rhs4 <: 'lhs & (FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs4} & ~#FunctionType | FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs4} & 'd | PrimitiveType & {name: string})
+//│     'd <: {lhs: 'rhs5, rhs: 'rhs5}
+//│     'rhs5 <: FunctionType & 'd | PrimitiveType | ~FunctionType & ~PrimitiveType
 //│     'a <: {key: string, left: 'right0, right: 'right0}
 //│     'right0 <: 'right1 & (Empty | Node & 'a)
-//│     'right1 <: Empty | Node & {key: string, left: 'right1, right: 'right1, value: 'rhs1}
-//│     'rhs1 <: 'lhs & (FunctionType & {lhs: 'rhs2 & 'lhs, rhs: 'rhs1} & ~#FunctionType | FunctionType & {lhs: 'rhs2 & 'lhs, rhs: 'rhs1} & 'b | PrimitiveType & {name: string})
-//│     'b <: {lhs: 'rhs3, rhs: 'rhs3}
-//│     'rhs3 <: FunctionType & 'b | PrimitiveType | ~FunctionType & ~PrimitiveType
-//│     'right <: Empty | Node & {key: string, left: 'right, right: 'right, value: 'rhs4}
-//│     'rhs4 <: 'lhs & (FunctionType & {lhs: 'rhs2 & 'lhs, rhs: 'rhs4} & ~#FunctionType | FunctionType & {lhs: 'rhs2 & 'lhs, rhs: 'rhs4} & 'c | PrimitiveType & {name: string})
-//│     'c <: {lhs: 'rhs5, rhs: 'rhs5}
-//│     'rhs5 <: FunctionType & 'c | PrimitiveType | ~FunctionType & ~PrimitiveType
-//│     'rhs0 <: Abs & {lhs: 'rhs0, lty: 'lhs, rhs: 'rhs0} | App & {lhs: 'rhs0 & (Abs & {lhs: 'rhs0, lty: 'lhs} | ~#Abs), rhs: 'rhs0} | Lit | Var
-//│     'rhs <: Abs & {lhs: Var & {name: string}, lty: 'lhs & 'rhs2 & (PrimitiveType & {name: string} | 'd & (FunctionType & 'e | FunctionType & ~#FunctionType)), rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Lit & {ty: 'rhs6} | Var & {name: string}
-//│     'd <: {lhs: 'rhs2 & 'lhs, rhs: 'rhs6}
-//│     'rhs6 <: 'lhs & (PrimitiveType & {name: string} | 'd & (FunctionType & 'e | FunctionType & ~#FunctionType))
+//│     'right1 <: Empty | Node & {key: string, left: 'right1, right: 'right1, value: 'rhs6}
+//│     'rhs6 <: 'lhs & (FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs6} & ~#FunctionType | FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs6} & 'e | PrimitiveType & {name: string})
 //│     'e <: {lhs: 'rhs7, rhs: 'rhs7}
 //│     'rhs7 <: FunctionType & 'e | PrimitiveType | ~FunctionType & ~PrimitiveType
-//│     'rhs2 <: FunctionType & {lhs: 'rhs2, rhs: 'rhs2} | PrimitiveType | ~FunctionType & ~PrimitiveType
-//│     'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
+//│ where
+//│   'a <: {key: string, left: 'right0, right: 'right0}
+//│   'right0 <: 'right1 & (Empty | Node & 'a)
+//│   'right1 <: Empty | Node & {key: string, left: 'right1, right: 'right1, value: 'rhs6}
+//│   'rhs6 <: 'lhs & (FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs6} & ~#FunctionType | FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs6} & 'e | PrimitiveType & {name: string})
+//│   'e <: {lhs: 'rhs7, rhs: 'rhs7}
+//│   'rhs7 <: FunctionType & 'e | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│   'right <: Empty | Node & {key: string, left: 'right, right: 'right, value: 'rhs4}
+//│   'rhs4 <: 'lhs & (FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs4} & ~#FunctionType | FunctionType & {lhs: 'rhs1 & 'lhs, rhs: 'rhs4} & 'd | PrimitiveType & {name: string})
+//│   'd <: {lhs: 'rhs5, rhs: 'rhs5}
+//│   'rhs5 <: FunctionType & 'd | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│   'rhs0 <: Abs & {lhs: 'rhs0, lty: 'lhs, rhs: 'rhs0} | App & {lhs: 'rhs0 & (Abs & {lhs: 'rhs0, lty: 'lhs} | ~#Abs), rhs: 'rhs0} | Lit | Var
+//│   'rhs <: Abs & {lhs: Var & {name: string}, lty: 'lhs & 'rhs1 & (PrimitiveType & {name: string} | 'b & (FunctionType & 'c | FunctionType & ~#FunctionType)), rhs: 'rhs} | App & {lhs: 'rhs, rhs: 'rhs} | Lit & {ty: 'rhs2} | Var & {name: string}
+//│   'b <: {lhs: 'rhs1 & 'lhs, rhs: 'rhs2}
+//│   'rhs2 <: 'lhs & (PrimitiveType & {name: string} | 'b & (FunctionType & 'c | FunctionType & ~#FunctionType))
+//│   'c <: {lhs: 'rhs3, rhs: 'rhs3}
+//│   'rhs3 <: FunctionType & 'c | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│   'rhs1 <: FunctionType & {lhs: 'rhs1, rhs: 'rhs1} | PrimitiveType | ~FunctionType & ~PrimitiveType
+//│   'lhs <: FunctionType & {lhs: 'lhs & (PrimitiveType & {name: string} | ~#PrimitiveType), rhs: 'lhs} | PrimitiveType & {name: string}
 //│             = [Function: showTypeTerm]
 
 // FIXME

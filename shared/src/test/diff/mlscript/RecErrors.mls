@@ -58,6 +58,8 @@ rec def lefts() =
 //│ lefts: () -> 'a
 //│   where
 //│     'a :> Left with {v: 'a}
+//│ where
+//│   'a :> Left with {v: 'a}
 
 
 

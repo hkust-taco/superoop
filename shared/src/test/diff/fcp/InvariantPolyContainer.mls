@@ -9,6 +9,8 @@ sid = single id
 //│ sid: MutArray['a]
 //│   where
 //│     'a :> forall 'b. 'b -> 'b
+//│ where
+//│   'a :> forall 'b. 'b -> 'b
 
 def ty1: MutArray[forall 'X. 'X -> 'X]
 def ty1 = sid
@@ -16,6 +18,8 @@ def ty1 = sid
 //│ MutArray['a]
 //│   where
 //│     'a :> forall 'b. 'b -> 'b
+//│ where
+//│   'a :> forall 'b. 'b -> 'b
 //│   <:  ty1:
 //│ MutArray[forall 'X. 'X -> 'X]
 
@@ -25,6 +29,8 @@ def ty2 = sid
 //│ MutArray['a]
 //│   where
 //│     'a :> forall 'b. 'b -> 'b
+//│ where
+//│   'a :> forall 'b. 'b -> 'b
 //│   <:  ty2:
 //│ MutArray['A -> 'A]
 
@@ -34,17 +40,17 @@ ty1 = ty2
 //│   <:  ty1:
 //│ MutArray[forall 'X. 'X -> 'X]
 //│ ╔══[ERROR] Type error in def definition
-//│ ║  l.32: 	ty1 = ty2
+//│ ║  l.38: 	ty1 = ty2
 //│ ║        	^^^^^^^^^
 //│ ╟── type variable `'X` leaks out of its scope
-//│ ║  l.13: 	def ty1: MutArray[forall 'X. 'X -> 'X]
+//│ ║  l.15: 	def ty1: MutArray[forall 'X. 'X -> 'X]
 //│ ║        	                             ^^
 //│ ╟── back into type variable `'X`
-//│ ║  l.13: 	def ty1: MutArray[forall 'X. 'X -> 'X]
+//│ ║  l.15: 	def ty1: MutArray[forall 'X. 'X -> 'X]
 //│ ║        	                                   ^^
 //│ ╟── adding a type annotation to any of the following terms may help resolve the problem
 //│ ╟── • this reference:
-//│ ║  l.32: 	ty1 = ty2
+//│ ║  l.38: 	ty1 = ty2
 //│ ╙──      	      ^^^
 
 :e
@@ -53,16 +59,16 @@ ty2 = ty1
 //│   <:  ty2:
 //│ MutArray['A -> 'A]
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.51: 	ty2 = ty1
+//│ ║  l.57: 	ty2 = ty1
 //│ ║        	^^^^^^^^^
 //│ ╟── type `'X` does not match type `'A`
-//│ ║  l.13: 	def ty1: MutArray[forall 'X. 'X -> 'X]
+//│ ║  l.15: 	def ty1: MutArray[forall 'X. 'X -> 'X]
 //│ ║        	                             ^^
 //│ ╟── Note: constraint arises from type variable:
-//│ ║  l.22: 	def ty2: forall 'A. MutArray['A -> 'A]
+//│ ║  l.26: 	def ty2: forall 'A. MutArray['A -> 'A]
 //│ ║        	                             ^^
 //│ ╟── Note: quantified type variable 'X is defined at:
-//│ ║  l.13: 	def ty1: MutArray[forall 'X. 'X -> 'X]
+//│ ║  l.15: 	def ty1: MutArray[forall 'X. 'X -> 'X]
 //│ ╙──      	                         ^^
 
 

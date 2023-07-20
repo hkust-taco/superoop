@@ -11,19 +11,22 @@ foo x =
 foo x =
   let _ = log (succ x.prop)
   in x
-//│ foo: forall 'prop 'a. 'a -> 'a
+//│ foo: forall 'a 'prop. 'a -> 'a
 //│   where
 //│     'a <: {prop: 'prop}
 //│     'prop <: int
+//│ where
+//│   'a <: {prop: 'prop}
+//│   'prop <: int
 //│    = [Function: foo1]
 
 :e
 foo false
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.21: 	foo false
+//│ ║  l.24: 	foo false
 //│ ║        	^^^^^^^^^
 //│ ╟── reference of type `false` does not have field 'prop'
-//│ ║  l.21: 	foo false
+//│ ║  l.24: 	foo false
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.12: 	  let _ = log (succ x.prop)
@@ -55,13 +58,13 @@ foo x =
 :e
 foo false
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.56: 	foo false
+//│ ║  l.59: 	foo false
 //│ ║        	^^^^^^^^^
 //│ ╟── reference of type `false` does not have field 'prop'
-//│ ║  l.56: 	foo false
+//│ ║  l.59: 	foo false
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.50: 	  let _ = log ((fun y -> x.prop y) 0)
+//│ ║  l.53: 	  let _ = log ((fun y -> x.prop y) 0)
 //│ ╙──      	                         ^^^^^^
 //│ res: error | false
 //│ Runtime error:
@@ -80,13 +83,13 @@ foo x =
 :e
 foo false
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.81: 	foo false
+//│ ║  l.84: 	foo false
 //│ ║        	^^^^^^^^^
 //│ ╟── reference of type `false` does not have field 'prop'
-//│ ║  l.81: 	foo false
+//│ ║  l.84: 	foo false
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.76: 	  let _ = app (fun y -> x.prop y)
+//│ ║  l.79: 	  let _ = app (fun y -> x.prop y)
 //│ ╙──      	                        ^^^^^^
 //│ res: error | false
 //│ Runtime error:

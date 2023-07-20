@@ -27,6 +27,8 @@ mixin EvalBase {
 module TestLang extends EvalBase
 //│ module TestLang {
 //│   fun eval: forall 'E. (Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]) -> Int
+//│     where
+//│       'E <: 'a
 //│ }
 //│ where
 //│   'E <: 'a
@@ -40,6 +42,8 @@ fun mk(n) = if n is
 //│ fun mk: forall 'E. Object -> 'E
 //│   where
 //│     'E :> Add['E] | Lit | Neg['E]
+//│ where
+//│   'E :> Add['E] | Lit | Neg['E]
 
 :stats
 TestLang.eval(mk(0))

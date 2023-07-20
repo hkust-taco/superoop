@@ -50,6 +50,8 @@ rec def evalOpt = fun x -> case x of {
 //│ evalOpt: 'a -> (None & {err: string} | Some & {v: int})
 //│   where
 //│     'a <: Lit & {v: int} | Neg & {sub: 'a} | Plus & {lhs: 'a, rhs: 'a} | Var & {nme: string}
+//│ where
+//│   'a <: Lit & {v: int} | Neg & {sub: 'a} | Plus & {lhs: 'a, rhs: 'a} | Var & {nme: string}
 //│        = [Function: evalOpt]
 //│ constrain calls  : 630
 //│ annoying  calls  : 156

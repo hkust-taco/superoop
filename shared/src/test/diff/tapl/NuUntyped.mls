@@ -98,6 +98,8 @@ fun listConcat(xs, ys) =
 //│ fun listConcat: forall 'A 'A0 'a. (Cons['A] | Nil, List['A0] & 'a,) -> (Cons['A0] | 'a)
 //│   where
 //│     'A <: 'A0
+//│ where
+//│   'A <: 'A0
 
 fun listContains(xs, x) =
   if xs is
@@ -117,6 +119,8 @@ fun listWithout(xs, x) =
 //│ fun listWithout: forall 'A 'A0. (Cons['A] | Nil, anything,) -> (Cons['A0] | Nil)
 //│   where
 //│     'A <: 'A0
+//│ where
+//│   'A <: 'A0
 
 // fix this:
 // fun listJoin(xs, sep) =
@@ -247,6 +251,8 @@ fun fv(t) =
 //│ fun fv: forall 'A. (Abs | App | Var) -> (Cons['A] | Nil)
 //│   where
 //│     'A :> Str
+//│ where
+//│   'A :> Str
 
 fun showFv(t) =
   concat2(showTerm(t), if fv(t) is

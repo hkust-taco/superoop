@@ -42,6 +42,8 @@ module A {
 //│ module A {
 //│   fun f: nothing
 //│   fun g: forall 'b 'a. 'a -> 'b
+//│     where
+//│       'a := 'a -> 'b
 //│   fun h: forall 'b. 'b
 //│   fun i: forall 'c. 'c -> 'c
 //│ }
@@ -61,7 +63,10 @@ A.i
 A.f
 //│ 'f
 //│   where
-//│     'f :> forall 'a 'f0. 'a
+//│     'f :> forall 'f0 'a. 'a
+//│       where
+//│         'f0 <: 'f0 -> 'a
+//│         'a <: 'f0
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded
@@ -71,6 +76,10 @@ A.g
 //│ 'g
 //│   where
 //│     'g :> forall 'a 'b 'c 'h. 'a -> 'b
+//│       where
+//│         'a := 'a -> 'b
+//│         'b <: 'c
+//│         'c <: 'h
 //│ res
 //│     = [Function: g]
 
@@ -80,6 +89,8 @@ A.h
 //│ 'h
 //│   where
 //│     'h :> forall 'a 'h0. 'a
+//│       where
+//│         'a <: 'h0
 //│ res
 //│ Runtime error:
 //│   RangeError: Maximum call stack size exceeded

@@ -59,6 +59,8 @@ fun unbox(x) = if x is
 //│ fun unbox: forall 'a. (Numbr | Vectr) -> 'a
 //│   where
 //│     'a :> Int | Array['a]
+//│ where
+//│   'a :> Int | Array['a]
 
 fun add(e) =
   if e is
@@ -91,6 +93,8 @@ unbox(v)
 //│ forall 'a. 'a
 //│   where
 //│     'a :> Int | Array['a]
+//│ where
+//│   'a :> Int | Array['a]
 //│ res
 //│     = [ 10, 20, 30 ]
 
@@ -104,6 +108,8 @@ unbox(res)
 //│ forall 'a. 'a
 //│   where
 //│     'a :> Int | Array['a]
+//│ where
+//│   'a :> Int | Array['a]
 //│ res
 //│     = [ 4, [ 12, 22, 32 ] ]
 
@@ -173,7 +179,7 @@ s([Numbr(0),Numbr(0)])
 //│ ║  l.+1: 	s([Numbr(0),Numbr(0)])
 //│ ║        	 ^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from tuple type:
-//│ ║  l.136: 	fun s: ([Numbr,Numbr] -> Int) & ([Vectr,Vectr] -> Int)
+//│ ║  l.142: 	fun s: ([Numbr,Numbr] -> Int) & ([Vectr,Vectr] -> Int)
 //│ ╙──       	         ^^^^^^^^^^^
 //│ Int | error
 
@@ -241,10 +247,10 @@ add2(Pair(Vectr(0), Numbr(1)))
 //│ ║  l.+1: 	add2(Pair(Vectr(0), Numbr(1)))
 //│ ║        	          ^^^^^^^^
 //│ ╟── Note: constraint arises from class pattern:
-//│ ║  l.113: 	    Pair(Numbr(n), Numbr(m)) then Numbr(m + m)
+//│ ║  l.119: 	    Pair(Numbr(n), Numbr(m)) then Numbr(m + m)
 //│ ║         	         ^^^^^
 //│ ╟── from reference:
-//│ ║  l.112: 	  if e is
+//│ ║  l.118: 	  if e is
 //│ ║         	     ^
 //│ ╟── Note: type parameter A is defined at:
 //│ ║  l.52: 	class Pair[A, B](a: A, b: B)

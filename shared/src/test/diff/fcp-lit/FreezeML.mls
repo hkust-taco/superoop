@@ -513,7 +513,11 @@ choose id (fun (x: ('a -> 'a)) -> auto_ x)
 //│ ╙──       	                              ^^
 //│ res: 'c
 //│   where
-//│     'c :> (forall 'a. 'a -> 'a) | (forall 'a0 'd. ('a0 -> 'a0) -> 'd)
+//│     'c :> (forall 'a. 'a -> 'a) | (forall 'a0 'd. ('a0 -> 'a0) -> 'd
+//│       where
+//│         'a0 :> ??a
+//│             <: ??a0
+//│         'd :> (forall 'b. 'b -> 'b) | error)
 //│     'd :> (forall 'b. 'b -> 'b) | error
 //│     'a0 :> ??a
 //│         <: ??a0
@@ -527,7 +531,7 @@ res
 :e // skolem extrusion
 res id
 //│ ╔══[ERROR] Type error in application
-//│ ║  l.528: 	res id
+//│ ║  l.532: 	res id
 //│ ║         	^^^^^^
 //│ ╟── type variable `'a` leaks out of its scope
 //│ ║  l.172: 	def auto_ : (forall 'a. 'a -> 'a) -> 'b -> 'b
@@ -545,10 +549,10 @@ res id
 :e
 a (fun x -> { u = x })
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.546: 	a (fun x -> { u = x })
+//│ ║  l.550: 	a (fun x -> { u = x })
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{u: ?a}` does not match type `'a`
-//│ ║  l.546: 	a (fun x -> { u = x })
+//│ ║  l.550: 	a (fun x -> { u = x })
 //│ ║         	            ^^^^^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.172: 	def auto_ : (forall 'a. 'a -> 'a) -> 'b -> 'b

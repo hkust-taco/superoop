@@ -108,6 +108,8 @@ f
 //│     'a <: 'b -> 'b)
 //│ where
 //│   'a :> int
+//│ where
+//│   'a :> int
 
 // * Note the first-class polymorphic type with impossible bound...
 let r = f(1)
@@ -122,11 +124,16 @@ r
 //│       where
 //│         'a <: 'b -> 'b
 //│     'a :> int
+//│ where
+//│   'c :> forall 'b. 'a
+//│     where
+//│       'a <: 'b -> 'b
+//│   'a :> int
 
 :e
 r(2)
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.127: 	r(2)
+//│ ║  l.134: 	r(2)
 //│ ║         	^^^^
 //│ ╟── type `int` is not a function
 //│ ║  l.99: 	  int : 'a
@@ -139,7 +146,7 @@ r(2)
 :e
 r + 1
 //│ ╔══[ERROR] Type mismatch in operator application:
-//│ ║  l.140: 	r + 1
+//│ ║  l.147: 	r + 1
 //│ ║         	^^^
 //│ ╟── type `int` is not a function
 //│ ║  l.99: 	  int : 'a
@@ -164,6 +171,8 @@ f
 //│     'a <: 'b -> 'b)
 //│ where
 //│   'a :> int
+//│ where
+//│   'a :> int
 
 let r = f(1)
 //│ r: 'b
@@ -173,26 +182,26 @@ let r = f(1)
 :e
 r(2)
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.174: 	r(2)
+//│ ║  l.183: 	r(2)
 //│ ║         	^^^^
 //│ ╟── type `int` is not a function
-//│ ║  l.155: 	  int : 'a
+//│ ║  l.162: 	  int : 'a
 //│ ║         	  ^^^
 //│ ╟── Note: constraint arises from function type:
-//│ ║  l.154: 	  'a : 'b => 'b
+//│ ║  l.161: 	  'a : 'b => 'b
 //│ ╙──       	       ^^^^^^^^
 //│ res: error
 
 :e
 r + 1
 //│ ╔══[ERROR] Type mismatch in operator application:
-//│ ║  l.187: 	r + 1
+//│ ║  l.196: 	r + 1
 //│ ║         	^^^
 //│ ╟── type `int` is not a function
-//│ ║  l.155: 	  int : 'a
+//│ ║  l.162: 	  int : 'a
 //│ ║         	  ^^^
 //│ ╟── Note: constraint arises from function type:
-//│ ║  l.154: 	  'a : 'b => 'b
+//│ ║  l.161: 	  'a : 'b => 'b
 //│ ╙──       	       ^^^^^^^^
 //│ res: error | int
 

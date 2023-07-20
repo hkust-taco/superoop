@@ -101,6 +101,8 @@ mixin EvalLambda {
 module Test1 extends EvalVar, EvalLambda
 //│ module Test1 {
 //│   fun eval: forall 'b. (List[{_1: Str, _2: anything}], 'a,) -> ('A | 'b)
+//│     where
+//│       'b :> App['A] | Abs['A]
 //│ }
 //│ where
 //│   'A :> 'b | Var
@@ -110,26 +112,34 @@ module Test1 extends EvalVar, EvalLambda
 Test1.eval(Nil(), Var("a"))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Var
+//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Nil(), Abs("b", Var("a")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Var
+//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Cons(("c", Var("d")), Nil()), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Var
+//│   'a :> App['A] | Abs['A]
 
 Test1.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("b", Var("b")), Var("c")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Var
+//│   'a :> App['A] | Abs['A]
 
 class Numb(n: Int)
 class Add<out A>(l: A, r: A)
@@ -184,6 +194,8 @@ Test2.eval(Cons(("a", Abs("d", Var("d"))), Nil()), Add(Numb(1), Var("a")))
 module Test3 extends EvalVar, EvalExpr, EvalLambda
 //│ module Test3 {
 //│   fun eval: forall 'b. (List[{_1: Str, _2: anything}], 'a,) -> ('A | 'b)
+//│     where
+//│       'b :> App['A] | Abs['A]
 //│ }
 //│ where
 //│   'A :> 'b | Numb | Var | 'c
@@ -193,14 +205,18 @@ module Test3 extends EvalVar, EvalExpr, EvalLambda
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), Abs("a", Var("a")))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Numb | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Numb | Var
+//│   'a :> App['A] | Abs['A]
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("a", Var("a")), Add(Numb(1), Var("c"))))
 //│ forall 'a. 'A | 'a
 //│   where
-//│     'A :> 'a | Abs[Var] | Add[Numb | Var] | Numb | Var
 //│     'a :> App['A] | Abs['A]
+//│ where
+//│   'A :> 'a | Abs[Var] | Add[Numb | Var] | Numb | Var
+//│   'a :> App['A] | Abs['A]
 
 module Test3 extends EvalVar, EvalLambda, EvalExpr
 //│ module Test3 {

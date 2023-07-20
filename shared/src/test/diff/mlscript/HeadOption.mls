@@ -117,6 +117,8 @@ rec def lr1 = Cons { head = 0; tail = lr1 }
 //│ lr1: 'tail
 //│   where
 //│     'tail :> Cons[0] with {tail: 'tail}
+//│ where
+//│   'tail :> Cons[0] with {tail: 'tail}
 //│ constrain calls  : 19
 //│ annoying  calls  : 0
 //│ subtyping calls  : 96
@@ -133,6 +135,8 @@ rec def lr2 = Cons { head = 0; tail = Cons { head = 1; tail = Cons { head = 3; t
 //│ lr2: 'tail
 //│   where
 //│     'tail :> Cons[0] with {tail: Cons[1] with {tail: Cons[3] with {tail: 'tail}}}
+//│ where
+//│   'tail :> Cons[0] with {tail: Cons[1] with {tail: Cons[3] with {tail: 'tail}}}
 //│ constrain calls  : 49
 //│ annoying  calls  : 0
 //│ subtyping calls  : 262
@@ -148,22 +152,22 @@ Cons.HeadOption lr2
 :e
 l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	                                 ^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	                                      ^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
-//│ ║  l.149: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
+//│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ l1: (Cons[nothing] with {tail: (Cons[nothing] with {tail: (Cons[nothing] with {tail: Nil[?]}) | error}) | error}) | error
 

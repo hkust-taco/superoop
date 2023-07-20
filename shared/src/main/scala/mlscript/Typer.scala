@@ -1503,6 +1503,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           
           val boundsSize = bounds.size
           val b = go(bod)
+          /* 
           // * This is not completely correct: if we've already traversed TVs as part of a previous sibling PolymorphicType,
           // * the bounds of these TVs won't be registered again...
           // FIXME in principle we'd want to compute a transitive closure...
@@ -1516,11 +1517,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool, var ne
           
           if (fvars.isEmpty) b else
             PolyType(fvars.map(_.asTypeVar pipe (R(_))).toList, b)
-          // val bs = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+          */
           
-          // if (quantified.isEmpty) b else
-          //   PolyType(quantified.map(_.asTypeVar pipe (R(_))).toList,
-          //     Constrained.mk(b, bs))
+          val bs = quantified.iterator.flatMap(tv => boundsMap.get(tv).map(tv.asTypeVar -> _)).toList
+          
+          if (quantified.isEmpty) b else
+            PolyType(quantified.map(_.asTypeVar pipe (R(_))).toList,
+              Constrained.mk(b, bs))
           
         case ConstrainedType(cs, bod) =>
           val (ubs, others1) = cs.groupMap(_._1)(_._2).toList.partition(_._2.sizeIs > 1)

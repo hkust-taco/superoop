@@ -230,6 +230,8 @@ fun showList(xs) =
 //│ showList: 'tail -> string
 //│   where
 //│     'tail <: Cons & {tail: 'tail} | Nil
+//│ where
+//│   'tail <: Cons & {tail: 'tail} | Nil
 //│         = [Function: showList]
 
 let zeroToThree = Cons(0, Cons(1, Cons(2, Cons(3, Nil()))))
@@ -254,16 +256,23 @@ fun mapPartition(f, xs) =
       Right(v) then Pair(l, Cons(v, r))
 //│ mapPartition: ('head -> (Left & {leftValue: 'leftValue} | Right & {rightValue: 'rightValue}), 'tail,) -> (Pair & {fst: 'fst, snd: 'snd})
 //│   where
-//│     'snd :> Cons & {head: 'rightValue, tail: 'snd}
-//│     'fst :> Cons & {head: 'leftValue, tail: 'fst}
 //│     'tail <: Cons & {head: 'head, tail: 'tail} | Nil
+//│     'fst :> Cons & {head: 'leftValue, tail: 'fst}
+//│     'snd :> Cons & {head: 'rightValue, tail: 'snd}
+//│ where
+//│   'snd :> Cons & {head: 'rightValue, tail: 'snd}
+//│   'fst :> Cons & {head: 'leftValue, tail: 'fst}
+//│   'tail <: Cons & {head: 'head, tail: 'tail} | Nil
 //│             = [Function: mapPartition]
 
 mapPartition(x => if x % 2 == 0 then Left(x) else Right(x), zeroToThree)
 //│ res: Pair & {fst: 'fst, snd: 'snd}
 //│   where
-//│     'snd :> Cons & {head: 0 | 1 | 2 | 3, tail: 'snd} | Nil
 //│     'fst :> Nil | Cons & {head: 0 | 1 | 2 | 3, tail: 'fst}
+//│     'snd :> Cons & {head: 0 | 1 | 2 | 3, tail: 'snd} | Nil
+//│ where
+//│   'snd :> Cons & {head: 0 | 1 | 2 | 3, tail: 'snd} | Nil
+//│   'fst :> Nil | Cons & {head: 0 | 1 | 2 | 3, tail: 'fst}
 //│    = Pair {
 //│        fst: Cons { head: 0, tail: Cons { head: 2, tail: Nil {} } },
 //│        snd: Cons { head: 1, tail: Cons { head: 3, tail: Nil {} } }
@@ -276,17 +285,35 @@ fun mapPartition2(f, xs) =
     Cons(x, xs) and mapPartition(f, xs) is res and res.fst is l and res.snd is r and f(x) is
       Left(v)  then Pair(Cons(v, l), r)
       Right(v) then Pair(l, Cons(v, r))
-//│ mapPartition2: ('head -> (Left & {leftValue: 'leftValue} | Right & {rightValue: 'rightValue}) & 'head0 -> (Left & {leftValue: 'leftValue0} | Right & {rightValue: 'rightValue0}), Cons & {head: 'head0, tail: 'tail} | Nil,) -> (Pair & {fst: forall 'fst. Cons & {head: 'leftValue0, tail: forall 'fst. Nil | 'fst | Cons & {head: 'leftValue, tail: Nil | 'fst}} | Nil | 'fst | Cons & {head: 'leftValue, tail: Nil | 'fst}, snd: forall 'snd. Cons & {head: 'rightValue0, tail: forall 'snd. Nil | 'snd | Cons & {head: 'rightValue, tail: Nil | 'snd}} | Nil | 'snd | Cons & {head: 'rightValue, tail: Nil | 'snd}})
+//│ mapPartition2: ('head -> (Left & {leftValue: 'leftValue} | Right & {rightValue: 'rightValue}) & 'head0 -> (Left & {leftValue: 'leftValue0} | Right & {rightValue: 'rightValue0}), Cons & {head: 'head0, tail: 'tail} | Nil,) -> (Pair & {fst: forall 'fst. Cons & {head: 'leftValue0, tail: forall 'fst. Nil | 'fst | Cons & {head: 'leftValue, tail: Nil | 'fst}
 //│   where
-//│     'snd :> Nil | Cons & {head: 'rightValue, tail: 'snd}
-//│     'fst :> Nil | Cons & {head: 'leftValue, tail: 'fst}
-//│     'tail <: Cons & {head: 'head, tail: 'tail} | Nil
+//│     'fst :> Nil | Cons & {head: 'leftValue, tail: 'fst}} | Nil | 'fst | Cons & {head: 'leftValue, tail: Nil | 'fst}
+//│ where
+//│   'fst :> Nil | Cons & {head: 'leftValue, tail: 'fst}, snd: forall 'snd. Cons & {head: 'rightValue0, tail: forall 'snd. Nil | 'snd | Cons & {head: 'rightValue, tail: Nil | 'snd}
+//│   where
+//│     'snd :> Nil | Cons & {head: 'rightValue, tail: 'snd}} | Nil | 'snd | Cons & {head: 'rightValue, tail: Nil | 'snd}
+//│ where
+//│   'snd :> Nil | Cons & {head: 'rightValue, tail: 'snd}})
+//│ where
+//│   'tail <: Cons & {head: 'head, tail: 'tail} | Nil
+//│ where
+//│   'snd :> Nil | Cons & {head: 'rightValue, tail: 'snd}
+//│   'fst :> Nil | Cons & {head: 'leftValue, tail: 'fst}
+//│   'tail <: Cons & {head: 'head, tail: 'tail} | Nil
 //│              = [Function: mapPartition2]
 
 mapPartition2(x => if x % 2 == 0 then Left(x) else Right(x), zeroToThree)
-//│ res: Pair & {fst: forall 'fst. Cons & {head: 0, tail: forall 'fst. Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}} | Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}, snd: forall 'fst. Cons & {head: 0, tail: forall 'fst. Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}} | Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}}
+//│ res: Pair & {fst: forall 'fst. Cons & {head: 0, tail: forall 'fst. Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}
 //│   where
-//│     'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}
+//│     'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}} | Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}
+//│ where
+//│   'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}, snd: forall 'fst. Cons & {head: 0, tail: forall 'fst. Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}
+//│   where
+//│     'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}} | Nil | 'fst | Cons & {head: 1 | 2 | 3, tail: Nil | 'fst}
+//│ where
+//│   'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}}
+//│ where
+//│   'fst :> Nil | Cons & {head: 1 | 2 | 3, tail: 'fst}
 //│    = Pair {
 //│        fst: Cons { head: 0, tail: Cons { head: 2, tail: Nil {} } },
 //│        snd: Cons { head: 1, tail: Cons { head: 3, tail: Nil {} } }

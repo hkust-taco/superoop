@@ -148,6 +148,8 @@ iter256_ty = iter256
 //│ iter256: () -> ('a -> ('a & 'b) & ('b | 'c) -> ('a & 'c)) -> 'a -> 'c
 //│   where
 //│     'a :> 'c
+//│ where
+//│   'a :> 'c
 //│        = [Function: iter256]
 //│ iter256_ty: () -> (forall 'X. ('X -> 'X) -> 'X -> 'X)
 //│           = <missing implementation>
@@ -158,6 +160,8 @@ iter256_ty = iter256
 //│ () -> ('a -> ('a & 'b) & ('b | 'c) -> ('a & 'c)) -> 'a -> 'c
 //│   where
 //│     'a :> 'c
+//│ where
+//│   'a :> 'c
 //│   <:  iter256_ty:
 //│ () -> (forall 'X. ('X -> 'X) -> 'X -> 'X)
 //│           = [Function: iter256]
@@ -336,6 +340,8 @@ fp02
 //│ res: forall 'a. 'a
 //│   where
 //│     'a :> forall 'b 'c. 'b -> 'c -> 'c
+//│ where
+//│   'a :> forall 'b 'c. 'b -> 'c -> 'c
 //│    = [Function: Z]
 
 sp02 = snd p02
@@ -399,7 +405,7 @@ E q = q id
 // shallow (not (not true))        -- Shallow encoding.
 // λid.id(λb t f.b f t)(id(λb t f.b f t)(λx y.x))
 sh id = (id not) ((id not) tru)
-//│ sh: ((forall 'c 'a 'b. ('a -> 'b -> 'c) -> 'b -> 'a -> 'c) -> ('d -> 'e & (forall 'f. 'f -> anything -> 'f) -> 'd)) -> 'e
+//│ sh: ((forall 'a 'b 'c. ('a -> 'b -> 'c) -> 'b -> 'a -> 'c) -> ('d -> 'e & (forall 'f. 'f -> anything -> 'f) -> 'd)) -> 'e
 //│   = [Function: sh]
 
 // E[forall X.X->X->X](shallow (not( not true)))
@@ -420,7 +426,7 @@ sh_pu id x y = id (id u x) x
 :e
 pu sh_pu
 //│ ╔══[ERROR] Cyclic-looking constraint while typing application; a type annotation may be required
-//│ ║  l.421: 	pu sh_pu
+//│ ║  l.427: 	pu sh_pu
 //│ ║         	^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ res: error | anything -> anything -> anything -> nothing
@@ -430,7 +436,7 @@ pu sh_pu
 :e
 (fun x -> x x) (fun x -> x x)
 //│ ╔══[ERROR] Cyclic-looking constraint while typing application; a type annotation may be required
-//│ ║  l.431: 	(fun x -> x x) (fun x -> x x)
+//│ ║  l.437: 	(fun x -> x x) (fun x -> x x)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╙── Note: use flag `:ex` to see internal error info.
 //│ res: error

@@ -145,7 +145,7 @@ iter2 f x = f(f x)
 iter2 iter2
 //│ res: 'a -> 'b
 //│   where
-//│     forall 'c. 'c -> (forall 'f 'e 'd. 'd -> 'e
+//│     forall 'c. 'c -> (forall 'd 'f 'e. 'd -> 'e
 //│       where
 //│         'c <: 'd -> 'f & 'f -> 'e) <: 'a -> 'g & 'g -> 'b
 //│    = [Function (anonymous)]
@@ -243,10 +243,10 @@ c2 c2 K
 //│    = [Function (anonymous)]
 
 c2_ = succ_ (succ_ n0)
-//│ c2_: 'a -> (forall 'b 'd 'c. 'b -> 'c
+//│ c2_: 'a -> (forall 'd 'c 'b. 'b -> 'c
 //│   where
 //│     'a <: 'd -> 'c
-//│     forall 'e. 'e -> (forall 'f 'h 'g. 'f -> 'g
+//│     forall 'e. 'e -> (forall 'h 'g 'f. 'f -> 'g
 //│       where
 //│         forall 'X. ('X -> 'X) -> 'X -> 'X <: 'e -> 'f -> 'h
 //│         'e <: 'h -> 'g) <: 'a -> 'b -> 'd)
@@ -295,7 +295,7 @@ c2_ c2_ K
 //│             'e <: 'h -> 'g) <: 'i -> 'c -> 'j
 //│         'i <: 'j -> 'd) -> 'a -> 'k
 //│ where
-//│   'i :> forall 'p 'q 's 'r. ('p & 'q) -> (anything -> 'q | 'r)
+//│   'i :> forall 's 'r 'p 'q. ('p & 'q) -> (anything -> 'q | 'r)
 //│     where
 //│       'i <: 's -> 'r
 //│       forall 't. 't -> (forall 'w 'v 'u. 'u -> 'v
@@ -320,14 +320,14 @@ c2__ c2__
 //│     forall 'c. 'c -> (forall 'f 'e 'd. 'd -> 'e
 //│       where
 //│         'c <: 'f -> 'e
-//│         anything -> (forall 'g. 'g -> 'g) <: 'c -> 'd -> 'f) <: (forall 'h. 'h -> (forall 'j 'i 'o. 'i -> 'j
+//│         anything -> (forall 'g. 'g -> 'g) <: 'c -> 'd -> 'f) <: (forall 'h. 'h -> (forall 'o 'j 'i. 'i -> 'j
 //│       where
 //│         forall 'k. 'k -> (forall 'n 'm 'l. 'l -> 'm
 //│           where
 //│             'k <: 'n -> 'm
 //│             anything -> (forall 'g. 'g -> 'g) <: 'k -> 'l -> 'n) <: 'h -> 'i -> 'o
 //│         'h <: 'o -> 'j)) -> 'a -> 'p
-//│     forall 'h. 'h -> (forall 'j 'i 'o. 'i -> 'j
+//│     forall 'h. 'h -> (forall 'o 'j 'i. 'i -> 'j
 //│       where
 //│         forall 'k. 'k -> (forall 'n 'm 'l. 'l -> 'm
 //│           where
@@ -346,7 +346,7 @@ c2__ c2__ K
 //│             anything -> (forall 'h. 'h -> 'h) <: 'e -> 'f -> 'i
 //│             'e <: 'i -> 'g) <: (forall 'j. 'j -> anything -> 'j) -> 'c -> 'k
 //│         forall 'j. 'j -> anything -> 'j <: 'k -> 'd <: 'l -> 'b
-//│     forall 'm. 'm -> (forall 'n 'p 'o. 'n -> 'o
+//│     forall 'm. 'm -> (forall 'p 'o 'n. 'n -> 'o
 //│       where
 //│         anything -> (forall 'h. 'h -> 'h) <: 'm -> 'n -> 'p
 //│         'm <: 'p -> 'o) <: (forall 'k 'd 'c. 'c -> 'd

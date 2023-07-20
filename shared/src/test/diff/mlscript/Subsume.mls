@@ -352,6 +352,8 @@ def self2: 'a -> 'b as 'a
 //│ self2: 'a
 //│   where
 //│     'a := 'a -> 'b
+//│ where
+//│   'a := 'a -> 'b
 //│      = <missing implementation>
 
 // :e // fails since the fix to spurious-TV-cycles // works since assigned TVs
@@ -361,6 +363,8 @@ def self2 = self1
 //│ 'a
 //│   where
 //│     'a := 'a -> 'b
+//│ where
+//│   'a := 'a -> 'b
 //│      = [Function: self2]
 
 
@@ -374,5 +378,8 @@ fun p -> fun q -> p q p
 //│   where
 //│     'a <: 'b -> 'd
 //│     'd <: 'a -> 'c
+//│ where
+//│   'a <: 'b -> 'd
+//│   'd <: 'a -> 'c
 //│    = [Function: res]
 

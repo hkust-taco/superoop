@@ -13,6 +13,8 @@ rec def eval x = case x of {
 //│ eval: 'a -> int
 //│   where
 //│     'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit
+//│ where
+//│   'a <: (Add with {lhs: 'a, rhs: 'a}) | Lit
 //│     = [Function: eval]
 
 def eval eval x = case x of {
@@ -77,19 +79,21 @@ def evalN2 evalN2 x = case x of {
 //│ evalN2: ('a -> 'underlying -> int & 'a) -> ((Add with {lhs: 'b, rhs: 'b}) | (Lit with {val: 'val}) | (Neg with {underlying: 'underlying})) -> (int | 'val)
 //│   where
 //│     'b <: (Add with {lhs: 'b, rhs: 'b}) | Lit
+//│ where
+//│   'b <: (Add with {lhs: 'b, rhs: 'b}) | Lit
 
 evalN2 evalN2! e
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	evalN2 evalN2! e
 //│ ║        	^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Neg & {underlying: ?underlying}` does not match type `Add & ?a | Lit & ?b`
-//│ ║  l.53: 	e = Add{lhs = Lit{val = 1}; rhs = Neg{underlying = Lit{val = 2}}}
+//│ ║  l.55: 	e = Add{lhs = Lit{val = 1}; rhs = Neg{underlying = Lit{val = 2}}}
 //│ ║        	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.18: 	def eval eval x = case x of {
+//│ ║  l.20: 	def eval eval x = case x of {
 //│ ║        	                       ^
 //│ ╟── from field selection:
-//│ ║  l.20: 	  | Add -> eval eval x.lhs + eval eval x.rhs
+//│ ║  l.22: 	  | Add -> eval eval x.lhs + eval eval x.rhs
 //│ ╙──      	                                       ^^^^^
 //│ res: error | int
 
@@ -102,13 +106,13 @@ def evalN3 evalN3 x = case x of {
 //│ ║  l.+2: 	  Neg -> 0 - (evalN2 x.underlying)
 //│ ║        	         ^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── function of type `?a -> (forall ?b ?c. ?b | ?c)` is not an instance of type `int`
-//│ ║  l.73: 	def evalN2 evalN2 x = case x of {
+//│ ║  l.75: 	def evalN2 evalN2 x = case x of {
 //│ ║        	                  ^^^^^^^^^^^^^^^
-//│ ║  l.74: 	  Neg -> 0 - (evalN2 evalN2 x.underlying)
+//│ ║  l.76: 	  Neg -> 0 - (evalN2 evalN2 x.underlying)
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.75: 	  | _ -> eval eval! x
+//│ ║  l.77: 	  | _ -> eval eval! x
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.76: 	  }
+//│ ║  l.78: 	  }
 //│ ║        	^^^
 //│ ╟── but it flows into application with expected type `int`
 //│ ║  l.+2: 	  Neg -> 0 - (evalN2 x.underlying)
@@ -126,28 +130,28 @@ evalN3 evalN3! e
 //│ ║  l.+1: 	evalN3 evalN3! e
 //│ ║        	^^^^^^^^^^^^^
 //│ ╟── function of type `?a -> (?b | ?c)` is not an instance of type `int`
-//│ ║  l.118: 	def evalN3 evalN3 x = case x of {
+//│ ║  l.122: 	def evalN3 evalN3 x = case x of {
 //│ ║         	                  ^^^^^^^^^^^^^^^
-//│ ║  l.119: 	  Neg -> 0 - (evalN3 x.underlying)
+//│ ║  l.123: 	  Neg -> 0 - (evalN3 x.underlying)
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.120: 	  | _ -> eval evalN3 x
+//│ ║  l.124: 	  | _ -> eval evalN3 x
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.121: 	  }
+//│ ║  l.125: 	  }
 //│ ║         	^^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.119: 	  Neg -> 0 - (evalN3 x.underlying)
+//│ ║  l.123: 	  Neg -> 0 - (evalN3 x.underlying)
 //│ ╙──       	              ^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	evalN3 evalN3! e
 //│ ║        	^^^^^^^^^^^^^^^^
 //│ ╟── application of type `Lit & {val: ?val}` is not a function
-//│ ║  l.53: 	e = Add{lhs = Lit{val = 1}; rhs = Neg{underlying = Lit{val = 2}}}
+//│ ║  l.55: 	e = Add{lhs = Lit{val = 1}; rhs = Neg{underlying = Lit{val = 2}}}
 //│ ║        	                                                   ^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.20: 	  | Add -> eval eval x.lhs + eval eval x.rhs
+//│ ║  l.22: 	  | Add -> eval eval x.lhs + eval eval x.rhs
 //│ ║        	                             ^^^^^^^^^
 //│ ╟── from field selection:
-//│ ║  l.119: 	  Neg -> 0 - (evalN3 x.underlying)
+//│ ║  l.123: 	  Neg -> 0 - (evalN3 x.underlying)
 //│ ╙──       	                     ^^^^^^^^^^^^
 //│ res: error | int
 

@@ -16,12 +16,17 @@ foo
 
 :ns
 r = foo (fun a -> fun f -> f a)
-//│ r: forall 'b 'a 'c 'd. 'b
+//│ r: forall 'b 'a 'd 'c. 'b
 //│   where
 //│     'b :> 'a -> 'a
-//│     'a <: 'd & 'c
-//│     'c <: ~'a
-//│     'd <: 'a
+//│     'a <: 'c & 'd
+//│     'd <: ~'a
+//│     'c <: 'a
+//│ where
+//│   'b :> 'a -> 'a
+//│   'a <: 'c & 'd
+//│   'd <: ~'a
+//│   'c <: 'a
 //│  = <no result>
 //│    foo is not implemented
 
@@ -33,10 +38,10 @@ r
 :e
 r: anything -> nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.34: 	r: anything -> nothing
+//│ ║  l.39: 	r: anything -> nothing
 //│ ║        	^
 //│ ╟── type `anything` does not match type `nothing`
-//│ ║  l.34: 	r: anything -> nothing
+//│ ║  l.39: 	r: anything -> nothing
 //│ ║        	   ^^^^^^^^
 //│ ╟── Note: constraint arises from type negation:
 //│ ║  l.7: 	def foo: ('a -> (~'a -> 'a) -> 'a) -> 'a -> 'a
@@ -56,24 +61,28 @@ def foo: ('a -> (~'a -> anything) -> anything) -> MutArray['a]
 
 :ns
 r = foo (fun a -> fun f -> f a)
-//│ r: forall 'c 'b 'a. 'b
+//│ r: forall 'b 'a 'c. 'b
 //│   where
 //│     'b :> MutArray['a]
 //│     'a <: 'c
 //│     'c <: ~'a
+//│ where
+//│   'b :> MutArray['a]
+//│   'a <: 'c
+//│   'c <: ~'a
 //│  = <no result>
 //│    foo is not implemented
 
 :e
 r[0] <- "test"
 //│ ╔══[ERROR] Type mismatch in assignment:
-//│ ║  l.68: 	r[0] <- "test"
+//│ ║  l.77: 	r[0] <- "test"
 //│ ║        	^^^^^^^^^^^^^^
 //│ ╟── string literal of type `"test"` does not match type `~"test"`
-//│ ║  l.68: 	r[0] <- "test"
+//│ ║  l.77: 	r[0] <- "test"
 //│ ║        	        ^^^^^^
 //│ ╟── but it flows into assigned array element with expected type `~"test"`
-//│ ║  l.68: 	r[0] <- "test"
+//│ ║  l.77: 	r[0] <- "test"
 //│ ╙──      	^^^^
 //│ = <no result>
 //│   r and foo are not implemented
@@ -81,10 +90,10 @@ r[0] <- "test"
 :e
 r[0] + 1
 //│ ╔══[ERROR] Type mismatch in operator application:
-//│ ║  l.82: 	r[0] + 1
+//│ ║  l.91: 	r[0] + 1
 //│ ║        	^^^^^^
 //│ ╟── possibly-undefined array access of type `undefined` is not an instance of type `int`
-//│ ║  l.82: 	r[0] + 1
+//│ ║  l.91: 	r[0] + 1
 //│ ╙──      	^^^^
 //│ res: error | int
 //│    = <no result>
@@ -109,14 +118,25 @@ r = bar (fun x -> (x, x + 1, not x, x x))
 
 :ns
 r
-//│ res: forall 'b 'a 'c 'd. 'b
+//│ res: forall 'b 'a 'c 'f. 'b
 //│   where
-//│     'b :> forall 'e 'f. ('c, 'e, 'f, 'd,)
-//│     'f :> bool
-//│     'e :> int
+//│     'b :> forall 'd 'e. ('c, 'd, 'e, 'f,)
+//│       where
+//│         'd :> int
+//│         'e :> bool
+//│     'a <: (bool | ~(int & ~'a)) & ('c -> 'f | ~(int & ~'a))
 //│     'c :> 'a & int & ~'a
-//│        <: 'c -> 'd & bool & int
-//│     'a <: (bool | ~(int & ~'a)) & ('c -> 'd | ~(int & ~'a))
+//│        <: 'c -> 'f & bool & int
+//│ where
+//│   'b :> forall 'd 'e. ('c, 'd, 'e, 'f,)
+//│     where
+//│       'd :> int
+//│       'e :> bool
+//│   'e :> bool
+//│   'd :> int
+//│   'c :> 'a & int & ~'a
+//│      <: 'c -> 'f & bool & int
+//│   'a <: (bool | ~(int & ~'a)) & ('c -> 'f | ~(int & ~'a))
 //│    = <no result>
 //│      r and bar are not implemented
 

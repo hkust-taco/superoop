@@ -34,6 +34,8 @@ def f: T3 & { x: T1 & 'a } as 'a
 //│ f: 'a
 //│   where
 //│     'a :> T3 & {x: T1 & 'a}
+//│ where
+//│   'a :> T3 & {x: T1 & 'a}
 
 :stats
 f.x
@@ -48,6 +50,8 @@ g = error : T1 & { x: T2 | 'a } as 'a
 //│ g: 'a
 //│   where
 //│     'a :> T1 & {x: 'a | T2}
+//│ where
+//│   'a :> T1 & {x: 'a | T2}
 
 :stats
 g.x
@@ -63,10 +67,14 @@ f = g
 //│ 'a
 //│   where
 //│     'a :> T1 & {x: 'a | T2}
+//│ where
+//│   'a :> T1 & {x: 'a | T2}
 //│   <:  f:
 //│ 'a
 //│   where
 //│     'a :> T3 & {x: T1 & 'a}
+//│ where
+//│   'a :> T3 & {x: T1 & 'a}
 //│ constrain calls  : 48
 //│ annoying  calls  : 60
 //│ subtyping calls  : 1977
