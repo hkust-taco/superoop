@@ -353,11 +353,10 @@ mixin EvalNegNeg {
 module TestLang extends EvalBase, EvalNeg, EvalNegNeg
 //│ module TestLang {
 //│   fun eval: 'a -> Int
-//│ }
-//│ where
-//│   'a <: Neg['A] | Object & 'b & ~#Neg
-//│   'A <: Neg['a & 'A] | Neg['A] & ~#Neg | Object & 'b & ~#Neg
-//│   'b <: Add['a] | Lit | Neg['a]
+//│ } where
+//│     'a <: Neg['A] | Object & 'b & ~#Neg
+//│     'A <: Neg['a & 'A] | Neg['A] & ~#Neg | Object & 'b & ~#Neg
+//│     'b <: Add['a] | Lit | Neg['a]
 //│ // Prelude
 //│ class TypingUnit5 {
 //│   #TestLang;
@@ -431,7 +430,7 @@ TestLang.eval(mk(0))
 //│ // Query 2
 //│ res = TestLang.eval(mk(0));
 //│ // End of generated code
-//│ ┌ Block at Mixin.mls:412
+//│ ┌ Block at Mixin.mls:411
 //│ ├─┬ Prelude
 //│ │ ├── Code
 //│ │ │   class TypingUnit6 {}
@@ -582,7 +581,7 @@ mixin Base {
   fun x = y
 }
 //│ ╔══[ERROR] identifier not found: y
-//│ ║  l.582: 	  fun x = y
+//│ ║  l.581: 	  fun x = y
 //│ ╙──       	          ^
 //│ mixin Base {
 //│   fun x: error

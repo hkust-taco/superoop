@@ -38,35 +38,45 @@ mixin Test {
     // this.g(a)
     // (([a, b]) => this.g(b)(this.y))(foo(super.y))
     g(this.x)
+  mixin T {
+    fun h(x) = h(x.u)
+    fun baz = h(this.x)
+  }
 }
 //│ mixin Test {
 //│   super: {x: 'x}
 //│   this: {f: 'x -> 'a, x: 'b}
+//│   mixin T {
+//│     this: {x: 'c}
+//│     fun baz: nothing
+//│     fun h: 'c -> nothing
+//│   } where
+//│       'c <: {u: 'c}
 //│   fun bar: 'a
-//│   fun baz: 'c
-//│   fun foo: 'd -> ('d, forall 'e 'u 'f. 'e -> 'f
+//│   fun baz: 'd
+//│   fun foo: 'e -> ('e, forall 'f 'u 'g. 'f -> 'g
 //│     where
-//│       'e <: {u: 'e & 'u}
-//│       'f :> ('f, 'u,),)
-//│   fun g: 'b -> 'c
-//│ }
-//│ where
-//│   'b <: {u: 'b & 'u0}
-//│   'c :> ('c, 'u0,)
+//│       'f <: {u: 'f & 'u}
+//│       'g :> ('g, 'u,),)
+//│   fun g: 'b -> 'd
+//│ } where
+//│     'd :> ('d, 'u0,)
+//│     'b <: {u: 'b & 'u0}
 
 
 
 // TODO support
 let [a, b] = foo
 //│ ╔══[PARSE ERROR] Expected a function name; found square bracket section instead
-//│ ║  l.60: 	let [a, b] = foo
+//│ ║  l.69: 	let [a, b] = foo
 //│ ╙──      	    ^^^^^^
 //│ ╔══[ERROR] identifier not found: foo
-//│ ║  l.60: 	let [a, b] = foo
+//│ ║  l.69: 	let [a, b] = foo
 //│ ╙──      	             ^^^
 //│ let <error>: error
 //│ Code generation encountered an error:
 //│   unresolved symbol foo
+
 
 
 

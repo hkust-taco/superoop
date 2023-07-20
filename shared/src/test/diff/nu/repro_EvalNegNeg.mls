@@ -29,10 +29,9 @@ module TestLang extends EvalBase
 //│   fun eval: forall 'E. (Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]) -> Int
 //│     where
 //│       'E <: 'a
-//│ }
-//│ where
-//│   'a <: Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]
-//│   'E <: 'a
+//│ } where
+//│     'a <: Add['E] | Lit | Neg['a & (Neg['a] | Object & ~#Neg)]
+//│     'E <: 'a
 
 
 fun mk(n) = if n is

@@ -46,10 +46,9 @@ mixin EvalNeg {
 module TestLang extends EvalNothing, EvalAddLit, EvalNeg
 //│ module TestLang {
 //│   fun eval: (Neg['a] | Object & 'b & ~#Neg) -> Int
-//│ }
-//│ where
-//│   'a <: Neg['a] | Object & 'b & ~#Neg
-//│   'b <: Add['a] | Lit
+//│ } where
+//│     'a <: Neg['a] | Object & 'b & ~#Neg
+//│     'b <: Add['a] | Lit
 
 TestLang.eval
 //│ (Neg['a] | Object & 'b & ~#Neg) -> Int

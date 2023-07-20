@@ -103,11 +103,10 @@ module Test1 extends EvalVar, EvalLambda
 //│   fun eval: forall 'b. (List[{_1: Str, _2: anything}], 'a,) -> ('A | 'b)
 //│     where
 //│       'b :> App['A] | Abs['A]
-//│ }
-//│ where
-//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Var
-//│   'A :> 'b | Var
-//│   'b :> App['A] | Abs['A]
+//│ } where
+//│     'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Var
+//│     'A :> 'b | Var
+//│     'b :> App['A] | Abs['A]
 
 Test1.eval(Nil(), Var("a"))
 //│ forall 'a. 'A | 'a
@@ -175,9 +174,8 @@ mixin EvalExpr {
 module Test2 extends EvalVar, EvalExpr
 //│ module Test2 {
 //│   fun eval: forall 'a. (List[{_1: Str, _2: anything}], 'a & (Add['b] | Mul['b] | Numb | Var),) -> (Numb | Var | 'a | 'b)
-//│ }
-//│ where
-//│   'b <: Add['b] | Mul['b] | Numb | Var
+//│ } where
+//│     'b <: Add['b] | Mul['b] | Numb | Var
 
 Test2.eval(Nil(), Var("a"))
 //│ Numb | Var
@@ -196,12 +194,11 @@ module Test3 extends EvalVar, EvalExpr, EvalLambda
 //│   fun eval: forall 'b. (List[{_1: Str, _2: anything}], 'a,) -> ('A | 'b)
 //│     where
 //│       'b :> App['A] | Abs['A]
-//│ }
-//│ where
-//│   'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Object & 'c & ~#Abs & ~#App
-//│   'c <: Add['a] | Mul['a] | Numb | Var
-//│   'A :> 'b | Numb | Var | 'c
-//│   'b :> App['A] | Abs['A]
+//│ } where
+//│     'a <: Abs['a] | App['a & (Abs['a] | Object & ~#Abs)] | Object & 'c & ~#Abs & ~#App
+//│     'c <: Add['a] | Mul['a] | Numb | Var
+//│     'A :> 'b | Numb | Var | 'c
+//│     'b :> App['A] | Abs['A]
 
 Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), Abs("a", Var("a")))
 //│ forall 'a. 'A | 'a
@@ -222,8 +219,7 @@ Test3.eval(Cons(("c", Abs("d", Var("d"))), Nil()), App(Abs("a", Var("a")), Add(N
 module Test3 extends EvalVar, EvalLambda, EvalExpr
 //│ module Test3 {
 //│   fun eval: (List[{_1: Str, _2: anything}], 'A & (Add['a] | Mul['a] | Numb | Var),) -> ('a | 'A)
-//│ }
-//│ where
-//│   'A :> Abs['A] | App['A] | Var | 'a | Numb
-//│   'a <: Add['a] | Mul['a] | Numb | Var
+//│ } where
+//│     'A :> Abs['A] | App['A] | Var | 'a | Numb
+//│     'a <: Add['a] | Mul['a] | Numb | Var
 

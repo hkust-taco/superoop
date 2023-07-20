@@ -33,9 +33,8 @@ let res = TestLang.eval(add2negadd11)
 //│ }
 //│ module TestLang {
 //│   fun eval: 'c -> Int
-//│ }
-//│ where
-//│   'c <: Neg['c] | Object & (Add['c] | Lit) & ~#Neg
+//│ } where
+//│     'c <: Neg['c] | Object & (Add['c] | Lit) & ~#Neg
 //│ let res: Int
 //│ add11
 //│       = Add {}

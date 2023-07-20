@@ -97,11 +97,19 @@ trait TypeLikeImpl extends Located { self: TypeLike =>
       val oldCtx = ctx
       val bStr = b.showIn(ctx, 0).stripSuffix("\n")
       val multiline = bStr.contains('\n')
+      // val curlyEnd = bStr.endsWith("}") && bStr.reverseIterator.drop(1).takeWhile(_ =/= '\n').forall(_.isWhitespace)
+      val (curlyEnd, curlyWs) = if (!bStr.endsWith("}")) (false, 0) else {
+        val ln = bStr.reverseIterator.drop(1).takeWhile(_ =/= '\n').toArray
+        (ln.forall(_.isWhitespace), ws.size)
+        // def ws = bStr.reverseIterator.drop(1).takeWhile(_ =/= '\n')
+        // (ws.forall(_.isWhitespace), ws.size)
+      }
       parensIf({
-        val ctx = if (multiline) oldCtx.indent else oldCtx.indent.indent
+        val ctx = if (multiline && !curlyEnd) oldCtx.indent else oldCtx.indent.indent
         s"${
           bStr
-        }\n${oldCtx.indStr}${if (multiline) "" else "  "}where${
+        // }\n${oldCtx.indStr}${if (multiline) "" else "  "}where${
+        }${if (curlyEnd) " " else s"\n${oldCtx.indStr}${if (multiline) "" else "  "}"}where${
               bs.map {
           case (uv, Bounds(Bot, ub)) =>
             s"\n${ctx.indStr}${ctx.vs(uv)} <: ${ub.showIn(ctx, 0)}"

@@ -62,9 +62,8 @@ mixin EvalAdd {
 module TestLang extends EvalAdd
 //│ module TestLang {
 //│   fun eval: Add['lhs] -> nothing
-//│ }
-//│ where
-//│   'lhs <: Add['lhs]
+//│ } where
+//│     'lhs <: Add['lhs]
 
 TestLang.eval
 //│ Add['lhs] -> nothing
@@ -88,9 +87,8 @@ mixin EvalBase {
 module TestLang extends EvalBase
 //│ module TestLang {
 //│   fun eval: (Add['E] | Lit) -> Int
-//│ }
-//│ where
-//│   'E <: Add['E] | Lit
+//│ } where
+//│     'E <: Add['E] | Lit
 
 TestLang.eval
 //│ (Add['E] | Lit) -> Int
@@ -138,10 +136,9 @@ mixin EvalNeg {
 module TestLang extends EvalBase, EvalNeg
 //│ module TestLang {
 //│   fun eval: (Neg['a] | Object & 'b & ~#Neg) -> Int
-//│ }
-//│ where
-//│   'a <: Neg['a] | Object & 'b & ~#Neg
-//│   'b <: Add['a] | Lit
+//│ } where
+//│     'a <: Neg['a] | Object & 'b & ~#Neg
+//│     'b <: Add['a] | Lit
 
 TestLang.eval
 //│ (Neg['a] | Object & 'b & ~#Neg) -> Int

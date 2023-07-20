@@ -44,9 +44,8 @@ mixin Contains {
 module TestContains extends Contains
 //│ module TestContains {
 //│   fun contains: 'a -> nothing
-//│ }
-//│ where
-//│   'a <: Union['a]
+//│ } where
+//│     'a <: Union['a]
 
 TestContains.contains(circles)
 //│ nothing
